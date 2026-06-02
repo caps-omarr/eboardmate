@@ -1,8 +1,10 @@
 <script setup>
 import { Head } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import { onMounted, onUnmounted, ref, watch, nextTick } from 'vue';
+import Chart from 'chart.js/auto';
 
-defineProps({
+const props = defineProps({
     stats: {
         type: Object,
         required: true,
@@ -21,23 +23,70 @@ const printReport = () => {
     window.print();
 };
 
+// --- CHART.JS LOGIC ---
+const reservationChartCanvas = ref(null);
+let reservationChartInstance = null;
+
+const renderChart = () => {
+    if (reservationChartCanvas.value) {
+        if (reservationChartInstance) {
+            reservationChartInstance.destroy();
+        }
+        reservationChartInstance = new Chart(reservationChartCanvas.value, {
+            type: 'doughnut',
+            data: {
+                labels: ['Pending', 'Approved', 'Rejected', 'Expired', 'Cancelled'],
+                datasets: [{
+                    data: [
+                        props.stats.pending_reservations,
+                        props.stats.approved_reservations,
+                        props.stats.rejected_reservations,
+                        props.stats.expired_reservations,
+                        props.stats.cancelled_reservations
+                    ],
+                    // Colors: Warning (Yellow), Success (Green), Danger (Red), Secondary (Gray), Dark (Dark Gray)
+                    backgroundColor: ['#ffc107', '#198754', '#dc3545', '#6c757d', '#343a40'],
+                    borderWidth: 0
+                }]
+            },
+            options: { 
+                maintainAspectRatio: false, 
+                responsive: true, 
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'right' // Puts the labels neatly to the side of the circle
+                    }
+                }
+            }
+        });
+    }
+};
+
+watch(() => props.stats, () => {
+    nextTick(() => {
+        renderChart();
+    });
+}, { deep: true });
+
+onMounted(() => {
+    nextTick(() => {
+        renderChart();
+    });
+});
+
+onUnmounted(() => {
+    if (reservationChartInstance) {
+        reservationChartInstance.destroy();
+    }
+});
+// ----------------------
+
 const statusBadgeClass = (status) => {
-    if (status === 'pending') {
-        return 'text-bg-warning';
-    }
-
-    if (status === 'approved') {
-        return 'text-bg-success';
-    }
-
-    if (status === 'rejected') {
-        return 'text-bg-danger';
-    }
-
-    if (status === 'expired' || status === 'cancelled') {
-        return 'text-bg-secondary';
-    }
-
+    if (status === 'pending') return 'text-bg-warning';
+    if (status === 'approved') return 'text-bg-success';
+    if (status === 'rejected') return 'text-bg-danger';
+    if (status === 'expired' || status === 'cancelled') return 'text-bg-secondary';
     return 'text-bg-secondary';
 };
 </script>
@@ -88,123 +137,48 @@ const statusBadgeClass = (status) => {
             <div class="row g-3 mb-4">
                 <div class="col-md-6 col-xl-3">
                     <div class="ebm-card p-4">
-                        <span class="dashboard-stat-label">
-                            Total Owners
-                        </span>
-
-                        <strong class="dashboard-stat-value">
-                            {{ stats.total_owners }}
-                        </strong>
+                        <span class="dashboard-stat-label">Total Owners</span>
+                        <strong class="dashboard-stat-value">{{ stats.total_owners }}</strong>
                     </div>
                 </div>
 
                 <div class="col-md-6 col-xl-3">
                     <div class="ebm-card p-4">
-                        <span class="dashboard-stat-label">
-                            Boarding Houses
-                        </span>
-
-                        <strong class="dashboard-stat-value">
-                            {{ stats.total_boarding_houses }}
-                        </strong>
+                        <span class="dashboard-stat-label">Boarding Houses</span>
+                        <strong class="dashboard-stat-value">{{ stats.total_boarding_houses }}</strong>
                     </div>
                 </div>
 
                 <div class="col-md-6 col-xl-3">
                     <div class="ebm-card p-4">
-                        <span class="dashboard-stat-label">
-                            Approved Listings
-                        </span>
-
-                        <strong class="dashboard-stat-value text-success">
-                            {{ stats.approved_boarding_houses }}
-                        </strong>
+                        <span class="dashboard-stat-label">Approved Listings</span>
+                        <strong class="dashboard-stat-value text-success">{{ stats.approved_boarding_houses }}</strong>
                     </div>
                 </div>
 
                 <div class="col-md-6 col-xl-3">
                     <div class="ebm-card p-4">
-                        <span class="dashboard-stat-label">
-                            Pending Listings
-                        </span>
-
-                        <strong class="dashboard-stat-value text-warning">
-                            {{ stats.pending_boarding_houses }}
-                        </strong>
+                        <span class="dashboard-stat-label">Pending Listings</span>
+                        <strong class="dashboard-stat-value text-warning">{{ stats.pending_boarding_houses }}</strong>
                     </div>
                 </div>
             </div>
 
-            <div class="row g-3 mb-4">
-                <div class="col-md-6 col-xl-2">
-                    <div class="ebm-card p-4">
-                        <span class="dashboard-stat-label">
-                            Total
-                        </span>
-
-                        <strong class="dashboard-stat-value">
-                            {{ stats.total_reservations }}
-                        </strong>
+            <div class="row g-4 mb-4">
+                <div class="col-xl-4">
+                    <div class="ebm-card p-4 h-100 d-flex flex-column justify-content-center align-items-center text-center">
+                        <span class="dashboard-stat-label mb-2">Total Reservations</span>
+                        <strong class="display-4 fw-bold text-dark">{{ stats.total_reservations }}</strong>
+                        <p class="ebm-muted mt-2 mb-0">All-time reservation requests</p>
                     </div>
                 </div>
-
-                <div class="col-md-6 col-xl-2">
-                    <div class="ebm-card p-4">
-                        <span class="dashboard-stat-label">
-                            Pending
-                        </span>
-
-                        <strong class="dashboard-stat-value text-warning">
-                            {{ stats.pending_reservations }}
-                        </strong>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-xl-2">
-                    <div class="ebm-card p-4">
-                        <span class="dashboard-stat-label">
-                            Approved
-                        </span>
-
-                        <strong class="dashboard-stat-value text-success">
-                            {{ stats.approved_reservations }}
-                        </strong>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-xl-2">
-                    <div class="ebm-card p-4">
-                        <span class="dashboard-stat-label">
-                            Rejected
-                        </span>
-
-                        <strong class="dashboard-stat-value text-danger">
-                            {{ stats.rejected_reservations }}
-                        </strong>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-xl-2">
-                    <div class="ebm-card p-4">
-                        <span class="dashboard-stat-label">
-                            Expired
-                        </span>
-
-                        <strong class="dashboard-stat-value text-secondary">
-                            {{ stats.expired_reservations }}
-                        </strong>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-xl-2">
-                    <div class="ebm-card p-4">
-                        <span class="dashboard-stat-label">
-                            Cancelled
-                        </span>
-
-                        <strong class="dashboard-stat-value text-secondary">
-                            {{ stats.cancelled_reservations }}
-                        </strong>
+                
+                <div class="col-xl-8">
+                    <div class="ebm-card p-4 h-100">
+                        <h2 class="h5 fw-bold mb-4">Reservation Status Breakdown</h2>
+                        <div style="height: 250px; position: relative;">
+                            <canvas ref="reservationChartCanvas"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,8 +1,10 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import { onMounted, onUnmounted, ref, watch, nextTick } from 'vue';
+import Chart from 'chart.js/auto';
 
-defineProps({
+const props = defineProps({
     admin: {
         type: Object,
         required: true,
@@ -21,43 +23,119 @@ defineProps({
     },
 });
 
+// --- CHART.JS LOGIC WITH VUE REFS ---
+const overviewCanvas = ref(null);
+const distributionCanvas = ref(null);
+let chartInstances = { overview: null, distribution: null };
+
+const renderCharts = () => {
+    // 1. Bar Chart: System Overview
+    if (overviewCanvas.value) {
+        if (chartInstances.overview) {
+            chartInstances.overview.destroy();
+        }
+        chartInstances.overview = new Chart(overviewCanvas.value, {
+            type: 'bar',
+            data: {
+                labels: ['Boarding Houses', 'Reservations', 'Owners'],
+                datasets: [{
+                    label: 'Total Count',
+                    data: [props.stats.boarding_houses, props.stats.reservations, props.stats.owners],
+                    backgroundColor: ['#0d6efd', '#198754', '#ffc107'],
+                    borderRadius: 6,
+                }]
+            },
+            options: { 
+                maintainAspectRatio: false, 
+                responsive: true,
+                plugins: {
+                    legend: { display: false } 
+                }
+            }
+        });
+    }
+
+    // 2. Doughnut Chart: Listing Distribution (UPDATED WITH DEACTIVATED)
+    if (distributionCanvas.value) {
+        if (chartInstances.distribution) {
+            chartInstances.distribution.destroy();
+        }
+        chartInstances.distribution = new Chart(distributionCanvas.value, {
+            type: 'doughnut',
+            data: {
+                // Added 'Deactivated' to the labels
+                labels: ['Approved', 'Pending', 'Rejected', 'Deactivated'],
+                datasets: [{
+                    data: [
+                        props.stats.approved_listings, 
+                        props.stats.pending_listings, 
+                        props.stats.rejected_listings,
+                        props.stats.deactivated_listings // Added the deactivated data
+                    ],
+                    // Added Bootstrap's secondary gray (#6c757d) for the new slice
+                    backgroundColor: ['#198754', '#ffc107', '#dc3545', '#6c757d'],
+                    borderWidth: 0
+                }]
+            },
+            options: { 
+                maintainAspectRatio: false, 
+                responsive: true, 
+                cutout: '70%' 
+            }
+        });
+    }
+};
+
+// Watch for changes from Silent Polling and update charts automatically
+watch(() => props.stats, () => {
+    nextTick(() => {
+        renderCharts();
+    });
+}, { deep: true });
+// ------------------------------------
+
+// --- SILENT BACKGROUND POLLING ---
+let pollingInterval = null;
+
+onMounted(() => {
+    // Render the charts on initial page load
+    nextTick(() => {
+        renderCharts();
+    });
+
+    // Silently refresh the dashboard stats and recent activity every 10 seconds
+    pollingInterval = setInterval(() => {
+        router.reload({
+            only: ['stats', 'latestBoardingHouses', 'latestReservations'], 
+            preserveState: true,  
+            preserveScroll: true, 
+        });
+    }, 10000);
+});
+
+onUnmounted(() => {
+    if (pollingInterval) {
+        clearInterval(pollingInterval);
+    }
+    // Clean up charts to prevent memory leaks when navigating away
+    if (chartInstances.overview) chartInstances.overview.destroy();
+    if (chartInstances.distribution) chartInstances.distribution.destroy();
+});
+// ---------------------------------
+
 const listingStatusBadgeClass = (status) => {
-    if (status === 'approved') {
-        return 'text-bg-success';
-    }
-
-    if (status === 'pending') {
-        return 'text-bg-warning';
-    }
-
-    if (status === 'rejected') {
-        return 'text-bg-danger';
-    }
-
-    if (status === 'deactivated') {
-        return 'text-bg-secondary';
-    }
-
+    if (status === 'approved') return 'text-bg-success';
+    if (status === 'pending') return 'text-bg-warning';
+    if (status === 'rejected') return 'text-bg-danger';
+    if (status === 'deactivated') return 'text-bg-secondary';
     return 'text-bg-secondary';
 };
 
 const reservationStatusBadgeClass = (status) => {
-    if (status === 'pending') {
-        return 'text-bg-warning';
-    }
-
-    if (status === 'approved') {
-        return 'text-bg-success';
-    }
-
-    if (status === 'rejected') {
-        return 'text-bg-danger';
-    }
-
-    if (status === 'expired' || status === 'cancelled') {
-        return 'text-bg-secondary';
-    }
-
+    if (status === 'pending') return 'text-bg-warning';
+    if (status === 'approved') return 'text-bg-success';
+    if (status === 'rejected') return 'text-bg-danger';
+    if (status === 'expired' || status === 'cancelled') return 'text-bg-secondary';
     return 'text-bg-secondary';
 };
 
@@ -91,119 +169,56 @@ const formatPrice = (price) => {
             <div class="row g-3 mb-4">
                 <div class="col-md-6 col-xl-3">
                     <div class="ebm-card p-4">
-                        <span class="dashboard-stat-label">
-                            Total Owners
-                        </span>
-
-                        <strong class="dashboard-stat-value">
-                            {{ stats.owners }}
-                        </strong>
-
-                        <small class="ebm-muted">
-                            {{ stats.active_owners }} active
-                        </small>
+                        <span class="dashboard-stat-label">Total Owners</span>
+                        <strong class="dashboard-stat-value">{{ stats.owners }}</strong>
+                        <small class="ebm-muted">{{ stats.active_owners }} active</small>
                     </div>
                 </div>
 
                 <div class="col-md-6 col-xl-3">
                     <div class="ebm-card p-4">
-                        <span class="dashboard-stat-label">
-                            Boarding Houses
-                        </span>
-
-                        <strong class="dashboard-stat-value">
-                            {{ stats.boarding_houses }}
-                        </strong>
-
-                        <small class="ebm-muted">
-                            Total listings
-                        </small>
+                        <span class="dashboard-stat-label">Boarding Houses</span>
+                        <strong class="dashboard-stat-value">{{ stats.boarding_houses }}</strong>
+                        <small class="ebm-muted">Total listings</small>
                     </div>
                 </div>
 
                 <div class="col-md-6 col-xl-3">
                     <div class="ebm-card p-4">
-                        <span class="dashboard-stat-label">
-                            Pending Listings
-                        </span>
-
-                        <strong class="dashboard-stat-value text-warning">
-                            {{ stats.pending_listings }}
-                        </strong>
-
-                        <small class="ebm-muted">
-                            Need admin review
-                        </small>
+                        <span class="dashboard-stat-label">Pending Listings</span>
+                        <strong class="dashboard-stat-value text-warning">{{ stats.pending_listings }}</strong>
+                        <small class="ebm-muted">Need admin review</small>
                     </div>
                 </div>
 
                 <div class="col-md-6 col-xl-3">
                     <div class="ebm-card p-4">
-                        <span class="dashboard-stat-label">
-                            Total Reservations
-                        </span>
-
-                        <strong class="dashboard-stat-value">
-                            {{ stats.reservations }}
-                        </strong>
-
-                        <small class="ebm-muted">
-                            {{ stats.pending_reservations }} pending
-                        </small>
+                        <span class="dashboard-stat-label">Total Reservations</span>
+                        <strong class="dashboard-stat-value">{{ stats.reservations }}</strong>
+                        <small class="ebm-muted">{{ stats.pending_reservations }} pending</small>
                     </div>
                 </div>
             </div>
 
             <div class="row g-4 mb-4">
-                <div class="col-md-6 col-xl-3">
-                    <div class="ebm-card p-4">
-                        <span class="dashboard-stat-label">
-                            Approved Listings
-                        </span>
-
-                        <strong class="dashboard-stat-value text-success">
-                            {{ stats.approved_listings }}
-                        </strong>
+                <div class="col-xl-8">
+                    <div class="ebm-card p-4 h-100">
+                        <h2 class="h5 fw-bold mb-4">System Overview</h2>
+                        <div style="height: 300px; position: relative;">
+                            <canvas ref="overviewCanvas"></canvas>
+                        </div>
                     </div>
                 </div>
-
-                <div class="col-md-6 col-xl-3">
-                    <div class="ebm-card p-4">
-                        <span class="dashboard-stat-label">
-                            Rejected Listings
-                        </span>
-
-                        <strong class="dashboard-stat-value text-danger">
-                            {{ stats.rejected_listings }}
-                        </strong>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-xl-3">
-                    <div class="ebm-card p-4">
-                        <span class="dashboard-stat-label">
-                            Deactivated Listings
-                        </span>
-
-                        <strong class="dashboard-stat-value text-secondary">
-                            {{ stats.deactivated_listings }}
-                        </strong>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-xl-3">
-                    <div class="ebm-card p-4">
-                        <span class="dashboard-stat-label">
-                            Approved Reservations
-                        </span>
-
-                        <strong class="dashboard-stat-value text-success">
-                            {{ stats.approved_reservations }}
-                        </strong>
+                
+                <div class="col-xl-4">
+                    <div class="ebm-card p-4 h-100">
+                        <h2 class="h5 fw-bold mb-4">Listings Distribution</h2>
+                        <div style="height: 300px; position: relative;">
+                            <canvas ref="distributionCanvas"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
-
             <div class="row g-4">
                 <div class="col-xl-7">
                     <div class="ebm-card p-4">

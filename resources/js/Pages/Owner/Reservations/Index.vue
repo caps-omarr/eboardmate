@@ -2,7 +2,8 @@
 import { Head, useForm, usePage, router } from '@inertiajs/vue3';
 import OwnerLayout from '@/Layouts/OwnerLayout.vue';
 import { Modal } from 'bootstrap';
-import { computed, ref } from 'vue';
+// Added onMounted and onUnmounted here
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps({
     boardingHouse: { type: Object, default: null },
@@ -12,6 +13,28 @@ const props = defineProps({
 
 const page = usePage();
 const flashSuccess = computed(() => page.props.flash?.success || null);
+
+// --- SILENT BACKGROUND POLLING ---
+let pollingInterval = null;
+
+onMounted(() => {
+    // Refresh the 'reservations' data every 10 seconds
+    pollingInterval = setInterval(() => {
+        router.reload({
+            only: ['reservations'], // Only fetch the table data
+            preserveState: true,    // Keep the active filter tab selected
+            preserveScroll: true,   // Prevent the page from jumping
+        });
+    }, 10000);
+});
+
+onUnmounted(() => {
+    // Stop polling when the user leaves this page to save resources
+    if (pollingInterval) {
+        clearInterval(pollingInterval);
+    }
+});
+// ---------------------------------
 
 // Archive Logic
 const archiveForm = useForm({});

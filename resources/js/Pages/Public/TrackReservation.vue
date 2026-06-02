@@ -1,7 +1,8 @@
 <script setup>
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
-import { computed } from 'vue';
+// 1. Added onMounted and onUnmounted here
+import { computed, onMounted, onUnmounted } from 'vue';
 
 const page = usePage();
 
@@ -11,6 +12,32 @@ const form = useForm({
     reference_code: '',
     email: '',
 });
+
+// --- SILENT BACKGROUND POLLING ---
+let pollingInterval = null;
+
+onMounted(() => {
+    // Silently check for status updates every 10 seconds
+    pollingInterval = setInterval(() => {
+        // ONLY poll if the user has already searched and is currently viewing a valid reservation.
+        // (We don't want to poll if they haven't searched yet, or if they entered a wrong code)
+        if (trackingResult.value && trackingResult.value.status_type !== 'danger') {
+            form.post('/track-reservation', {
+                preserveScroll: true,
+                preserveState: true, // Keeps the screen completely still (no flickering)
+                replace: true,       // CRITICAL: Stops the background requests from breaking the browser's "Back" button!
+            });
+        }
+    }, 10000);
+});
+
+onUnmounted(() => {
+    // Stop polling when they leave the tracking page
+    if (pollingInterval) {
+        clearInterval(pollingInterval);
+    }
+});
+// ---------------------------------
 
 const submitTracking = () => {
     form.post('/track-reservation', {

@@ -1,8 +1,10 @@
 <script setup>
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+// Added router here
+import { Head, Link, useForm, usePage, router } from '@inertiajs/vue3';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import { Modal } from 'bootstrap';
-import { computed, nextTick, ref } from 'vue';
+// Added onMounted and onUnmounted here
+import { computed, nextTick, ref, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps({
     boardingHouse: {
@@ -12,6 +14,28 @@ const props = defineProps({
 });
 
 const page = usePage();
+
+// --- SILENT BACKGROUND POLLING ---
+let pollingInterval = null;
+
+onMounted(() => {
+    // Silently check for updated boarding house availability every 10 seconds
+    pollingInterval = setInterval(() => {
+        router.reload({
+            only: ['boardingHouse'], // ONLY update the boarding house data
+            preserveState: true,     // VERY IMPORTANT: Keeps the guest's form inputs from clearing
+            preserveScroll: true,    // Stops the page from jumping up and down
+        });
+    }, 10000);
+});
+
+onUnmounted(() => {
+    // Kill the timer if the guest leaves the page
+    if (pollingInterval) {
+        clearInterval(pollingInterval);
+    }
+});
+// ---------------------------------
 
 const reservationForm = useForm({
     full_name: '',
