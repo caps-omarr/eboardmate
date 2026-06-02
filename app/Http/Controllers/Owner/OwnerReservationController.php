@@ -26,34 +26,43 @@ class OwnerReservationController extends Controller
             return Inertia::render('Owner/Reservations/Index', [
                 'boardingHouse' => null,
                 'reservations' => [],
+                'filters' => ['status' => 'all'],
             ]);
         }
 
-        $reservations = Reservation::query()
+        // Handle Status Filtering
+        $statusFilter = $request->query('status', 'all');
+        
+        $query = Reservation::query()
             ->where('boarding_house_id', $boardingHouse->id)
-            ->latest()
-            ->get()
-            ->map(function (Reservation $reservation) {
-                return [
-                    'id' => $reservation->id,
-                    'reference_code' => $reservation->reference_code,
-                    'guest_name' => $reservation->guest_name,
-                    'guest_email' => $reservation->guest_email,
-                    'guest_phone' => $reservation->guest_phone,
-                    'preferred_move_in_date' => $reservation->preferred_move_in_date?->format('M d, Y'),
-                    'status' => $reservation->status,
-                    'status_label' => $this->statusLabel($reservation->status),
-                    'message' => $reservation->message,
-                    'owner_response' => $reservation->owner_response,
-                    'email_notification_status' => $reservation->email_notification_status,
-                    'created_at' => $reservation->created_at?->format('M d, Y h:i A'),
-                    'expires_at' => $reservation->expires_at?->format('M d, Y h:i A'),
-                    'responded_at' => $reservation->responded_at?->format('M d, Y h:i A'),
-                    'can_respond' => $reservation->status === Reservation::STATUS_PENDING,
-                    'approve_url' => route('owner.reservations.approve', $reservation->id),
-                    'reject_url' => route('owner.reservations.reject', $reservation->id),
-                ];
-            });
+            ->where('is_archived_by_owner', false); // Only show unarchived
+
+        if ($statusFilter !== 'all') {
+            $query->where('status', $statusFilter);
+        }
+
+        $reservations = $query->latest()->get()->map(function (Reservation $reservation) {
+            return [
+                'id' => $reservation->id,
+                'reference_code' => $reservation->reference_code,
+                'guest_name' => $reservation->guest_name,
+                'guest_email' => $reservation->guest_email,
+                'guest_phone' => $reservation->guest_phone,
+                'preferred_move_in_date' => $reservation->preferred_move_in_date?->format('M d, Y'),
+                'status' => $reservation->status,
+                'status_label' => $this->statusLabel($reservation->status),
+                'message' => $reservation->message,
+                'owner_response' => $reservation->owner_response,
+                'email_notification_status' => $reservation->email_notification_status,
+                'created_at' => $reservation->created_at?->format('M d, Y h:i A'),
+                'expires_at' => $reservation->expires_at?->format('M d, Y h:i A'),
+                'responded_at' => $reservation->responded_at?->format('M d, Y h:i A'),
+                'can_respond' => $reservation->status === Reservation::STATUS_PENDING,
+                'approve_url' => route('owner.reservations.approve', $reservation->id),
+                'reject_url' => route('owner.reservations.reject', $reservation->id),
+                'archive_url' => route('owner.reservations.archive', $reservation->id),
+            ];
+        });
 
         return Inertia::render('Owner/Reservations/Index', [
             'boardingHouse' => [
@@ -63,7 +72,17 @@ class OwnerReservationController extends Controller
                 'is_verified' => $boardingHouse->is_verified,
             ],
             'reservations' => $reservations,
+            'filters' => ['status' => $statusFilter],
         ]);
+    }
+
+    public function archive(Request $request, Reservation $reservation): RedirectResponse
+    {
+        $this->ensureOwnerCanManageReservation($request, $reservation);
+        
+        $reservation->update(['is_archived_by_owner' => true]);
+
+        return back()->with('success', 'Reservation archived successfully.');
     }
 
     public function approve(
@@ -106,7 +125,7 @@ class OwnerReservationController extends Controller
 
         $notificationService->sendStatusEmail($reservation->fresh());
 
-        return back()->with('success', 'Reservation approved successfully. Email notification was attempted.');
+        return back()->with('success', 'Reservation approved successfully.');
     }
 
     public function reject(
@@ -149,7 +168,7 @@ class OwnerReservationController extends Controller
 
         $notificationService->sendStatusEmail($reservation->fresh());
 
-        return back()->with('success', 'Reservation rejected successfully. Email notification was attempted.');
+        return back()->with('success', 'Reservation rejected successfully.');
     }
 
     private function ensureOwnerCanManageReservation(Request $request, Reservation $reservation): void

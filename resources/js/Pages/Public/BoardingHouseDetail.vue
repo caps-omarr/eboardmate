@@ -528,42 +528,54 @@ const submitReservation = () => {
                             </div>
 
                             <div class="reservation-notice mt-4">
-                                <div
-                                    class="notice-icon"
-                                    aria-hidden="true"
-                                >
-                                    🔒
-                                </div>
-
-                                <div class="notice-content">
-                                    <h3 class="h6 fw-bold mb-1">
-                                        Privacy Notice
-                                    </h3>
-
-                                    <p class="small ebm-muted mb-0">
-                                        Your name, email address, phone number, and preferred move-in date will be used only for reservation processing, tracking, owner response, and reservation status notification. Your contact details will not be shown publicly.
-                                    </p>
+                                <div class="notice-icon mt-0" aria-hidden="true">🔒</div>
+                                <div class="notice-content w-100">
+                                    <div 
+                                        class="d-flex justify-content-between align-items-center" 
+                                        data-bs-toggle="collapse" 
+                                        data-bs-target="#privacyNoticeCollapse" 
+                                        style="cursor: pointer;"
+                                        aria-expanded="false" 
+                                        aria-controls="privacyNoticeCollapse"
+                                    >
+                                        <h3 class="h6 fw-bold mb-0 text-dark">Privacy Notice</h3>
+                                        <span class="ebm-muted small">▼</span>
+                                    </div>
+                                    <div class="collapse" id="privacyNoticeCollapse">
+                                        <p class="small ebm-muted mt-2 mb-0">
+                                            Your personal information (name, email address, phone number, and preferred move-in date) will be used strictly for processing this reservation, tracking your status, and owner communication. Your contact details will never be displayed publicly on E-BoardMate. Only the assigned boarding house owner and system administrators have access to your reservation record.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="reservation-notice mt-3">
-                                <div
-                                    class="notice-icon"
-                                    aria-hidden="true"
-                                >
-                                    📌
-                                </div>
+                                <div class="notice-icon mt-0" aria-hidden="true">📌</div>
+                                <div class="notice-content w-100">
+                                    <div 
+                                        class="d-flex justify-content-between align-items-center" 
+                                        data-bs-toggle="collapse" 
+                                        data-bs-target="#termsCollapse" 
+                                        style="cursor: pointer;"
+                                        aria-expanded="false" 
+                                        aria-controls="termsCollapse"
+                                    >
+                                        <h3 class="h6 fw-bold mb-0 text-dark">Terms and Conditions</h3>
+                                        <span class="ebm-muted small">▼</span>
+                                    </div>
+                                    
+                                    <div class="collapse" id="termsCollapse">
+                                        <div class="small ebm-muted mt-2 mb-3">
+                                            By submitting this reservation, you agree to the following system rules:
+                                            <ul class="mb-0 mt-1 ps-3">
+                                                <li class="mb-1"><strong>Single Active Reservation:</strong> You may only have one active (Pending or Approved) reservation for this specific boarding house at a time.</li>
+                                                <li class="mb-1"><strong>24-Hour Expiration:</strong> Pending reservations will automatically expire after 24 hours if the boarding house owner does not respond.</li>
+                                                <li><strong>Re-applying:</strong> If your reservation is rejected, declined, expired, or cancelled, your slot is freed and you may submit a new reservation request.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
 
-                                <div class="notice-content">
-                                    <h3 class="h6 fw-bold mb-1">
-                                        Terms and Conditions
-                                    </h3>
-
-                                    <p class="small ebm-muted mb-2">
-                                        You may only have one active reservation for the same boarding house. If your reservation is rejected, expired, or cancelled, you may submit another reservation.
-                                    </p>
-
-                                    <div class="form-check">
+                                    <div class="form-check mt-3 pt-3 border-top">
                                         <input
                                             id="accepted_terms"
                                             v-model="reservationForm.accepted_terms"
@@ -571,14 +583,12 @@ const submitReservation = () => {
                                             :class="{ 'is-invalid': reservationForm.errors.accepted_terms }"
                                             type="checkbox"
                                         >
-
                                         <label
-                                            class="form-check-label small"
+                                            class="form-check-label small text-dark fw-medium"
                                             for="accepted_terms"
                                         >
                                             I understand and agree to the reservation terms and privacy notice.
                                         </label>
-
                                         <div
                                             v-if="reservationForm.errors.accepted_terms"
                                             class="invalid-feedback d-block"

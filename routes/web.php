@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\OwnerAuthController;
 use App\Http\Controllers\Owner\OwnerDashboardController;
 use App\Http\Controllers\Owner\OwnerReservationController;
+use App\Http\Controllers\Owner\OwnerSettingsController;
 use App\Http\Controllers\Public\PublicBoardingHouseController;
 use App\Http\Controllers\Public\PublicMapController;
 use App\Http\Controllers\Public\PublicReservationController;
@@ -98,6 +99,16 @@ Route::middleware(['auth', 'role:owner'])
 
         Route::post('/reservations/{reservation}/reject', [OwnerReservationController::class, 'reject'])
             ->name('reservations.reject');
+
+        Route::post('/reservations/{reservation}/archive', [OwnerReservationController::class, 'archive'])
+            ->name('reservations.archive');
+
+        // Added Settings Routes
+        Route::get('/settings', [OwnerSettingsController::class, 'edit'])
+            ->name('settings.edit');
+
+        Route::put('/settings/password', [OwnerSettingsController::class, 'updatePassword'])
+            ->name('settings.update-password');
     });
 
 /*
@@ -151,7 +162,7 @@ Route::middleware(['auth', 'role:super_admin'])
         Route::post('/boarding-houses', [AdminBoardingHouseController::class, 'store'])
             ->name('boarding-houses.store');
 
-         Route::put('/boarding-houses/{boardingHouse}', [AdminBoardingHouseController::class, 'update'])
+        Route::put('/boarding-houses/{boardingHouse}', [AdminBoardingHouseController::class, 'update'])
             ->name('boarding-houses.update');
 
         Route::post('/boarding-houses/{boardingHouse}/approve', [AdminBoardingHouseController::class, 'approve'])

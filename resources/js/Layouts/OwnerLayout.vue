@@ -30,6 +30,10 @@ const logout = () => {
                         My Listing
                     </Link>
 
+                    <Link href="/owner/settings" class="btn btn-sm btn-light border">
+                        Settings
+                    </Link>
+
                     <button
                         type="button"
                         class="btn btn-outline-danger btn-sm"

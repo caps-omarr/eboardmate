@@ -221,10 +221,12 @@ const clearMarkers = () => {
 
 const addTpcMarker = () => {
     const popup = new mapboxgl.Popup({
-        offset: 32,
+        offset: [0, -32],
         closeButton: true,
         closeOnClick: true,
-        maxWidth: '300px',
+        maxWidth: '280px',
+        focusAfterOpen: false,
+        autoPanPadding: { top: 60, bottom: 60, left: 60, right: 60 }
     }).setDOMContent(createTpcPopupContent());
 
     const marker = new mapboxgl.Marker({
@@ -253,10 +255,12 @@ const addBoardingHouseMarkers = () => {
         }
 
         const popup = new mapboxgl.Popup({
-            offset: 32,
+            offset: [0, -32],
             closeButton: true,
             closeOnClick: true,
-            maxWidth: '320px',
+            maxWidth: '280px',
+            focusAfterOpen: false,
+            autoPanPadding: { top: 60, bottom: 60, left: 60, right: 60 }
         }).setDOMContent(createBoardingHousePopupContent(boardingHouse));
 
         const marker = new mapboxgl.Marker({
@@ -423,46 +427,39 @@ onBeforeUnmount(() => {
                                 class="ebm-map"
                             />
 
-                            <div class="row g-3 mt-3">
-                                <div class="col-md-3">
-                                    <div class="small ebm-muted">
-                                        <strong class="text-dark">Map Style:</strong>
-                                        Satellite Streets
-                                    </div>
+                            <!-- IMPROVED MAP STATUS LEGEND -->
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-4 p-3 border rounded-3 bg-light">
+                                <div class="small ebm-muted d-flex align-items-center gap-2">
+                                    <span aria-hidden="true" class="fs-5">🗺️</span>
+                                    <span><strong class="text-dark">Map Style:</strong> Satellite Streets</span>
                                 </div>
 
-                                <div class="col-md-3">
-                                    <div class="small ebm-muted">
-                                        <strong class="text-dark">Map Center:</strong>
-                                        TPC
-                                    </div>
+                                <div class="small ebm-muted d-flex align-items-center gap-2">
+                                    <span aria-hidden="true" class="fs-5">📍</span>
+                                    <span><strong class="text-dark">Map Center:</strong> TPC</span>
                                 </div>
 
-                                <div class="col-md-3">
-                                    <div class="small ebm-muted">
-                                        <strong class="text-dark">Verified Listings:</strong>
-                                        {{ boardingHouses.length }}
-                                    </div>
+                                <div class="small ebm-muted d-flex align-items-center gap-2">
+                                    <span aria-hidden="true" class="fs-5">✅</span>
+                                    <span><strong class="text-dark">Verified Listings:</strong> {{ boardingHouses.length }}</span>
                                 </div>
 
-                                <div class="col-md-3">
-                                    <div class="small ebm-muted">
-                                        <strong class="text-dark">Distance:</strong>
-                                        Shown in marker popup
-                                    </div>
+                                <div class="small ebm-muted d-flex align-items-center gap-2">
+                                    <span aria-hidden="true" class="fs-5">📏</span>
+                                    <span><strong class="text-dark">Distance:</strong> Shown in marker popup</span>
                                 </div>
                             </div>
 
                             <div
                                 v-if="!hasBoardingHouses"
-                                class="alert alert-light border mt-3 mb-0"
+                                class="alert alert-light border mt-4 mb-0"
                             >
                                 No verified boarding houses are available on the map yet. Once the admin approves listings with coordinates, they will appear here.
                             </div>
 
                             <div
                                 v-if="!hasValidBounds"
-                                class="alert alert-info mt-3 mb-0"
+                                class="alert alert-info mt-4 mb-0"
                             >
                                 Boundary coordinates are still placeholders. The map is usable now, but focus-bound panning will be finalized after you provide the Southwest and Northeast coordinates.
                             </div>
