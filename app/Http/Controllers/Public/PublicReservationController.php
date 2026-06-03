@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\BoardingHouse;
 use App\Models\Reservation;
+use App\Mail\ReservationSubmittedMail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class PublicReservationController extends Controller
@@ -24,13 +27,22 @@ class PublicReservationController extends Controller
             ]);
         }
 
+        // Strict Domain Validation
         $validated = $request->validate([
             'full_name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
+            'email' => [
+                'required', 
+                'string', 
+                'email', 
+                'max:255',
+                'regex:/^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com|outlook\.com)$/i'
+            ],
             'phone' => ['required', 'string', 'max:30'],
             'preferred_move_in_date' => ['required', 'date', 'after_or_equal:today'],
             'message' => ['nullable', 'string', 'max:1000'],
             'accepted_terms' => ['accepted'],
+        ], [
+            'email.regex' => 'Please use a valid email address from standard providers (Gmail, Yahoo, or Outlook).',
         ]);
 
         $normalizedFullName = trim($validated['full_name']);
@@ -56,6 +68,7 @@ class PublicReservationController extends Controller
             ]);
         }
 
+        // 1. Save the reservation to the database
         $reservation = DB::transaction(function () use ($boardingHouse, $validated, $request, $normalizedFullName, $normalizedEmail, $normalizedPhone) {
             return Reservation::create([
                 'boarding_house_id' => $boardingHouse->id,
@@ -72,12 +85,22 @@ class PublicReservationController extends Controller
             ]);
         });
 
+        // 2. Automate the Email Dispatch
+        try {
+            Mail::to($reservation->guest_email)->send(new ReservationSubmittedMail($reservation, $boardingHouse));
+        } catch (\Exception $e) {
+            // If the email fails (e.g. no internet, bad SMTP config), log it so the admin knows, 
+            // but do not crash the user's screen. The database record is already safe.
+            Log::error('Failed to send submission email to ' . $reservation->guest_email . '. Error: ' . $e->getMessage());
+        }
+
+        // 3. Return the success redirect
         return redirect()
             ->route('boarding-houses.show', $boardingHouse->slug)
             ->with('reservation_result', [
                 'type' => 'success',
                 'title' => 'Reservation Submitted Successfully',
-                'message' => 'Your reservation request has been submitted. Please save your reference code because you will need it to track your reservation status.',
+                'message' => 'Your reservation request has been submitted. We also sent a copy of your reference code to your email.',
                 'reference_code' => $reservation->reference_code,
                 'boarding_house_name' => $boardingHouse->name,
                 'tracking_email' => $reservation->guest_email,
