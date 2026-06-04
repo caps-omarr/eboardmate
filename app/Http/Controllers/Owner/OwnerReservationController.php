@@ -33,9 +33,9 @@ class OwnerReservationController extends Controller
         // Handle Status Filtering
         $statusFilter = $request->query('status', 'all');
         
+        // Laravel automatically hides Soft-Deleted (Archived) reservations!
         $query = Reservation::query()
-            ->where('boarding_house_id', $boardingHouse->id)
-            ->where('is_archived_by_owner', false); // Only show unarchived
+            ->where('boarding_house_id', $boardingHouse->id);
 
         if ($statusFilter !== 'all') {
             $query->where('status', $statusFilter);
@@ -80,7 +80,9 @@ class OwnerReservationController extends Controller
     {
         $this->ensureOwnerCanManageReservation($request, $reservation);
         
-        $reservation->update(['is_archived_by_owner' => true]);
+        // This triggers Laravel's Soft Delete mechanism automatically!
+        // It updates the `deleted_at` column, hiding it from all queries.
+        $reservation->delete();
 
         return back()->with('success', 'Reservation archived successfully.');
     }

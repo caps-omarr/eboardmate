@@ -123,7 +123,7 @@ const statusBadgeClass = computed(() => {
                                         type="email"
                                         class="form-control"
                                         :class="{ 'is-invalid': form.errors.email }"
-                                        placeholder="example@email.com"
+                                        placeholder="your-gmail@email.com"
                                     >
 
                                     <div

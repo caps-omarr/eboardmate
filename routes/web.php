@@ -144,8 +144,13 @@ Route::middleware(['auth', 'role:super_admin'])
         Route::get('/reports', [AdminReportController::class, 'index'])
             ->name('reports.index');
 
+        // --- ACTIVITY LOGS ---
         Route::get('/activity-logs', [AdminActivityLogController::class, 'index'])
             ->name('activity-logs.index');
+            
+        // 🚀 NEW: Bulk Archive Route for Activity Logs
+        Route::delete('/activity-logs/bulk', [AdminActivityLogController::class, 'bulkArchive'])
+            ->name('activity-logs.bulk');
 
         Route::get('/owners', [AdminOwnerController::class, 'index'])
             ->name('owners.index');

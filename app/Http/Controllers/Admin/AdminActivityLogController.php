@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
+use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -11,6 +13,7 @@ class AdminActivityLogController extends Controller
 {
     public function index(): Response
     {
+       
         $activityLogs = ActivityLog::query()
             ->with(['user', 'boardingHouse', 'reservation'])
             ->latest()
@@ -33,5 +36,21 @@ class AdminActivityLogController extends Controller
         return Inertia::render('Admin/ActivityLogs/Index', [
             'activityLogs' => $activityLogs,
         ]);
+    }
+
+    
+    public function bulkArchive(Request $request): RedirectResponse
+    {
+       
+        $request->validate([
+            'ids' => ['required', 'array'],
+            'ids.*' => ['exists:activity_logs,id']
+        ]);
+
+       
+        ActivityLog::whereIn('id', $request->ids)->delete();
+
+        
+        return back()->with('success', count($request->ids) . ' logs archived successfully.');
     }
 }

@@ -1,8 +1,7 @@
 <script setup>
-import { Head, useForm, usePage, router } from '@inertiajs/vue3';
+import { Head, useForm, usePage, router, Link } from '@inertiajs/vue3';
 import OwnerLayout from '@/Layouts/OwnerLayout.vue';
 import { Modal } from 'bootstrap';
-// Added onMounted and onUnmounted here
 import { computed, ref, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps({
@@ -36,15 +35,37 @@ onUnmounted(() => {
 });
 // ---------------------------------
 
-// Archive Logic
+// --- NEW ARCHIVE LOGIC WITH OPTIMISTIC UI ---
 const archiveForm = useForm({});
-const archiveReservation = (reservation) => {
-    if (confirm('Are you sure you want to archive this reservation? It will be hidden from this list.')) {
-        archiveForm.post(reservation.archive_url, {
-            preserveScroll: true,
-        });
-    }
+const reservationToArchive = ref(null);
+
+const openArchiveModal = (reservation) => {
+    reservationToArchive.value = reservation;
+    Modal.getOrCreateInstance(document.getElementById('archiveModal')).show();
 };
+
+const submitArchive = () => {
+    if (!reservationToArchive.value) return;
+    
+    archiveForm.post(reservationToArchive.value.archive_url, {
+        preserveScroll: true,
+        preserveState: true,
+        onSuccess: () => {
+            // 1. Hide the Modal
+            Modal.getOrCreateInstance(document.getElementById('archiveModal')).hide();
+            
+            // 2. Instantly remove the row from the table (Optimistic UI Update)
+            const index = props.reservations.findIndex(r => r.id === reservationToArchive.value.id);
+            if (index !== -1) {
+                props.reservations.splice(index, 1);
+            }
+
+            // 3. Reset state
+            reservationToArchive.value = null; 
+        },
+    });
+};
+// ----------------------------------------------
 
 const selectedReservation = ref(null);
 const actionType = ref('approve');
@@ -112,19 +133,54 @@ const submitResponse = () => {
 
                 <ul class="nav nav-tabs mb-4">
                     <li class="nav-item">
-                        <a class="nav-link text-capitalize" :class="{ 'active': filters.status === 'all' }" href="/owner/reservations?status=all">All</a>
+                        <Link 
+                            class="nav-link text-capitalize" 
+                            :class="{ 'active': filters.status === 'all' }" 
+                            href="/owner/reservations?status=all"
+                            preserve-scroll
+                        >
+                            All
+                        </Link>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-capitalize" :class="{ 'active': filters.status === 'pending' }" href="/owner/reservations?status=pending">Pending</a>
+                        <Link 
+                            class="nav-link text-capitalize" 
+                            :class="{ 'active': filters.status === 'pending' }" 
+                            href="/owner/reservations?status=pending"
+                            preserve-scroll
+                        >
+                            Pending
+                        </Link>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-capitalize" :class="{ 'active': filters.status === 'approved' }" href="/owner/reservations?status=approved">Approved</a>
+                        <Link 
+                            class="nav-link text-capitalize" 
+                            :class="{ 'active': filters.status === 'approved' }" 
+                            href="/owner/reservations?status=approved"
+                            preserve-scroll
+                        >
+                            Approved
+                        </Link>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-capitalize" :class="{ 'active': filters.status === 'rejected' }" href="/owner/reservations?status=rejected">Rejected</a>
+                        <Link 
+                            class="nav-link text-capitalize" 
+                            :class="{ 'active': filters.status === 'rejected' }" 
+                            href="/owner/reservations?status=rejected"
+                            preserve-scroll
+                        >
+                            Rejected
+                        </Link>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-capitalize" :class="{ 'active': filters.status === 'expired' }" href="/owner/reservations?status=expired">Expired</a>
+                        <Link 
+                            class="nav-link text-capitalize" 
+                            :class="{ 'active': filters.status === 'expired' }" 
+                            href="/owner/reservations?status=expired"
+                            preserve-scroll
+                        >
+                            Expired
+                        </Link>
                     </li>
                 </ul>
 
@@ -162,7 +218,7 @@ const submitResponse = () => {
                                     <div class="d-flex flex-column gap-2">
                                         <button v-if="res.can_respond" class="btn btn-sm btn-success" @click="openResponseModal(res, 'approve')">Approve</button>
                                         <button v-if="res.can_respond" class="btn btn-sm btn-outline-danger" @click="openResponseModal(res, 'reject')">Reject</button>
-                                        <button class="btn btn-sm btn-outline-secondary" @click="archiveReservation(res)">Archive</button>
+                                        <button class="btn btn-sm btn-outline-secondary" @click="openArchiveModal(res)">Archive</button>
                                     </div>
                                 </td>
                             </tr>
@@ -192,5 +248,29 @@ const submitResponse = () => {
                 </div>
             </div>
         </div>
+
+        <div id="archiveModal" class="modal fade" tabindex="-1" aria-hidden="true">
+             <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content text-center p-4">
+                    <div class="mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="#6c757d" class="bi bi-box-arrow-in-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M3.5 10a.5.5 0 0 1-.5-.5v-8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 0 0 1h2A1.5 1.5 0 0 0 14 9.5v-8A1.5 1.5 0 0 0 12.5 0h-9A1.5 1.5 0 0 0 2 1.5v8A1.5 1.5 0 0 0 3.5 11h2a.5.5 0 0 0 0-1h-2z"/>
+                            <path fill-rule="evenodd" d="M7.646 15.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 14.293V5.5a.5.5 0 0 0-1 0v8.793l-2.146-2.147a.5.5 0 0 0-.708.708l3 3z"/>
+                        </svg>
+                    </div>
+                    <h3 class="h5 fw-bold mb-2">Archive Reservation?</h3>
+                    <p class="text-muted small mb-4">This reservation (<strong v-if="reservationToArchive">{{ reservationToArchive.reference_code }}</strong>) will be removed from your active view.</p>
+                    
+                    <div class="d-flex justify-content-center gap-2">
+                        <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal" :disabled="archiveForm.processing">Cancel</button>
+                        <button type="button" class="btn btn-secondary px-4 d-flex align-items-center" @click="submitArchive" :disabled="archiveForm.processing">
+                            <span v-if="archiveForm.processing" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            Yes, Archive
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </OwnerLayout>
 </template>

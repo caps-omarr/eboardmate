@@ -8,30 +8,19 @@ use Illuminate\Support\Facades\Hash;
 
 class EBoardMateUserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+   
     public function run(): void
     {
+        
         User::updateOrCreate(
-            ['email' => 'admin@eboardmate.test'],
+            ['email' => env('SEED_ADMIN_EMAIL', 'admin@eboardmate.com')],
             [
-                'name' => 'E-BoardMate Super Admin',
-                'phone' => '09123456789',
-                'password' => Hash::make('EBoardMate2026!'),
+                'name' => env('SEED_ADMIN_NAME', 'E-BoardMate Super Admin'),
+                'phone' => env('SEED_ADMIN_PHONE', '09123456789'),
+                'password' => Hash::make(env('SEED_ADMIN_PASSWORD', 'fallback_password_change_immediately')),
                 'role' => User::ROLE_SUPER_ADMIN,
                 'status' => User::STATUS_ACTIVE,
-            ]
-        );
-
-        User::updateOrCreate(
-            ['email' => 'owner@eboardmate.test'],
-            [
-                'name' => 'Sample Boarding House Owner',
-                'phone' => '09987654321',
-                'password' => Hash::make('EBoardMate2026!'),
-                'role' => User::ROLE_OWNER,
-                'status' => User::STATUS_ACTIVE,
+                'email_verified_at' => now(), 
             ]
         );
     }
