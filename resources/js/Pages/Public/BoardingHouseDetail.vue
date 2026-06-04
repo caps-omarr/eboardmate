@@ -13,9 +13,7 @@ const props = defineProps({
 
 const page = usePage();
 
-let pollingInterval = null;
-
-// --- LIGHTBOX STATE & LOGIC ---
+// --- 📸 LIGHTBOX STATE & LOGIC ---
 const activePhotoIndex = ref(0);
 
 const openLightbox = (index) => {
@@ -28,7 +26,7 @@ const nextPhoto = () => {
     if (activePhotoIndex.value < props.boardingHouse.photos.length - 1) {
         activePhotoIndex.value++;
     } else {
-        activePhotoIndex.value = 0; // Loop back to the first photo
+        activePhotoIndex.value = 0;
     }
 };
 
@@ -36,11 +34,10 @@ const prevPhoto = () => {
     if (activePhotoIndex.value > 0) {
         activePhotoIndex.value--;
     } else {
-        activePhotoIndex.value = props.boardingHouse.photos.length - 1; // Loop to the last photo
+        activePhotoIndex.value = props.boardingHouse.photos.length - 1;
     }
 };
 
-// Keyboard navigation for the lightbox
 const handleKeydown = (e) => {
     const modalEl = document.getElementById('photoLightboxModal');
     if (modalEl && modalEl.classList.contains('show')) {
@@ -49,24 +46,27 @@ const handleKeydown = (e) => {
     }
 };
 
+// --- 🧹 MODAL CLEANUP LOGIC ---
+const cleanupModalBackdrop = () => {
+    const backdrops = document.querySelectorAll('.modal-backdrop');
+    backdrops.forEach(backdrop => backdrop.remove());
+    
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+};
+
+// --- LIFECYCLE HOOKS ---
 onMounted(() => {
     window.addEventListener('keydown', handleKeydown);
-    
-    pollingInterval = setInterval(() => {
-        router.reload({
-            only: ['boardingHouse'], 
-            preserveState: true,     
-            preserveScroll: true,    
-        });
-    }, 10000);
 });
 
 onUnmounted(() => {
     window.removeEventListener('keydown', handleKeydown);
-    if (pollingInterval) clearInterval(pollingInterval);
+    cleanupModalBackdrop();
 });
-// ------------------------------
 
+// --- 📝 RESERVATION LOGIC ---
 const reservationForm = useForm({
     full_name: '',
     email: '',
@@ -96,7 +96,10 @@ const getModalInstance = (modalId) => {
 
 const closeModal = (modalId) => {
     const modal = getModalInstance(modalId);
-    if (modal) modal.hide();
+    if (modal) {
+        modal.hide();
+        setTimeout(cleanupModalBackdrop, 300);
+    }
 };
 
 const openModal = (modalId) => {
@@ -179,6 +182,7 @@ const submitReservation = () => {
                 </div>
 
                 <div class="row g-4">
+                    <!-- Left Column: Details -->
                     <div class="col-lg-8">
                         <div class="ebm-card p-4 p-md-5 mb-4">
                             <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-3">
@@ -197,6 +201,7 @@ const submitReservation = () => {
                             </p>
                         </div>
 
+                        <!-- 📸 PHOTOS SECTION -->
                         <div class="ebm-card p-4 p-md-5 mb-4">
                             <h2 class="h4 fw-bold mb-3">Photos</h2>
                             <div v-if="boardingHouse.photos.length" class="row g-3">
@@ -216,6 +221,7 @@ const submitReservation = () => {
                             </div>
                         </div>
 
+                        <!-- LOCATION DETAILS -->
                         <div class="ebm-card p-4 p-md-5 mb-4">
                             <h2 class="h4 fw-bold mb-3">Location Details</h2>
                             <p class="ebm-muted mb-3">{{ boardingHouse.location_description || 'No location description has been provided yet.' }}</p>
@@ -243,12 +249,14 @@ const submitReservation = () => {
                             <p class="small ebm-muted mt-3 mb-0">Distance is estimated using coordinates. Actual walking distance may vary.</p>
                         </div>
 
+                        <!-- HOUSE RULES -->
                         <div class="ebm-card p-4 p-md-5">
                             <h2 class="h4 fw-bold mb-3">House Rules</h2>
                             <p class="ebm-muted mb-0">{{ boardingHouse.rules || 'No house rules have been added yet.' }}</p>
                         </div>
                     </div>
 
+                    <!-- Right Column: Sticky Summary -->
                     <div class="col-lg-4">
                         <div class="ebm-card p-4 sticky-detail-card">
                             <h2 class="h4 fw-bold mb-3">Boarding House Summary</h2>
@@ -287,50 +295,39 @@ const submitReservation = () => {
                             <button v-else type="button" class="btn btn-secondary w-100" disabled>
                                 Reservation Unavailable
                             </button>
-                            <p class="small ebm-muted mt-3 mb-0">Students can submit a guest reservation without creating an account.</p>
+                            <p class="small ebm-muted mt-3 mb-0 text-center mt-3">Students can submit a guest reservation without creating an account.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
+        <!-- 🖼️ THE FULLSCREEN LIGHTBOX MODAL -->
         <div id="photoLightboxModal" class="modal fade" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-fullscreen">
                 <div class="modal-content bg-dark bg-opacity-75 border-0" style="backdrop-filter: blur(10px);">
-                    
                     <div class="modal-header border-0 pb-0 position-absolute top-0 end-0 z-3">
                         <button type="button" class="btn-close btn-close-white p-3 m-2" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     
                     <div class="modal-body d-flex align-items-center justify-content-center p-0 position-relative">
-                        
-                        <button v-if="boardingHouse.photos.length > 1" @click="prevPhoto" class="lightbox-nav-btn prev-btn">
-                            &#10094;
-                        </button>
+                        <button v-if="boardingHouse.photos.length > 1" @click="prevPhoto" class="lightbox-nav-btn prev-btn">&#10094;</button>
 
                         <Transition name="fade" mode="out-in">
-                            <img 
-                                v-if="boardingHouse.photos.length"
-                                :key="activePhotoIndex" 
-                                :src="boardingHouse.photos[activePhotoIndex].url" 
-                                :alt="boardingHouse.name"
-                                class="lightbox-image"
-                            />
+                            <img v-if="boardingHouse.photos.length" :key="activePhotoIndex" :src="boardingHouse.photos[activePhotoIndex].url" :alt="boardingHouse.name" class="lightbox-image" />
                         </Transition>
 
-                        <button v-if="boardingHouse.photos.length > 1" @click="nextPhoto" class="lightbox-nav-btn next-btn">
-                            &#10095;
-                        </button>
+                        <button v-if="boardingHouse.photos.length > 1" @click="nextPhoto" class="lightbox-nav-btn next-btn">&#10095;</button>
 
                         <div v-if="boardingHouse.photos.length > 1" class="lightbox-counter">
                             {{ activePhotoIndex + 1 }} / {{ boardingHouse.photos.length }}
                         </div>
-                        
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- 📝 THE RESERVATION INPUT FORM MODAL -->
         <div id="reservationModal" class="modal fade" tabindex="-1" aria-labelledby="reservationModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-scrollable reservation-dialog">
                 <div class="modal-content reservation-modal-content">
@@ -340,7 +337,7 @@ const submitReservation = () => {
                                 <span class="badge badge-soft-green mb-2">Guest Reservation</span>
                                 <h2 id="reservationModalLabel" class="modal-title h5 fw-bold">Reserve at {{ boardingHouse.name }}</h2>
                             </div>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="cleanupModalBackdrop" />
                         </div>
 
                         <div class="modal-body">
@@ -379,21 +376,70 @@ const submitReservation = () => {
                                     <textarea id="message" v-model="reservationForm.message" class="form-control" :class="{ 'is-invalid': reservationForm.errors.message }" rows="3" placeholder="Optional message, question, or note"></textarea>
                                     <div v-if="reservationForm.errors.message" class="invalid-feedback">{{ reservationForm.errors.message }}</div>
                                 </div>
-                            </div>
 
-                            <div class="form-check mt-4 pt-3 border-top">
-                                <input id="accepted_terms" v-model="reservationForm.accepted_terms" class="form-check-input" :class="{ 'is-invalid': reservationForm.errors.accepted_terms }" type="checkbox">
-                                <label class="form-check-label small text-dark fw-medium" for="accepted_terms">
-                                    I understand that my reservation is valid for 24 hours and subject to owner approval.
-                                </label>
-                                <div v-if="reservationForm.errors.accepted_terms" class="invalid-feedback d-block">
-                                    {{ reservationForm.errors.accepted_terms }}
+                                <!-- 🛡️ Legal Protection & DPA Compliance Accordions -->
+                                <div class="col-12 mt-4">
+                                    <div class="accordion custom-legal-accordion shadow-sm" id="legalAccordion">
+                                        
+                                        <!-- Privacy Notice -->
+                                        <div class="accordion-item border border-bottom-0 rounded-top overflow-hidden">
+                                            <h2 class="accordion-header">
+                                                <button class="accordion-button collapsed bg-light py-3 shadow-none text-dark fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePrivacy">
+                                                    <span class="me-2">🔒</span> Data Privacy Notice
+                                                </button>
+                                            </h2>
+                                            <div id="collapsePrivacy" class="accordion-collapse collapse" data-bs-parent="#legalAccordion">
+                                                <div class="accordion-body small ebm-muted pt-3 pb-4">
+                                                    <p class="mb-3">By submitting this form, you consent to the collection and processing of your personal information in accordance with the <strong>Data Privacy Act of 2012 (RA 10173)</strong>.</p>
+                                                    <ul class="mb-0 ps-3">
+                                                        <li class="mb-2"><strong>Purpose of Collection:</strong> Your full name, email address, and phone number are collected exclusively to process your reservation request, facilitate direct communication with the landlord, and provide tracking updates.</li>
+                                                        <li class="mb-2"><strong>Information Accuracy:</strong> You are legally required to provide accurate and active contact details. The use of aliases or falsified information will result in the immediate forfeiture of your reservation request.</li>
+                                                        <li><strong>Data Security:</strong> E-BoardMate will never sell your data to third parties. Your information is securely encrypted and shared <em>only</em> with the specific boarding house owner you have selected.</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Terms & Conditions -->
+                                        <div class="accordion-item border rounded-bottom overflow-hidden">
+                                            <h2 class="accordion-header">
+                                                <button class="accordion-button collapsed bg-light py-3 shadow-none text-dark fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTerms">
+                                                    <span class="me-2">⚖️</span> Platform Terms & Conditions
+                                                </button>
+                                            </h2>
+                                            <div id="collapseTerms" class="accordion-collapse collapse" data-bs-parent="#legalAccordion">
+                                                <div class="accordion-body small ebm-muted pt-3 pb-4">
+                                                    <ul class="mb-0 ps-3">
+                                                        <li class="mb-2"><strong>Nature of Request:</strong> Submitting this form constitutes a <em>reservation request</em>, not a legally binding lease agreement. Slot allocation is strictly subject to the boarding house owner's final verification and approval.</li>
+                                                        <li class="mb-2"><strong>Platform Disclaimer:</strong> E-BoardMate serves solely as an intermediary locator software. We do not manage properties, dictate rental prices, or hold liability for landlord-tenant disputes.</li>
+                                                        <li class="mb-2"><strong>System-Wide Limit:</strong> To prevent system abuse and ensure fairness to all students, you may only hold <strong>one active (Pending or Approved) reservation across the entire E-BoardMate system</strong> at any given time.</li>
+                                                        <li><strong>24-Hour Expiration:</strong> Pending reservations automatically expire if unacknowledged by the owner within 24 hours. If a request is rejected or expires, the slot is freed, and you may submit a new request.</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
                                 </div>
+
+                                <div class="col-12 mt-4 pt-4 border-top">
+                                    <div class="form-check custom-checkbox">
+                                        <input id="accepted_terms" v-model="reservationForm.accepted_terms" class="form-check-input shadow-none cursor-pointer" :class="{ 'is-invalid': reservationForm.errors.accepted_terms }" type="checkbox" style="width: 1.25em; height: 1.25em; margin-top: 0.15em;">
+                                        <label class="form-check-label small text-dark fw-bold cursor-pointer user-select-none ps-2" for="accepted_terms">
+                                            I acknowledge that I have read and agree to the Data Privacy Notice and Platform Terms & Conditions above.
+                                        </label>
+                                        <div v-if="reservationForm.errors.accepted_terms" class="invalid-feedback d-block fw-medium mt-2">
+                                            {{ reservationForm.errors.accepted_terms }}
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
 
                         <div class="modal-footer bg-light">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" :disabled="reservationForm.processing">Cancel</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="cleanupModalBackdrop" :disabled="reservationForm.processing">Cancel</button>
+                            
                             <button type="submit" class="btn btn-ebm-primary px-4" :disabled="reservationForm.processing">
                                 <span v-if="reservationForm.processing">Submitting...</span>
                                 <span v-else>Submit Reservation</span>
@@ -404,11 +450,12 @@ const submitReservation = () => {
             </div>
         </div>
 
+        <!-- 🧾 THE RESULT RECEIPT MODAL -->
         <div id="reservationResultModal" class="modal fade" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 shadow-lg">
                     <div class="modal-header border-0 pb-0">
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="cleanupModalBackdrop" />
                     </div>
 
                     <div v-if="resultModalData" class="modal-body px-4 pt-0 pb-4">
@@ -454,7 +501,7 @@ const submitReservation = () => {
                             <Link v-if="resultModalData?.type === 'success'" href="/track-reservation" class="btn btn-ebm-primary w-100 py-2 fw-medium">
                                 Track Reservation Now
                             </Link>
-                            <button type="button" class="btn btn-light w-100 py-2 fw-medium" data-bs-dismiss="modal">
+                            <button type="button" class="btn btn-light w-100 py-2 fw-medium" data-bs-dismiss="modal" @click="cleanupModalBackdrop">
                                 Close
                             </button>
                         </div>
@@ -466,7 +513,7 @@ const submitReservation = () => {
 </template>
 
 <style scoped>
-/* 📸 Hover Effects for the Grid Photos */
+/* Hover Effects for the Grid Photos */
 .photo-thumbnail-container {
     position: relative;
     border-radius: 8px;
@@ -498,7 +545,7 @@ const submitReservation = () => {
     opacity: 1;
 }
 
-/* 🖼️ Lightbox Modal Styles */
+/* Lightbox Modal Styles */
 .lightbox-image {
     max-height: 90vh;
     max-width: 90vw;
@@ -542,7 +589,7 @@ const submitReservation = () => {
     letter-spacing: 1px;
 }
 
-/* Vue Transitions for buttery smooth image swaps */
+/* Vue Transitions */
 .fade-enter-active,
 .fade-leave-active {
     transition: opacity 0.3s ease, transform 0.3s ease;
@@ -551,6 +598,19 @@ const submitReservation = () => {
 .fade-leave-to {
     opacity: 0;
     transform: scale(0.98);
+}
+
+/* Legal Accordion Tweaks */
+.custom-legal-accordion .accordion-button:not(.collapsed) {
+    background-color: #f4fbf7;
+    color: #198754;
+    box-shadow: inset 0 calc(-1 * var(--bs-accordion-border-width)) 0 var(--bs-accordion-border-color);
+}
+.cursor-pointer {
+    cursor: pointer;
+}
+.user-select-none {
+    user-select: none;
 }
 
 /* Modal Receipts */

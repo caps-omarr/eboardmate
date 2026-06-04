@@ -3,12 +3,12 @@ import { Link } from '@inertiajs/vue3';
 </script>
 
 <template>
-   
+    
     <div class="vh-100 d-flex flex-column bg-ebm snap-container">
-       
+        
         <nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top shadow-sm snap-section">
             <div class="container py-0">
-               
+                
                 <Link href="/" class="navbar-brand d-flex align-items-center" title="E-BoardMate Home">
                     <img 
                         src="../Pages/Public/Images/eboarmatelogo.png" 
@@ -31,9 +31,13 @@ import { Link } from '@inertiajs/vue3';
                 <div class="row gy-4 mb-4 justify-content-between">
                  
                     <div class="col-lg-6 col-md-12">
-                        <div class="d-flex align-items-center gap-2 fw-bold text-ebm-primary mb-3">
-                            <span class="brand-mark">E</span>
-                            <span class="fs-5">E-BoardMate</span>
+                        <div class="mb-3">
+                            <img 
+                                src="../Pages/Public/Images/eboarmatelogo.png" 
+                                alt="E-BoardMate Logo" 
+                                class="img-fluid footer-logo"
+                                style="height: 75px; object-fit: contain; image-rendering: -webkit-optimize-contrast;"
+                            />
                         </div>
                         <p class="ebm-muted small pe-lg-5 mb-0">
                             A Web-Based Boarding House Locator and Reservations System for Talibon Polytechnic College. Find verified boarding houses faster, easier, and safer.
@@ -75,6 +79,10 @@ import { Link } from '@inertiajs/vue3';
         height: 65px !important;
         margin-top: -10px !important;
         margin-bottom: -10px !important;
+    }
+    
+    .footer-logo {
+        height: 55px !important;
     }
 }
 </style>

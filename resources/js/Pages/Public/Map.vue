@@ -14,8 +14,9 @@ const props = defineProps({
 
 const mapContainer = ref(null);
 const mapInstance = ref(null);
-const mapMarkers = ref([]);
 const mapError = ref('');
+const selectedLocation = ref(null);
+const currentMapStyle = ref('mapbox://styles/mapbox/satellite-streets-v12');
 
 const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN || '';
 
@@ -31,438 +32,351 @@ const initialZoom = 16;
 const minZoom = 14;
 const maxZoom = 19;
 
-const hasMapboxToken = computed(() => {
-    return mapboxToken && mapboxToken !== 'your_public_mapbox_token_here';
-});
-
-const hasValidBounds = computed(() => {
-    return southwestLat !== 'TO_BE_PROVIDED'
-        && southwestLng !== 'TO_BE_PROVIDED'
-        && northeastLat !== 'TO_BE_PROVIDED'
-        && northeastLng !== 'TO_BE_PROVIDED'
-        && !Number.isNaN(Number(southwestLat))
-        && !Number.isNaN(Number(southwestLng))
-        && !Number.isNaN(Number(northeastLat))
-        && !Number.isNaN(Number(northeastLng));
-});
-
+const hasMapboxToken = computed(() => mapboxToken && mapboxToken !== 'your_public_mapbox_token_here');
 const hasBoardingHouses = computed(() => props.boardingHouses.length > 0);
+const hasValidBounds = computed(() => {
+    return southwestLat !== 'TO_BE_PROVIDED' && southwestLng !== 'TO_BE_PROVIDED'
+        && !Number.isNaN(Number(southwestLat)) && !Number.isNaN(Number(southwestLng));
+});
 
-const formatPrice = (price) => {
-    return Number(price || 0).toLocaleString('en-PH', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    });
+const formatPrice = (price) => Number(price || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const formatDistance = (distance) => Number(distance || 0) <= 0 ? 'Distance unavailable' : `${Number(distance || 0).toFixed(2)} km from TPC`;
+
+// --- 🏠 CUSTOM CANVAS ICON (Required for WebGL rendering) ---
+const houseIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32">
+    <circle cx="12" cy="12" r="11" fill="#0d6efd" stroke="#ffffff" stroke-width="2"/>
+    <path d="M7 11.5L12 7L17 11.5V17H8.5C7.7 17 7 16.3 7 15.5V11.5Z" fill="white"/>
+</svg>`;
+
+// --- 🌐 GEOJSON DATA PREPARATION ---
+const getBoardingHouseGeoJSON = () => {
+    return {
+        type: 'FeatureCollection',
+        features: props.boardingHouses.map(house => {
+            const lng = Number(house.longitude);
+            const lat = Number(house.latitude);
+            if (Number.isNaN(lng) || Number.isNaN(lat)) return null;
+
+            return {
+                type: 'Feature',
+                properties: {
+                    id: house.id,
+                    name: house.name,
+                    is_verified: house.is_verified,
+                    is_full: house.is_full,
+                    rent_price: house.rent_price,
+                    estimated_distance_km: house.estimated_distance_km,
+                    available_rooms: house.available_rooms,
+                    available_bedspaces: house.available_bedspaces,
+                    slug: house.slug,
+                    detail_url: house.detail_url,
+                },
+                geometry: {
+                    type: 'Point',
+                    coordinates: [lng, lat],
+                },
+            };
+        }).filter(f => f !== null),
+    };
 };
 
-const formatDistance = (distance) => {
-    const value = Number(distance || 0);
+// --- 🗺️ ADD LAYERS & REALISM ---
+const addMapLayers = () => {
+    const map = mapInstance.value;
+    if (!map) return;
 
-    if (value <= 0) {
-        return 'Distance unavailable';
+    // 1. Realistic Atmosphere / Fog
+    map.setFog({
+        'color': 'rgb(255, 255, 255)', 
+        'high-color': 'rgb(200, 200, 225)', 
+        'horizon-blend': 0.2, 
+    });
+
+    // 2. 3D Terrain Layer
+    if (!map.getSource('mapbox-dem')) {
+        map.addSource('mapbox-dem', {
+            'type': 'raster-dem',
+            'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
+            'tileSize': 512,
+            'maxzoom': 14
+        });
+        map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5 });
     }
 
-    return `${value.toFixed(2)} km from TPC`;
-};
-
-const schoolIconSvg = `
-    <svg class="map-marker-icon" viewBox="0 0 24 24" aria-hidden="true">
-        <path
-            d="M3 21V9.8L12 4L21 9.8V21H3Z"
-            fill="currentColor"
-        />
-        <path
-            d="M8 21V12H16V21"
-            fill="white"
-            opacity="0.95"
-        />
-        <path
-            d="M10 9.5H14V12.5H10V9.5Z"
-            fill="white"
-            opacity="0.95"
-        />
-    </svg>
-`;
-
-const houseIconSvg = `
-    <svg class="map-marker-icon" viewBox="0 0 24 24" aria-hidden="true">
-        <path
-            d="M4 11.5L12 5L20 11.5V20H5.5C4.7 20 4 19.3 4 18.5V11.5Z"
-            fill="currentColor"
-        />
-        <path
-            d="M9.5 20V14H14.5V20"
-            fill="white"
-            opacity="0.95"
-        />
-        <path
-            d="M3 12.2L12 4.8L21 12.2"
-            fill="none"
-            stroke="white"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-        />
-    </svg>
-`;
-
-const createMarkerElement = (type, displayName, titleText) => {
-    const element = document.createElement('button');
-    element.type = 'button';
-    element.className = type === 'tpc'
-        ? 'map-marker map-marker-school'
-        : 'map-marker map-marker-house';
-    element.setAttribute('aria-label', titleText);
-
-    const nameLabel = document.createElement('span');
-    nameLabel.className = type === 'tpc'
-        ? 'map-marker-name-label map-marker-name-label-school'
-        : 'map-marker-name-label map-marker-name-label-house';
-    nameLabel.textContent = displayName;
-
-    const iconWrapper = document.createElement('span');
-    iconWrapper.className = 'map-marker-icon-wrapper';
-    iconWrapper.innerHTML = type === 'tpc' ? schoolIconSvg : houseIconSvg;
-
-    element.appendChild(nameLabel);
-    element.appendChild(iconWrapper);
-
-    return element;
-};
-
-const createTextElement = (tag, className, text) => {
-    const element = document.createElement(tag);
-    element.className = className;
-    element.textContent = text;
-
-    return element;
-};
-
-const createInfoRow = (label, value) => {
-    const row = document.createElement('div');
-    row.className = 'map-popup-info-row';
-
-    const labelElement = createTextElement('span', '', label);
-    const valueElement = createTextElement('strong', '', value);
-
-    row.appendChild(labelElement);
-    row.appendChild(valueElement);
-
-    return row;
-};
-
-const createBoardingHousePopupContent = (boardingHouse) => {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'map-popup-card';
-
-    const header = document.createElement('div');
-    header.className = 'map-popup-header';
-
-    const title = createTextElement('strong', 'map-popup-title', boardingHouse.name);
-    const verifiedBadge = createTextElement('span', 'badge text-bg-success', 'Verified');
-
-    header.appendChild(title);
-    header.appendChild(verifiedBadge);
-    wrapper.appendChild(header);
-
-    const distance = createTextElement(
-        'div',
-        'map-popup-distance',
-        formatDistance(boardingHouse.estimated_distance_km)
-    );
-    wrapper.appendChild(distance);
-
-    const infoGrid = document.createElement('div');
-    infoGrid.className = 'map-popup-info-grid';
-
-    infoGrid.appendChild(createInfoRow('Rent', `₱${formatPrice(boardingHouse.rent_price)}`));
-    infoGrid.appendChild(createInfoRow('Rooms', `${boardingHouse.available_rooms}`));
-    infoGrid.appendChild(createInfoRow('Bedspaces', `${boardingHouse.available_bedspaces}`));
-
-    wrapper.appendChild(infoGrid);
-
-    const status = createTextElement(
-        'div',
-        boardingHouse.is_full ? 'map-popup-status is-full' : 'map-popup-status is-available',
-        boardingHouse.is_full ? 'Full' : 'Available'
-    );
-    wrapper.appendChild(status);
-
-    const detailsLink = document.createElement('a');
-    detailsLink.href = boardingHouse.detail_url;
-    detailsLink.className = 'btn btn-sm btn-ebm-primary w-100 mt-3';
-    detailsLink.textContent = 'View Details';
-    wrapper.appendChild(detailsLink);
-
-    return wrapper;
-};
-
-const createTpcPopupContent = () => {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'map-popup-card';
-
-    const title = createTextElement('strong', 'map-popup-title', 'Talibon Polytechnic College');
-    const description = createTextElement(
-        'p',
-        'map-popup-description mb-0',
-        'Map center point for nearby boarding house search.'
-    );
-
-    wrapper.appendChild(title);
-    wrapper.appendChild(description);
-
-    return wrapper;
-};
-
-const clearMarkers = () => {
-    mapMarkers.value.forEach((marker) => marker.remove());
-    mapMarkers.value = [];
-};
-
-const addTpcMarker = () => {
-    const popup = new mapboxgl.Popup({
-        offset: [0, -32],
-        closeButton: true,
-        closeOnClick: true,
-        maxWidth: '280px',
-        focusAfterOpen: false,
-        autoPanPadding: { top: 60, bottom: 60, left: 60, right: 60 }
-    }).setDOMContent(createTpcPopupContent());
-
-    const marker = new mapboxgl.Marker({
-        element: createMarkerElement(
-            'tpc',
-            'TPC',
-            'Talibon Polytechnic College marker'
-        ),
-        anchor: 'bottom',
-        offset: [0, 0],
-    })
-        .setLngLat([centerLng, centerLat])
-        .setPopup(popup)
-        .addTo(mapInstance.value);
-
-    mapMarkers.value.push(marker);
-};
-
-const addBoardingHouseMarkers = () => {
-    props.boardingHouses.forEach((boardingHouse) => {
-        const longitude = Number(boardingHouse.longitude);
-        const latitude = Number(boardingHouse.latitude);
-
-        if (Number.isNaN(longitude) || Number.isNaN(latitude)) {
-            return;
+    // A helper function to add sources and layers AFTER the custom icon loads
+    const loadSourcesAndLayers = () => {
+        // 3. The Boarding House Data Source (With Clustering)
+        if (map.getSource('boarding-houses')) {
+            map.getSource('boarding-houses').setData(getBoardingHouseGeoJSON());
+        } else {
+            map.addSource('boarding-houses', {
+                type: 'geojson',
+                data: getBoardingHouseGeoJSON(),
+                cluster: true,
+                clusterMaxZoom: 17, 
+                clusterRadius: 50 
+            });
         }
 
-        const popup = new mapboxgl.Popup({
-            offset: [0, -32],
-            closeButton: true,
-            closeOnClick: true,
-            maxWidth: '280px',
-            focusAfterOpen: false,
-            autoPanPadding: { top: 60, bottom: 60, left: 60, right: 60 }
-        }).setDOMContent(createBoardingHousePopupContent(boardingHouse));
+        // 4. Layer: Cluster Bubbles (Green)
+        if (!map.getLayer('clusters')) {
+            map.addLayer({
+                id: 'clusters',
+                type: 'circle',
+                source: 'boarding-houses',
+                filter: ['has', 'point_count'],
+                paint: {
+                    'circle-color': '#198754', 
+                    'circle-radius': ['step', ['get', 'point_count'], 20, 5, 30, 10, 40],
+                    'circle-stroke-width': 3,
+                    'circle-stroke-color': '#ffffff'
+                }
+            });
+        }
 
-        const marker = new mapboxgl.Marker({
-            element: createMarkerElement(
-                'boarding-house',
-                boardingHouse.name,
-                `${boardingHouse.name} boarding house marker`
-            ),
-            anchor: 'bottom',
-            offset: [0, 0],
-        })
-            .setLngLat([longitude, latitude])
-            .setPopup(popup)
-            .addTo(mapInstance.value);
+        // 5. Layer: Cluster Text (The number)
+        if (!map.getLayer('cluster-count')) {
+            map.addLayer({
+                id: 'cluster-count',
+                type: 'symbol',
+                source: 'boarding-houses',
+                filter: ['has', 'point_count'],
+                layout: {
+                    'text-field': '{point_count_abbreviated}',
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 14,
+                },
+                paint: { 'text-color': '#ffffff' }
+            });
+        }
 
-        mapMarkers.value.push(marker);
-    });
-};
+        // 6. 🚀 Layer: Individual Boarding Houses (Icon + Name)
+        if (!map.getLayer('unclustered-point')) {
+            map.addLayer({
+                id: 'unclustered-point',
+                type: 'symbol', // Changed from circle to symbol!
+                source: 'boarding-houses',
+                filter: ['!', ['has', 'point_count']],
+                layout: {
+                    'icon-image': 'house-icon',
+                    'icon-size': 1,
+                    'icon-allow-overlap': true,
+                    'text-field': ['get', 'name'],
+                    'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'], // Safe mapbox fonts
+                    'text-size': 13,
+                    'text-offset': [0, 1.3], // Push text below the icon
+                    'text-anchor': 'top',
+                    'text-max-width': 12
+                },
+                paint: {
+                    'text-color': '#ffffff',
+                    // Adds a dark shadow outline so text is readable against bright satellite roofs
+                    'text-halo-color': 'rgba(0, 0, 0, 0.75)', 
+                    'text-halo-width': 1.5
+                }
+            });
+        }
+    };
 
-const addMarkers = () => {
-    clearMarkers();
-    addTpcMarker();
-    addBoardingHouseMarkers();
+    // Load the custom SVG into Mapbox Canvas Memory, then build layers
+    if (map.hasImage('house-icon')) {
+        loadSourcesAndLayers();
+    } else {
+        const img = new Image(32, 32);
+        img.onload = () => {
+            if (!map.hasImage('house-icon')) map.addImage('house-icon', img);
+            loadSourcesAndLayers();
+        };
+        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(houseIconSvg);
+    }
 };
 
 const initializeMap = async () => {
     if (!hasMapboxToken.value) {
-        mapError.value = 'Mapbox token is not configured yet. Please add your public Mapbox token in the .env file.';
+        mapError.value = 'Mapbox token is not configured yet.';
         return;
     }
 
     await nextTick();
-
-    if (!mapContainer.value) {
-        mapError.value = 'Map container is not available.';
-        return;
-    }
+    if (!mapContainer.value) return;
 
     mapboxgl.accessToken = mapboxToken;
 
-    const mapOptions = {
+    mapInstance.value = new mapboxgl.Map({
         container: mapContainer.value,
-        style: 'mapbox://styles/mapbox/satellite-streets-v12',
+        style: currentMapStyle.value,
         center: [centerLng, centerLat],
         zoom: initialZoom,
-        minZoom,
-        maxZoom,
-        bearing: 0,
-        pitch: 0,
-        dragRotate: false,
-        pitchWithRotate: false,
-        cooperativeGestures: true,
+        minZoom, maxZoom,
+        bearing: 0, pitch: 45,
+        dragRotate: true,
         attributionControl: true,
-    };
-
-    if (hasValidBounds.value) {
-        mapOptions.maxBounds = [
-            [Number(southwestLng), Number(southwestLat)],
-            [Number(northeastLng), Number(northeastLat)],
-        ];
-    }
-
-    mapInstance.value = new mapboxgl.Map(mapOptions);
-
-    mapInstance.value.addControl(
-        new mapboxgl.NavigationControl({
-            visualizePitch: false,
-            showCompass: false,
-        }),
-        'top-right'
-    );
-
-    mapInstance.value.scrollZoom.setWheelZoomRate(1 / 350);
-    mapInstance.value.dragRotate.disable();
-
-    if (mapInstance.value.touchZoomRotate) {
-        mapInstance.value.touchZoomRotate.disableRotation();
-    }
-
-    mapInstance.value.on('load', () => {
-        mapInstance.value.resize();
-        addMarkers();
     });
 
-    mapInstance.value.on('moveend', () => {
-        mapInstance.value.setBearing(0);
-        mapInstance.value.setPitch(0);
+    mapInstance.value.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), 'top-right');
+    mapInstance.value.addControl(new mapboxgl.GeolocateControl({ positionOptions: { enableHighAccuracy: true }, trackUserLocation: true }), 'top-right');
+
+    mapInstance.value.on('load', () => {
+        addMapLayers();
+
+        // 📍 Add Static TPC Marker
+        const tpcMarkerEl = document.createElement('div');
+        tpcMarkerEl.innerHTML = `<div style="background:#dc3545; color:white; padding:4px 8px; border-radius:4px; font-weight:bold; font-size:12px; box-shadow:0 2px 4px rgba(0,0,0,0.3);">🏛️ TPC</div>`;
+        tpcMarkerEl.style.cursor = 'pointer';
+        
+        tpcMarkerEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            selectedLocation.value = { type: 'tpc' };
+            mapInstance.value.flyTo({ center: [centerLng, centerLat], zoom: 17.5, offset: [0, -100], duration: 800 });
+        });
+
+        new mapboxgl.Marker({ element: tpcMarkerEl, anchor: 'bottom' })
+            .setLngLat([centerLng, centerLat])
+            .addTo(mapInstance.value);
+    });
+
+    // Click a Cluster: Zoom in
+    mapInstance.value.on('click', 'clusters', (e) => {
+        const features = mapInstance.value.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+        const clusterId = features[0].properties.cluster_id;
+        mapInstance.value.getSource('boarding-houses').getClusterExpansionZoom(clusterId, (err, zoom) => {
+            if (err) return;
+            mapInstance.value.easeTo({ center: features[0].geometry.coordinates, zoom: zoom });
+        });
+    });
+
+    // Click a Single House: Open Bottom Sheet
+    mapInstance.value.on('click', 'unclustered-point', (e) => {
+        const coordinates = e.features[0].geometry.coordinates.slice();
+        const houseData = e.features[0].properties;
+
+        houseData.is_verified = houseData.is_verified === true || houseData.is_verified === 'true';
+        houseData.is_full = houseData.is_full === true || houseData.is_full === 'true';
+
+        selectedLocation.value = { type: 'house', data: houseData };
+        mapInstance.value.flyTo({ center: coordinates, zoom: 18, offset: [0, -100], duration: 800 });
+    });
+
+    // Pointers
+    mapInstance.value.on('mouseenter', 'clusters', () => mapInstance.value.getCanvas().style.cursor = 'pointer');
+    mapInstance.value.on('mouseleave', 'clusters', () => mapInstance.value.getCanvas().style.cursor = '');
+    mapInstance.value.on('mouseenter', 'unclustered-point', () => mapInstance.value.getCanvas().style.cursor = 'pointer');
+    mapInstance.value.on('mouseleave', 'unclustered-point', () => mapInstance.value.getCanvas().style.cursor = '');
+
+    // Close bottom sheet if clicking empty space
+    mapInstance.value.on('click', (e) => {
+        if (!mapInstance.value.queryRenderedFeatures(e.point, { layers: ['clusters', 'unclustered-point'] }).length) {
+            selectedLocation.value = null;
+        }
     });
 };
 
-onMounted(() => {
-    initializeMap();
-});
+const changeMapStyle = (event) => {
+    const styleUrl = event.target.value;
+    currentMapStyle.value = styleUrl;
+    mapInstance.value.setStyle(styleUrl);
+    
+    mapInstance.value.once('style.load', () => {
+        addMapLayers();
+    });
+};
 
-onBeforeUnmount(() => {
-    clearMarkers();
-
-    if (mapInstance.value) {
-        mapInstance.value.remove();
-    }
-});
+onMounted(() => initializeMap());
+onBeforeUnmount(() => { if (mapInstance.value) mapInstance.value.remove(); });
 </script>
 
 <template>
     <PublicLayout>
-        <Head title="Map of Verified Boarding Houses near TPC | E-BoardMate">
-            <meta
-                name="description"
-                content="View verified boarding houses near Talibon Polytechnic College using the E-BoardMate interactive satellite-streets map."
-            >
-        </Head>
+        <Head title="Map of Verified Boarding Houses | E-BoardMate" />
 
-        <section class="py-5">
+        <section class="py-5 bg-light">
             <div class="container">
                 <div class="row justify-content-center mb-4">
                     <div class="col-lg-11">
                         <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center">
                             <div>
-                                <span class="badge rounded-pill badge-soft-green mb-3">
-                                    Public Map
-                                </span>
-
-                                <h1 class="fw-bold mb-2">
-                                    Verified Boarding Houses Near Talibon Polytechnic College
-                                </h1>
-
-                                <p class="ebm-muted mb-0">
-                                    Explore approved boarding houses using a satellite-streets map centered on Talibon Polytechnic College.
-                                </p>
+                                <span class="badge rounded-pill badge-soft-green mb-2">Interactive Map</span>
+                                <h1 class="fw-bold mb-1">Explore Boarding Houses</h1>
+                                <p class="ebm-muted mb-0">Use the 3D map below to find the perfect location near Talibon Polytechnic College.</p>
                             </div>
-
-                            <div>
-                                <Link href="/" class="btn btn-ebm-outline">
-                                    Back to Home
-                                </Link>
-                            </div>
+                            <div><Link href="/" class="btn btn-ebm-outline">Back to Home</Link></div>
                         </div>
                     </div>
                 </div>
 
                 <div class="row justify-content-center">
                     <div class="col-lg-11">
-                        <div class="ebm-card p-3 p-md-4">
-                            <div
-                                v-if="mapError"
-                                class="alert alert-warning mb-3"
-                            >
-                                {{ mapError }}
+                        <div class="ebm-card p-0 overflow-hidden border shadow-sm" style="border-radius: 16px;">
+                            
+                            <div v-if="mapError" class="alert alert-warning m-3">{{ mapError }}</div>
+
+                            <div class="map-wrapper position-relative">
+                                
+                                <div class="position-absolute p-3" style="z-index: 10; top: 0; left: 0;">
+                                    <select @change="changeMapStyle" class="form-select form-select-sm shadow-sm border-0 fw-bold" style="width: 160px; background-color: rgba(255,255,255,0.95);">
+                                        <option value="mapbox://styles/mapbox/satellite-streets-v12">🛰️ Satellite 3D</option>
+                                        <option value="mapbox://styles/mapbox/streets-v12">🗺️ Standard Map</option>
+                                        <option value="mapbox://styles/mapbox/outdoors-v12">🏞️ Outdoors</option>
+                                        <option value="mapbox://styles/mapbox/dark-v11">🌙 Dark Mode</option>
+                                    </select>
+                                </div>
+
+                                <div ref="mapContainer" class="ebm-map m-0" style="height: 75vh; min-height: 550px;" />
+
+                                <Transition name="slide-up">
+                                    <div v-if="selectedLocation" class="map-bottom-sheet">
+                                        <button @click="selectedLocation = null" class="btn-close shadow-none position-absolute top-0 end-0 m-3"></button>
+
+                                        <div v-if="selectedLocation.type === 'tpc'" class="pt-2">
+                                            <h3 class="h5 fw-bold mb-2">🏛️ Talibon Polytechnic College</h3>
+                                            <p class="text-muted mb-0">Map center point for distance estimations.</p>
+                                        </div>
+
+                                        <div v-if="selectedLocation.type === 'house'" class="pt-2">
+                                            <div class="d-flex align-items-center gap-2 mb-2 pe-4">
+                                                <h3 class="h5 fw-bold mb-0 text-truncate">{{ selectedLocation.data.name }}</h3>
+                                                <span v-if="selectedLocation.data.is_verified" class="badge bg-success"><small>Verified</small></span>
+                                            </div>
+                                            
+                                            <p class="text-muted small fw-medium mb-3">
+                                                <span class="text-success fw-bold">📍 {{ formatDistance(selectedLocation.data.estimated_distance_km) }}</span>
+                                            </p>
+
+                                            <div class="row g-2 mb-3">
+                                                <div class="col-6">
+                                                    <div class="bg-light rounded p-2 text-center border">
+                                                        <span class="d-block text-muted small">Monthly Rent</span>
+                                                        <strong class="text-dark">₱{{ formatPrice(selectedLocation.data.rent_price) }}</strong>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="bg-light rounded p-2 text-center border">
+                                                        <span class="d-block text-muted small">Status</span>
+                                                        <strong :class="selectedLocation.data.is_full ? 'text-danger' : 'text-success'">
+                                                            {{ selectedLocation.data.is_full ? 'Full' : 'Available' }}
+                                                        </strong>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                                                <div class="small text-muted">
+                                                    <strong>{{ selectedLocation.data.available_rooms }}</strong> Rooms left
+                                                </div>
+                                                <Link :href="selectedLocation.data.detail_url || `/boarding-houses/${selectedLocation.data.slug}`" class="btn btn-ebm-primary px-4">
+                                                    View Details
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Transition>
                             </div>
-
-                            <div class="map-help-bar mb-3">
-                                <div>
-                                    <strong>Map Tip:</strong>
-                                    Scroll normally on the page. Use two fingers on mobile or Ctrl + scroll on desktop to zoom the map.
-                                </div>
-
-                                <div>
-                                    Zoom range: {{ minZoom }} to {{ maxZoom }}
-                                </div>
-                            </div>
-
-                            <div
-                                ref="mapContainer"
-                                class="ebm-map"
-                            />
-
-                            <!-- IMPROVED MAP STATUS LEGEND -->
-                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-4 p-3 border rounded-3 bg-light">
-                                <div class="small ebm-muted d-flex align-items-center gap-2">
-                                    <span aria-hidden="true" class="fs-5">🗺️</span>
-                                    <span><strong class="text-dark">Map Style:</strong> Satellite Streets</span>
-                                </div>
-
-                                <div class="small ebm-muted d-flex align-items-center gap-2">
-                                    <span aria-hidden="true" class="fs-5">📍</span>
-                                    <span><strong class="text-dark">Map Center:</strong> TPC</span>
-                                </div>
-
-                                <div class="small ebm-muted d-flex align-items-center gap-2">
-                                    <span aria-hidden="true" class="fs-5">✅</span>
-                                    <span><strong class="text-dark">Verified Listings:</strong> {{ boardingHouses.length }}</span>
-                                </div>
-
-                                <div class="small ebm-muted d-flex align-items-center gap-2">
-                                    <span aria-hidden="true" class="fs-5">📏</span>
-                                    <span><strong class="text-dark">Distance:</strong> Shown in marker popup</span>
-                                </div>
-                            </div>
-
-                            <div
-                                v-if="!hasBoardingHouses"
-                                class="alert alert-light border mt-4 mb-0"
-                            >
-                                No verified boarding houses are available on the map yet. Once the admin approves listings with coordinates, they will appear here.
-                            </div>
-
-                            <div
-                                v-if="!hasValidBounds"
-                                class="alert alert-info mt-4 mb-0"
-                            >
-                                Boundary coordinates are still placeholders. The map is usable now, but focus-bound panning will be finalized after you provide the Southwest and Northeast coordinates.
-                            </div>
+                        </div>
+                        
+                        <div class="d-flex flex-wrap justify-content-center align-items-center gap-4 mt-3 small text-muted">
+                            <span><span class="badge bg-success rounded-circle p-2 me-1"></span> Boarding House Cluster</span>
+                            <span><span class="badge bg-primary rounded-circle p-2 me-1"></span> Single Boarding House</span>
+                            <span><span class="badge bg-danger rounded-1 p-1 px-2 me-1 text-white fw-bold">🏛️ TPC</span> Map Center</span>
                         </div>
                     </div>
                 </div>
@@ -470,3 +384,47 @@ onBeforeUnmount(() => {
         </section>
     </PublicLayout>
 </template>
+
+<style scoped>
+.map-bottom-sheet {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    padding: 24px;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    pointer-events: auto;
+}
+
+@media (min-width: 768px) {
+    .map-bottom-sheet {
+        bottom: 24px;
+        left: 24px;
+        right: auto;
+        width: 400px;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    }
+}
+
+.slide-up-enter-active,
+.slide-up-leave-active {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+.slide-up-enter-from,
+.slide-up-leave-to {
+    transform: translateY(100%);
+    opacity: 0;
+}
+@media (min-width: 768px) {
+    .slide-up-enter-from,
+    .slide-up-leave-to {
+        transform: translateY(20px) scale(0.95);
+        opacity: 0;
+    }
+}
+</style>

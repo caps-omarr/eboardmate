@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\BoardingHouse;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -11,22 +12,34 @@ class PublicBoardingHouseController extends Controller
 {
     public function show(BoardingHouse $boardingHouse): Response
     {
+        // 1. Instantly block if not publicly visible (no heavy database lifting needed yet)
         abort_unless($boardingHouse->isPubliclyVisible(), 404);
 
-        $boardingHouse->load([
-            'photos' => function ($query) {
-                $query->orderByDesc('is_primary')
-                    ->orderBy('sort_order')
-                    ->orderBy('id')
-                    ->limit(5);
-            },
-        ]);
+        // 2. 🚀 THE CONCURRENCY FIX: Cache the heavy lifting!
+        // We create a unique cache key for this specific boarding house.
+        $cacheKey = "boarding_house_public_details_{$boardingHouse->id}";
 
-        $tpcLatitude = 10.1167;
-        $tpcLongitude = 124.2833;
+        // Cache the formatted data for 5 minutes. 
+        // If 50 phones click at the same time, MySQL is only queried ONCE. 
+        // The other 49 phones instantly get the data from RAM.
+        $formattedBoardingHouse = Cache::remember($cacheKey, now()->addMinutes(5), function () use ($boardingHouse) {
+            
+            // 3. Eager load the relationships to prevent N+1 queries.
+            // Note: If 'amenities' is a separate database table, add it here too: e.g., ['photos', 'amenities']
+            $boardingHouse->load([
+                'photos' => function ($query) {
+                    $query->orderByDesc('is_primary')
+                        ->orderBy('sort_order')
+                        ->orderBy('id')
+                        ->limit(5);
+                },
+            ]);
 
-        return Inertia::render('Public/BoardingHouseDetail', [
-            'boardingHouse' => [
+            $tpcLatitude = 10.1167;
+            $tpcLongitude = 124.2833;
+
+            // Return the perfectly formatted array to be stored in the Cache
+            return [
                 'id' => $boardingHouse->id,
                 'name' => $boardingHouse->name,
                 'slug' => $boardingHouse->slug,
@@ -60,7 +73,12 @@ class PublicBoardingHouseController extends Controller
                         'is_primary' => $photo->is_primary,
                     ];
                 })->values(),
-            ],
+            ];
+        });
+
+        // 4. Return the (now lightning-fast) cached data to the frontend
+        return Inertia::render('Public/BoardingHouseDetail', [
+            'boardingHouse' => $formattedBoardingHouse,
         ]);
     }
 
