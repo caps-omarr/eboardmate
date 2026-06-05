@@ -8,8 +8,12 @@ use App\Models\BoardingHouse;
 use App\Models\BoardingHousePhoto;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str; 
+use Intervention\Image\ImageManager; 
+use Intervention\Image\Drivers\Gd\Driver; 
 use Throwable;
 
 class OwnerListingPhotoController extends Controller
@@ -19,19 +23,25 @@ class OwnerListingPhotoController extends Controller
         $boardingHouse = $this->getOwnerBoardingHouse($request);
 
         $validated = $request->validate([
-            'photo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'photo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
             'alt_text' => ['nullable', 'string', 'max:255'],
         ]);
 
         $uploadedFile = $validated['photo'];
-
-        $filePath = $uploadedFile->store(
-            'boarding-houses/' . $boardingHouse->id . '/photos',
-            'public'
-        );
+        $fileName = Str::uuid() . '.webp';
+        $filePath = 'boarding-houses/' . $boardingHouse->id . '/photos/' . $fileName;
 
         try {
-            DB::transaction(function () use ($request, $boardingHouse, $uploadedFile, $filePath, $validated) {
+            
+            $manager = new ImageManager(new Driver());
+            $image = $manager->read($uploadedFile->getRealPath());
+            $image->scaleDown(width: 1200);
+            $encodedImage = $image->toWebp(80);
+            
+            Storage::disk('public')->put($filePath, $encodedImage->toString());
+            $newFileSize = Storage::disk('public')->size($filePath);
+
+            DB::transaction(function () use ($request, $boardingHouse, $uploadedFile, $filePath, $validated, $newFileSize) {
                 $hasPrimaryPhoto = $boardingHouse->photos()
                     ->where('is_primary', true)
                     ->exists();
@@ -42,8 +52,8 @@ class OwnerListingPhotoController extends Controller
                     'boarding_house_id' => $boardingHouse->id,
                     'file_path' => $filePath,
                     'original_name' => $uploadedFile->getClientOriginalName(),
-                    'mime_type' => $uploadedFile->getClientMimeType(),
-                    'file_size' => $uploadedFile->getSize(),
+                    'mime_type' => 'image/webp', 
+                    'file_size' => $newFileSize, 
                     'alt_text' => $validated['alt_text'] ?? $boardingHouse->name,
                     'is_primary' => ! $hasPrimaryPhoto,
                     'sort_order' => $nextSortOrder,
@@ -52,7 +62,7 @@ class OwnerListingPhotoController extends Controller
                 ActivityLog::create([
                     'user_id' => $request->user()->id,
                     'boarding_house_id' => $boardingHouse->id,
-                    'action' => 'owner_photo_uploaded',
+                    'action' => ActivityLog::ACTION_PHOTO_UPLOADED,
                     'description' => 'Owner uploaded a photo for ' . $boardingHouse->name . '.',
                     'properties' => [
                         'photo_id' => $photo->id,
@@ -62,13 +72,19 @@ class OwnerListingPhotoController extends Controller
                     'user_agent' => $request->userAgent(),
                 ]);
             });
-        } catch (Throwable $exception) {
-            Storage::disk('public')->delete($filePath);
 
+          
+            Cache::forget('public_map_markers');
+            Cache::forget("boarding_house_public_details_{$boardingHouse->id}");
+
+        } catch (Throwable $exception) {
+            if (Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);
+            }
             throw $exception;
         }
 
-        return back()->with('success', 'Photo uploaded successfully.');
+        return back()->with('success', 'Photo uploaded and optimized successfully.');
     }
 
     public function setPrimary(Request $request, BoardingHousePhoto $photo): RedirectResponse
@@ -91,7 +107,7 @@ class OwnerListingPhotoController extends Controller
             ActivityLog::create([
                 'user_id' => $request->user()->id,
                 'boarding_house_id' => $boardingHouse->id,
-                'action' => 'owner_photo_set_primary',
+                'action' => ActivityLog::ACTION_PHOTO_SET_PRIMARY,
                 'description' => 'Owner set a primary photo for ' . $boardingHouse->name . '.',
                 'properties' => [
                     'photo_id' => $photo->id,
@@ -100,6 +116,9 @@ class OwnerListingPhotoController extends Controller
                 'user_agent' => $request->userAgent(),
             ]);
         });
+
+        Cache::forget('public_map_markers');
+        Cache::forget("boarding_house_public_details_{$boardingHouse->id}");
 
         return back()->with('success', 'Primary photo updated successfully.');
     }
@@ -135,7 +154,7 @@ class OwnerListingPhotoController extends Controller
             ActivityLog::create([
                 'user_id' => $request->user()->id,
                 'boarding_house_id' => $boardingHouse->id,
-                'action' => 'owner_photo_deleted',
+                'action' => ActivityLog::ACTION_PHOTO_DELETED,
                 'description' => 'Owner deleted a photo for ' . $boardingHouse->name . '.',
                 'properties' => [
                     'photo_id' => $photoId,
@@ -146,6 +165,10 @@ class OwnerListingPhotoController extends Controller
         });
 
         Storage::disk('public')->delete($filePath);
+
+       
+        Cache::forget('public_map_markers');
+        Cache::forget("boarding_house_public_details_{$boardingHouse->id}");
 
         return back()->with('success', 'Photo deleted successfully.');
     }

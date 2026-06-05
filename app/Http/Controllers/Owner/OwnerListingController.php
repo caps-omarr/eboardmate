@@ -7,6 +7,7 @@ use App\Models\ActivityLog;
 use App\Models\BoardingHouse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache; 
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -122,6 +123,10 @@ class OwnerListingController extends Controller
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);
+
+        
+        Cache::forget('public_map_markers');
+        Cache::forget("boarding_house_public_details_{$boardingHouse->id}");
 
         return back()->with('success', 'Boarding house listing updated successfully.');
     }

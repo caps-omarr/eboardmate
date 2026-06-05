@@ -1,12 +1,12 @@
 <script setup>
-import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { Head, useForm, usePage, Link } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { computed } from 'vue';
 
 defineProps({
     owners: {
-        type: Array,
-        default: () => [],
+        type: Object,
+        required: true,
     },
 });
 
@@ -49,6 +49,14 @@ const statusBadgeClass = (status) => {
     return status === 'active'
         ? 'text-bg-success'
         : 'text-bg-secondary';
+};
+
+
+const cleanLabel = (label) => {
+    if (!label) return '';
+    if (label.includes('&laquo;')) return '« Previous';
+    if (label.includes('&raquo;')) return 'Next »';
+    return label;
 };
 </script>
 
@@ -233,92 +241,119 @@ const statusBadgeClass = (status) => {
                         </div>
 
                         <div
-                            v-if="owners.length"
-                            class="table-responsive"
+                            v-if="owners.data && owners.data.length"
                         >
-                            <table class="table align-middle owner-table">
-                                <thead>
-                                    <tr>
-                                        <th>Owner</th>
-                                        <th>Contact</th>
-                                        <th>Assigned Listing</th>
-                                        <th>Status</th>
-                                        <th>Created</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
+                            <div class="table-responsive">
+                                <table class="table align-middle owner-table mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Owner</th>
+                                            <th>Contact</th>
+                                            <th>Assigned Listing</th>
+                                            <th>Status</th>
+                                            <th>Created</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
 
-                                <tbody>
-                                    <tr
-                                        v-for="owner in owners"
-                                        :key="owner.id"
-                                    >
-                                        <td>
-                                            <div class="fw-semibold">
-                                                {{ owner.name }}
-                                            </div>
-
-                                            <div class="small ebm-muted">
-                                                ID: {{ owner.id }}
-                                            </div>
-                                        </td>
-
-                                        <td>
-                                            <div>
-                                                {{ owner.email }}
-                                            </div>
-
-                                            <div class="small ebm-muted">
-                                                {{ owner.phone || 'No phone' }}
-                                            </div>
-                                        </td>
-
-                                        <td>
-                                            <template v-if="owner.boarding_house">
+                                    <tbody>
+                                        <tr
+                                            v-for="owner in owners.data"
+                                            :key="owner.id"
+                                        >
+                                            <td>
                                                 <div class="fw-semibold">
-                                                    {{ owner.boarding_house.name }}
+                                                    {{ owner.name }}
                                                 </div>
 
                                                 <div class="small ebm-muted">
-                                                    {{ owner.boarding_house.status }}
+                                                    ID: {{ owner.id }}
                                                 </div>
-                                            </template>
+                                            </td>
 
-                                            <span
-                                                v-else
-                                                class="small ebm-muted"
-                                            >
-                                                No assigned listing
-                                            </span>
-                                        </td>
+                                            <td>
+                                                <div>
+                                                    {{ owner.email }}
+                                                </div>
 
-                                        <td>
-                                            <span
-                                                class="badge"
-                                                :class="statusBadgeClass(owner.status)"
-                                            >
-                                                {{ owner.status }}
-                                            </span>
-                                        </td>
+                                                <div class="small ebm-muted">
+                                                    {{ owner.phone || 'No phone' }}
+                                                </div>
+                                            </td>
 
-                                        <td class="small ebm-muted">
-                                            {{ owner.created_at }}
-                                        </td>
+                                            <td>
+                                                <template v-if="owner.boarding_house">
+                                                    <div class="fw-semibold">
+                                                        {{ owner.boarding_house.name }}
+                                                    </div>
 
-                                        <td>
-                                            <button
-                                                type="button"
-                                                class="btn btn-sm"
-                                                :class="owner.status === 'active' ? 'btn-outline-danger' : 'btn-outline-success'"
-                                                :disabled="statusForm.processing"
-                                                @click="toggleOwnerStatus(owner)"
-                                            >
-                                                {{ owner.status === 'active' ? 'Deactivate' : 'Activate' }}
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                                    <div class="small ebm-muted">
+                                                        {{ owner.boarding_house.status }}
+                                                    </div>
+                                                </template>
+
+                                                <span
+                                                    v-else
+                                                    class="small ebm-muted"
+                                                >
+                                                    No assigned listing
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                <span
+                                                    class="badge"
+                                                    :class="statusBadgeClass(owner.status)"
+                                                >
+                                                    {{ owner.status }}
+                                                </span>
+                                            </td>
+
+                                            <td class="small ebm-muted">
+                                                {{ owner.created_at }}
+                                            </td>
+
+                                            <td>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-sm"
+                                                    :class="owner.status === 'active' ? 'btn-outline-danger' : 'btn-outline-success'"
+                                                    :disabled="statusForm.processing"
+                                                    @click="toggleOwnerStatus(owner)"
+                                                >
+                                                    {{ owner.status === 'active' ? 'Deactivate' : 'Activate' }}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <nav v-if="owners.links && owners.links.length > 3" aria-label="Owner pagination" class="mt-4 border-top pt-3">
+                                <ul class="pagination justify-content-end mb-0">
+                                    <li 
+                                        v-for="(link, index) in owners.links" 
+                                        :key="index" 
+                                        class="page-item" 
+                                        :class="{ active: link.active, disabled: !link.url }"
+                                    >
+                                        <Link 
+                                            v-if="link.url" 
+                                            :href="link.url" 
+                                            class="page-link" 
+                                            preserve-scroll 
+                                        >
+                                            {{ cleanLabel(link.label) }}
+                                        </Link>
+                                        <span 
+                                            v-else 
+                                            class="page-link"
+                                        >
+                                            {{ cleanLabel(link.label) }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </nav>
                         </div>
 
                         <div

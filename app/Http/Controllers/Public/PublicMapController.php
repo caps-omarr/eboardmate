@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\BoardingHouse;
+use Illuminate\Support\Facades\Cache; // 🚀 1. Import the Cache facade
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -14,37 +15,41 @@ class PublicMapController extends Controller
         $tpcLatitude = 10.1167;
         $tpcLongitude = 124.2833;
 
-        $boardingHouses = BoardingHouse::query()
-            ->with('primaryPhoto')
-            ->where('status', BoardingHouse::STATUS_APPROVED)
-            ->where('is_verified', true)
-            ->whereNotNull('latitude')
-            ->whereNotNull('longitude')
-            ->orderBy('name')
-            ->get()
-            ->map(function (BoardingHouse $boardingHouse) use ($tpcLatitude, $tpcLongitude) {
-                return [
-                    'id' => $boardingHouse->id,
-                    'name' => $boardingHouse->name,
-                    'slug' => $boardingHouse->slug,
-                    'rent_price' => (float) $boardingHouse->rent_price,
-                    'available_rooms' => $boardingHouse->available_rooms,
-                    'available_bedspaces' => $boardingHouse->available_bedspaces,
-                    'latitude' => (float) $boardingHouse->latitude,
-                    'longitude' => (float) $boardingHouse->longitude,
-                    'is_verified' => $boardingHouse->is_verified,
-                    'is_full' => $boardingHouse->isFull(),
-                    'estimated_distance_km' => $this->calculateDistanceInKilometers(
-                        $tpcLatitude,
-                        $tpcLongitude,
-                        (float) $boardingHouse->latitude,
-                        (float) $boardingHouse->longitude
-                    ),
-                    'primary_photo_url' => $boardingHouse->primaryPhoto?->url,
-                    'detail_url' => url('/boarding-houses/' . $boardingHouse->slug),
-                ];
-            })
-            ->values();
+        // 🚀 2. Wrap the entire query AND the mapping logic in Cache::remember.
+        // We must pass $tpcLatitude and $tpcLongitude into the closure using 'use'.
+        $boardingHouses = Cache::remember('public_map_markers', 1440, function () use ($tpcLatitude, $tpcLongitude) {
+            return BoardingHouse::query()
+                ->with('primaryPhoto')
+                ->where('status', BoardingHouse::STATUS_APPROVED)
+                ->where('is_verified', true)
+                ->whereNotNull('latitude')
+                ->whereNotNull('longitude')
+                ->orderBy('name')
+                ->get()
+                ->map(function (BoardingHouse $boardingHouse) use ($tpcLatitude, $tpcLongitude) {
+                    return [
+                        'id' => $boardingHouse->id,
+                        'name' => $boardingHouse->name,
+                        'slug' => $boardingHouse->slug,
+                        'rent_price' => (float) $boardingHouse->rent_price,
+                        'available_rooms' => $boardingHouse->available_rooms,
+                        'available_bedspaces' => $boardingHouse->available_bedspaces,
+                        'latitude' => (float) $boardingHouse->latitude,
+                        'longitude' => (float) $boardingHouse->longitude,
+                        'is_verified' => $boardingHouse->is_verified,
+                        'is_full' => $boardingHouse->isFull(),
+                        'estimated_distance_km' => $this->calculateDistanceInKilometers(
+                            $tpcLatitude,
+                            $tpcLongitude,
+                            (float) $boardingHouse->latitude,
+                            (float) $boardingHouse->longitude
+                        ),
+                        'primary_photo_url' => $boardingHouse->primaryPhoto?->url,
+                        'detail_url' => url('/boarding-houses/' . $boardingHouse->slug),
+                    ];
+                })
+                ->values();
+        });
 
         return Inertia::render('Public/Map', [
             'boardingHouses' => $boardingHouses,

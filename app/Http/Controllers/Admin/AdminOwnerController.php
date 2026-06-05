@@ -7,6 +7,7 @@ use App\Models\ActivityLog;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache; 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -17,11 +18,16 @@ class AdminOwnerController extends Controller
     public function index(): Response
     {
         $owners = User::query()
+            ->select('id', 'name', 'email', 'phone', 'status', 'created_at')
             ->where('role', User::ROLE_OWNER)
-            ->with('boardingHouse')
+            ->with(['boardingHouse' => function ($query) {
+                $query->select('id', 'owner_id', 'name', 'status');
+            }])
             ->latest()
-            ->get()
-            ->map(function (User $owner) {
+           
+            ->paginate(10)
+            
+            ->through(function (User $owner) {
                 return [
                     'id' => $owner->id,
                     'name' => $owner->name,
@@ -91,6 +97,8 @@ class AdminOwnerController extends Controller
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);
+
+        Cache::forget('public_map_markers');
 
         return back()->with('success', 'Owner account status updated successfully.');
     }

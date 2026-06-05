@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Database\QueryException; // 🚀 Required for the retry loop
 
 class PublicReservationController extends Controller
 {
@@ -19,7 +20,7 @@ class PublicReservationController extends Controller
     {
         abort_unless($boardingHouse->isPubliclyVisible(), 404);
 
-        // 1. Strict Domain Validation (Fast, happens before touching the database)
+        // 1. Strict Domain Validation
         $validated = $request->validate([
             'full_name' => ['required', 'string', 'max:255'],
             'email' => [
@@ -41,63 +42,79 @@ class PublicReservationController extends Controller
         $normalizedEmail = strtolower(trim($validated['email']));
         $normalizedPhone = trim($validated['phone']);
 
-        // 2. 🛡️ The Concurrency-Safe Database Transaction
-        $reservation = DB::transaction(function () use ($boardingHouse, $validated, $request, $normalizedFullName, $normalizedEmail, $normalizedPhone) {
-            
-            // LOCK THE ROW: If two phones click at the exact same millisecond, 
-            // Phone B must wait here until Phone A finishes this block.
-            $lockedHouse = BoardingHouse::where('id', $boardingHouse->id)
-                ->lockForUpdate()
-                ->firstOrFail();
+        $attempts = 0;
+        $maxAttempts = 3;
+        $reservation = null;
 
-            // Expire old ones strictly for this house
-            $this->expireOldPendingReservations($lockedHouse);
+        // 2. 🛡️ The Concurrency-Safe Retry Loop & Transaction
+        while ($attempts < $maxAttempts) {
+            try {
+                $reservation = DB::transaction(function () use ($boardingHouse, $validated, $request, $normalizedFullName, $normalizedEmail, $normalizedPhone) {
+                    
+                    // LOCK THE ROW
+                    $lockedHouse = BoardingHouse::where('id', $boardingHouse->id)
+                        ->lockForUpdate()
+                        ->firstOrFail();
 
-            // Re-check capacity while the row is locked
-            if ($lockedHouse->isFull()) {
-                throw ValidationException::withMessages([
-                    'reservation' => 'This boarding house is currently full. Reservation is unavailable.',
-                ]);
+                    // Expire old ones strictly for this house
+                    $this->expireOldPendingReservations($lockedHouse);
+
+                    // Re-check capacity while the row is locked
+                    if ($lockedHouse->isFull()) {
+                        throw ValidationException::withMessages([
+                            'reservation' => 'This boarding house is currently full. Reservation is unavailable.',
+                        ]);
+                    }
+
+                    // GLOBAL ANTI-HOARDING CHECK
+                    $activeDuplicateExists = Reservation::query()
+                        ->whereIn('status', [
+                            Reservation::STATUS_PENDING,
+                            Reservation::STATUS_APPROVED,
+                        ])
+                        ->where(function ($query) use ($normalizedEmail, $normalizedPhone) {
+                            $query->whereRaw('LOWER(guest_email) = ?', [$normalizedEmail])
+                                  ->orWhere('guest_phone', $normalizedPhone);
+                        })
+                        ->exists();
+
+                    if ($activeDuplicateExists) {
+                        throw ValidationException::withMessages([
+                            'reservation' => 'You already have an active reservation request in the system. You can only hold one reservation at a time to ensure fairness. Please wait for it to be processed or cancel it.',
+                        ]);
+                    }
+
+                    // Create and return the reservation safely
+                    return Reservation::create([
+                        'boarding_house_id' => $lockedHouse->id,
+                        'reference_code' => $this->generateReferenceCode(), // 🚀 Atomic Generation
+                        'guest_name' => $normalizedFullName,
+                        'guest_email' => $normalizedEmail,
+                        'guest_phone' => $normalizedPhone,
+                        'preferred_move_in_date' => $validated['preferred_move_in_date'],
+                        'message' => $validated['message'] ?? null,
+                        'status' => Reservation::STATUS_PENDING,
+                        'expires_at' => now()->addHours(24),
+                        'submission_ip' => $request->ip(),
+                        'user_agent' => $request->userAgent(),
+                    ]);
+                });
+
+                break; // 🚀 If transaction succeeds, break out of the retry loop
+
+            } catch (QueryException $e) {
+                // 🚀 If it's a Unique Constraint Violation (Code 23000), retry!
+                if ($e->getCode() == 23000 && $attempts < $maxAttempts - 1) {
+                    $attempts++;
+                    usleep(100000); // Wait 100 milliseconds before retrying
+                    continue;
+                }
+                throw $e; // Rethrow if it's a different database error
             }
+        }
 
-            // GLOBAL ANTI-HOARDING CHECK
-            // We do NOT filter by boarding_house_id anymore. We check the entire system.
-            $activeDuplicateExists = Reservation::query()
-                ->whereIn('status', [
-                    Reservation::STATUS_PENDING,
-                    Reservation::STATUS_APPROVED,
-                ])
-                ->where(function ($query) use ($normalizedEmail, $normalizedPhone) {
-                    $query->whereRaw('LOWER(guest_email) = ?', [$normalizedEmail])
-                          ->orWhere('guest_phone', $normalizedPhone);
-                })
-                ->exists();
-
-            if ($activeDuplicateExists) {
-                throw ValidationException::withMessages([
-                    'reservation' => 'You already have an active reservation request in the system. You can only hold one reservation at a time to ensure fairness. Please wait for it to be processed or cancel it.',
-                ]);
-            }
-
-            // Create and return the reservation safely
-            return Reservation::create([
-                'boarding_house_id' => $lockedHouse->id,
-                'reference_code' => $this->generateReferenceCode(),
-                'guest_name' => $normalizedFullName,
-                'guest_email' => $normalizedEmail,
-                'guest_phone' => $normalizedPhone,
-                'preferred_move_in_date' => $validated['preferred_move_in_date'],
-                'message' => $validated['message'] ?? null,
-                'status' => Reservation::STATUS_PENDING,
-                'expires_at' => now()->addHours(24),
-                'submission_ip' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-            ]);
-        });
-
-        // 3. Automate the Email Dispatch (Using QUEUE instead of SEND)
+        // 3. Automate the Email Dispatch (Using QUEUE)
         try {
-            // ->queue() prevents the screen from freezing if Google SMTP is slow!
             Mail::to($reservation->guest_email)->queue(new ReservationSubmittedMail($reservation, $boardingHouse));
         } catch (\Exception $e) {
             Log::error('Failed to queue submission email to ' . $reservation->guest_email . '. Error: ' . $e->getMessage());
@@ -136,9 +153,11 @@ class PublicReservationController extends Controller
     {
         $year = now()->format('Y');
 
+        // 🚀 CRITICAL FIX: withTrashed() allows it to see soft-deleted records!
         $latestReservation = Reservation::query()
+            ->withTrashed() 
             ->where('reference_code', 'like', 'EBM-' . $year . '-%')
-            ->lockForUpdate() // Lock here too just in case two generate at the same time!
+            ->lockForUpdate() // Locks the row so no one else can grab this number
             ->latest('id')
             ->first();
 

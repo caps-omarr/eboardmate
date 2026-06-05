@@ -18,7 +18,9 @@ class OwnerReservationController extends Controller
 {
     public function index(Request $request): Response
     {
+        
         $boardingHouse = BoardingHouse::query()
+            ->select('id', 'name', 'status', 'is_verified')
             ->where('owner_id', $request->user()->id)
             ->first();
 
@@ -30,10 +32,10 @@ class OwnerReservationController extends Controller
             ]);
         }
 
-        // Handle Status Filtering
+        
         $statusFilter = $request->query('status', 'all');
         
-        // Laravel automatically hides Soft-Deleted (Archived) reservations!
+        
         $query = Reservation::query()
             ->where('boarding_house_id', $boardingHouse->id);
 
@@ -80,8 +82,7 @@ class OwnerReservationController extends Controller
     {
         $this->ensureOwnerCanManageReservation($request, $reservation);
         
-        // This triggers Laravel's Soft Delete mechanism automatically!
-        // It updates the `deleted_at` column, hiding it from all queries.
+        
         $reservation->delete();
 
         return back()->with('success', 'Reservation archived successfully.');
@@ -125,6 +126,7 @@ class OwnerReservationController extends Controller
             ]);
         });
 
+       
         $notificationService->sendStatusEmail($reservation->fresh());
 
         return back()->with('success', 'Reservation approved successfully.');
@@ -175,6 +177,7 @@ class OwnerReservationController extends Controller
 
     private function ensureOwnerCanManageReservation(Request $request, Reservation $reservation): void
     {
+        
         $reservation->loadMissing('boardingHouse');
 
         if (! $reservation->boardingHouse || $reservation->boardingHouse->owner_id !== $request->user()->id) {
