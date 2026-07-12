@@ -354,7 +354,7 @@ const submitReservation = () => {
 
                                 <div class="col-md-6">
                                     <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
-                                    <input id="email" v-model="reservationForm.email" type="email" class="form-control" :class="{ 'is-invalid': reservationForm.errors.email }" placeholder="example@email.com">
+                                    <input id="email" v-model="reservationForm.email" type="email" class="form-control" :class="{ 'is-invalid': reservationForm.errors.email }" placeholder="your-gmail@email.com">
                                     <div v-if="reservationForm.errors.email" class="invalid-feedback">{{ reservationForm.errors.email }}</div>
                                     <div class="form-text">This email will be used for tracking notifications.</div>
                                 </div>

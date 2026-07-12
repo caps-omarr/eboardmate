@@ -87,7 +87,7 @@ class PublicReservationController extends Controller
                     // Create and return the reservation safely
                     return Reservation::create([
                         'boarding_house_id' => $lockedHouse->id,
-                        'reference_code' => $this->generateReferenceCode(), // 🚀 Atomic Generation
+                        'reference_code' => $this->generateReferenceCode(), 
                         'guest_name' => $normalizedFullName,
                         'guest_email' => $normalizedEmail,
                         'guest_phone' => $normalizedPhone,
@@ -100,27 +100,27 @@ class PublicReservationController extends Controller
                     ]);
                 });
 
-                break; // 🚀 If transaction succeeds, break out of the retry loop
+                break; 
 
             } catch (QueryException $e) {
-                // 🚀 If it's a Unique Constraint Violation (Code 23000), retry!
+                
                 if ($e->getCode() == 23000 && $attempts < $maxAttempts - 1) {
                     $attempts++;
-                    usleep(100000); // Wait 100 milliseconds before retrying
+                    usleep(100000); 
                     continue;
                 }
-                throw $e; // Rethrow if it's a different database error
+                throw $e; 
             }
         }
 
-        // 3. Automate the Email Dispatch (Using QUEUE)
+        
         try {
             Mail::to($reservation->guest_email)->queue(new ReservationSubmittedMail($reservation, $boardingHouse));
         } catch (\Exception $e) {
             Log::error('Failed to queue submission email to ' . $reservation->guest_email . '. Error: ' . $e->getMessage());
         }
 
-        // 4. Return the success redirect
+       
         return redirect()
             ->route('boarding-houses.show', $boardingHouse->slug)
             ->with('reservation_result', [
@@ -153,11 +153,11 @@ class PublicReservationController extends Controller
     {
         $year = now()->format('Y');
 
-        // 🚀 CRITICAL FIX: withTrashed() allows it to see soft-deleted records!
+        
         $latestReservation = Reservation::query()
             ->withTrashed() 
             ->where('reference_code', 'like', 'EBM-' . $year . '-%')
-            ->lockForUpdate() // Locks the row so no one else can grab this number
+            ->lockForUpdate() 
             ->latest('id')
             ->first();
 

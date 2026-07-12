@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\BoardingHouse;
-use Illuminate\Support\Facades\Cache; // 🚀 1. Import the Cache facade
+use Illuminate\Support\Facades\Cache; 
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -15,8 +15,7 @@ class PublicMapController extends Controller
         $tpcLatitude = 10.1167;
         $tpcLongitude = 124.2833;
 
-        // 🚀 2. Wrap the entire query AND the mapping logic in Cache::remember.
-        // We must pass $tpcLatitude and $tpcLongitude into the closure using 'use'.
+        
         $boardingHouses = Cache::remember('public_map_markers', 1440, function () use ($tpcLatitude, $tpcLongitude) {
             return BoardingHouse::query()
                 ->with('primaryPhoto')
