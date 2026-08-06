@@ -32,7 +32,6 @@ a:hover {
 }
 
 /* Buttons */
-
 .btn-ebm-primary {
     --bs-btn-color: #ffffff;
     --bs-btn-bg: var(--ebm-primary);
@@ -59,7 +58,6 @@ a:hover {
 }
 
 /* Shared UI */
-
 .bg-ebm {
     background-color: var(--ebm-bg);
 }
@@ -90,7 +88,6 @@ a:hover {
 }
 
 /* Branding */
-
 .brand-mark {
     width: 2.25rem;
     height: 2.25rem;
@@ -103,7 +100,6 @@ a:hover {
 }
 
 /* Navigation */
-
 .navbar .container {
     gap: 1rem;
 }
@@ -124,7 +120,6 @@ a:hover {
 }
 
 /* Homepage */
-
 .hero-section {
     background:
         radial-gradient(circle at top right, rgba(46, 125, 91, 0.12), transparent 32rem),
@@ -144,7 +139,6 @@ a:hover {
 }
 
 /* Homepage Fixed Map Only Preview */
-
 .home-map-only-card {
     height: 28rem;
     border: 1px solid var(--ebm-border);
@@ -165,7 +159,6 @@ a:hover {
 }
 
 /* Homepage Professional Icon Markers */
-
 .home-map-icon-marker {
     width: 2.35rem;
     height: 2.85rem;
@@ -213,7 +206,6 @@ a:hover {
 }
 
 /* Temporary Map Placeholder */
-
 .temporary-map-placeholder {
     min-height: 28rem;
     border: 2px dashed rgba(46, 125, 91, 0.25);
@@ -235,7 +227,6 @@ a:hover {
 }
 
 /* Mapbox */
-
 .ebm-map {
     width: 100%;
     min-height: 34rem;
@@ -260,7 +251,6 @@ a:hover {
 }
 
 /* Full Map Professional Icon Markers With Name Labels */
-
 .map-marker {
     width: 8.5rem;
     min-height: 4.85rem;
@@ -359,7 +349,6 @@ a:hover {
 }
 
 /* Map Popups */
-
 .mapboxgl-popup-content {
     border-radius: 1rem;
     padding: 0;
@@ -454,7 +443,6 @@ a:hover {
 }
 
 /* Boarding House Detail Page */
-
 .boarding-house-photo {
     width: 100%;
     height: 16rem;
@@ -522,7 +510,6 @@ a:hover {
 }
 
 /* Reservation Modal */
-
 .reservation-dialog {
     margin-top: 1.25rem;
     margin-bottom: 1.25rem;
@@ -572,7 +559,6 @@ a:hover {
 }
 
 /* Reservation Notice Cards */
-
 .reservation-notice {
     display: flex;
     align-items: flex-start;
@@ -613,7 +599,6 @@ a:hover {
 }
 
 /* Reservation Result Receipt Modal */
-
 .reservation-result-dialog {
     margin-left: 1rem;
     margin-right: 1rem;
@@ -703,7 +688,6 @@ a:hover {
 }
 
 /* Tracking Page */
-
 .tracking-reference-box {
     border: 1px dashed rgba(46, 125, 91, 0.45);
     border-radius: 1rem;
@@ -729,7 +713,6 @@ a:hover {
 }
 
 /* Owner Dashboard */
-
 .dashboard-stat-label {
     display: block;
     color: var(--ebm-muted);
@@ -760,7 +743,6 @@ a:hover {
 }
 
 /* Admin Dashboard */
-
 .admin-reservation-list {
     display: grid;
     gap: 0.85rem;
@@ -774,7 +756,6 @@ a:hover {
 }
 
 /* Owner Photo Management */
-
 .owner-photo-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -800,7 +781,6 @@ a:hover {
 }
 
 /* Reports */
-
 .print-report-header {
     display: none;
     margin-bottom: 1.5rem;
@@ -811,7 +791,6 @@ a:hover {
 }
 
 /* Responsive Fixes */
-
 @media (max-width: 991.98px) {
     .sticky-detail-card {
         position: static;
@@ -958,7 +937,6 @@ a:hover {
 }
 
 /* Print */
-
 @media print {
     .no-print,
     nav,
@@ -1004,4 +982,45 @@ a:hover {
     .report-table td {
         padding: 0.35rem;
     }
+}
+
+/* 🚀 FIX: Premium Dark Mode Variables & Hardcoded Overrides */
+[data-bs-theme="dark"] {
+    /* Bootstrap Global Overrides */
+    --bs-body-bg: #121212; 
+    --bs-body-color: #e4e4e7; 
+    --bs-tertiary-bg: #1c1c1e; 
+    --bs-border-color: #2c2c2e; 
+    
+    /* EBM Custom Variable Overrides */
+    --ebm-bg: #121212;
+    --ebm-text: #e4e4e7;
+    --ebm-border: #2c2c2e;
+    --ebm-muted: #a1a1aa;
+}
+
+/* Force override the hardcoded #ffffff gradient in the hero section */
+[data-bs-theme="dark"] .hero-section {
+    background:
+        radial-gradient(circle at top right, rgba(46, 125, 91, 0.15), transparent 32rem),
+        linear-gradient(180deg, #121212 0%, #1c1c1e 100%) !important;
+}
+
+/* Force override hardcoded #ffffff backgrounds on specific custom classes */
+[data-bs-theme="dark"] .ebm-card,
+[data-bs-theme="dark"] .home-map-only-card,
+[data-bs-theme="dark"] .ebm-map,
+[data-bs-theme="dark"] .map-popup-card,
+[data-bs-theme="dark"] .detail-mini-card,
+[data-bs-theme="dark"] .admin-reservation-item,
+[data-bs-theme="dark"] .owner-photo-card {
+    background-color: var(--bs-tertiary-bg) !important;
+    border-color: var(--bs-border-color) !important;
+}
+
+/* Fix Map popup styling in dark mode */
+[data-bs-theme="dark"] .map-marker-name-label {
+    background-color: rgba(28, 28, 30, 0.94) !important;
+    border-color: var(--bs-border-color) !important;
+    color: #e4e4e7 !important;
 }

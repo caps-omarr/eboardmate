@@ -158,7 +158,7 @@ Route::middleware(['auth', 'role:super_admin'])
         Route::post('/owners', [AdminOwnerController::class, 'store'])
             ->name('owners.store');
 
-        Route::post('/owners/{owner}/toggle-status', [AdminOwnerController::class, 'toggleStatus'])
+        Route::patch('/owners/{owner}/toggle-status', [AdminOwnerController::class, 'toggleStatus'])
             ->name('owners.toggle-status');
 
         Route::get('/boarding-houses', [AdminBoardingHouseController::class, 'index'])
@@ -170,15 +170,15 @@ Route::middleware(['auth', 'role:super_admin'])
         Route::put('/boarding-houses/{boardingHouse}', [AdminBoardingHouseController::class, 'update'])
             ->name('boarding-houses.update');
 
-        Route::post('/boarding-houses/{boardingHouse}/approve', [AdminBoardingHouseController::class, 'approve'])
+        Route::patch('/boarding-houses/{boardingHouse}/approve', [AdminBoardingHouseController::class, 'approve'])
             ->name('boarding-houses.approve');
 
-        Route::post('/boarding-houses/{boardingHouse}/reject', [AdminBoardingHouseController::class, 'reject'])
+        Route::patch('/boarding-houses/{boardingHouse}/reject', [AdminBoardingHouseController::class, 'reject'])
             ->name('boarding-houses.reject');
 
-        Route::post('/boarding-houses/{boardingHouse}/deactivate', [AdminBoardingHouseController::class, 'deactivate'])
+        Route::patch('/boarding-houses/{boardingHouse}/deactivate', [AdminBoardingHouseController::class, 'deactivate'])
             ->name('boarding-houses.deactivate');
 
-        Route::post('/boarding-houses/{boardingHouse}/reactivate', [AdminBoardingHouseController::class, 'reactivate'])
+        Route::patch('/boarding-houses/{boardingHouse}/reactivate', [AdminBoardingHouseController::class, 'reactivate'])
             ->name('boarding-houses.reactivate');
     });

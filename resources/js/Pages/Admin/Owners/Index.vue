@@ -51,7 +51,6 @@ const statusBadgeClass = (status) => {
         : 'text-bg-secondary';
 };
 
-
 const cleanLabel = (label) => {
     if (!label) return '';
     if (label.includes('&laquo;')) return '« Previous';
@@ -64,32 +63,35 @@ const cleanLabel = (label) => {
     <AdminLayout>
         <Head title="Owner Accounts | E-BoardMate" />
 
-        <div class="container">
+        <div class="container-fluid py-2">
+            <!-- FLASH SUCCESS MESSAGE -->
             <div
                 v-if="flashSuccess"
-                class="alert alert-success mb-4"
+                class="alert alert-success mb-4 border-0 shadow-sm"
             >
                 {{ flashSuccess }}
             </div>
 
+            <!-- HEADER SECTION -->
             <div class="mb-4">
-                <span class="badge text-bg-dark mb-3">
+                <span class="badge text-bg-dark mb-3 px-3 py-2">
                     Super Admin
                 </span>
 
-                <h1 class="fw-bold mb-2">
+                <h1 class="text-body-emphasis fw-bold mb-2 transition-all">
                     Owner Account Management
                 </h1>
 
-                <p class="ebm-muted mb-0">
+                <p class="text-body-secondary mb-0 transition-all">
                     Create and manage boarding house owner accounts.
                 </p>
             </div>
 
             <div class="row g-4">
+                <!-- LEFT COLUMN: CREATE OWNER FORM -->
                 <div class="col-lg-4">
-                    <div class="ebm-card p-4">
-                        <h2 class="h5 fw-bold mb-3">
+                    <div class="card border-0 shadow-sm p-4 bg-body-tertiary h-100 transition-all">
+                        <h2 class="h5 text-body-emphasis fw-bold mb-4">
                             Create Owner Account
                         </h2>
 
@@ -97,7 +99,7 @@ const cleanLabel = (label) => {
                             <div class="mb-3">
                                 <label
                                     for="name"
-                                    class="form-label"
+                                    class="form-label text-body-emphasis fw-medium"
                                 >
                                     Full Name
                                 </label>
@@ -106,7 +108,7 @@ const cleanLabel = (label) => {
                                     id="name"
                                     v-model="createForm.name"
                                     type="text"
-                                    class="form-control"
+                                    class="form-control border-secondary-subtle bg-body"
                                     :class="{ 'is-invalid': createForm.errors.name }"
                                     placeholder="Owner full name"
                                 >
@@ -122,7 +124,7 @@ const cleanLabel = (label) => {
                             <div class="mb-3">
                                 <label
                                     for="email"
-                                    class="form-label"
+                                    class="form-label text-body-emphasis fw-medium"
                                 >
                                     Email Address
                                 </label>
@@ -131,7 +133,7 @@ const cleanLabel = (label) => {
                                     id="email"
                                     v-model="createForm.email"
                                     type="email"
-                                    class="form-control"
+                                    class="form-control border-secondary-subtle bg-body"
                                     :class="{ 'is-invalid': createForm.errors.email }"
                                     placeholder="owner@example.com"
                                 >
@@ -147,7 +149,7 @@ const cleanLabel = (label) => {
                             <div class="mb-3">
                                 <label
                                     for="phone"
-                                    class="form-label"
+                                    class="form-label text-body-emphasis fw-medium"
                                 >
                                     Phone Number
                                 </label>
@@ -156,7 +158,7 @@ const cleanLabel = (label) => {
                                     id="phone"
                                     v-model="createForm.phone"
                                     type="text"
-                                    class="form-control"
+                                    class="form-control border-secondary-subtle bg-body"
                                     :class="{ 'is-invalid': createForm.errors.phone }"
                                     placeholder="09XXXXXXXXX"
                                 >
@@ -172,7 +174,7 @@ const cleanLabel = (label) => {
                             <div class="mb-3">
                                 <label
                                     for="password"
-                                    class="form-label"
+                                    class="form-label text-body-emphasis fw-medium"
                                 >
                                     Temporary Password
                                 </label>
@@ -181,7 +183,7 @@ const cleanLabel = (label) => {
                                     id="password"
                                     v-model="createForm.password"
                                     type="password"
-                                    class="form-control"
+                                    class="form-control border-secondary-subtle bg-body"
                                     :class="{ 'is-invalid': createForm.errors.password }"
                                     placeholder="Minimum 8 characters"
                                 >
@@ -197,7 +199,7 @@ const cleanLabel = (label) => {
                             <div class="mb-4">
                                 <label
                                     for="password_confirmation"
-                                    class="form-label"
+                                    class="form-label text-body-emphasis fw-medium"
                                 >
                                     Confirm Password
                                 </label>
@@ -206,14 +208,14 @@ const cleanLabel = (label) => {
                                     id="password_confirmation"
                                     v-model="createForm.password_confirmation"
                                     type="password"
-                                    class="form-control"
+                                    class="form-control border-secondary-subtle bg-body"
                                     placeholder="Repeat password"
                                 >
                             </div>
 
                             <button
                                 type="submit"
-                                class="btn btn-ebm-primary w-100"
+                                class="btn btn-ebm-primary w-100 py-2 fw-semibold"
                                 :disabled="createForm.processing"
                             >
                                 <span v-if="createForm.processing">
@@ -228,31 +230,33 @@ const cleanLabel = (label) => {
                     </div>
                 </div>
 
+                <!-- RIGHT COLUMN: OWNERS TABLE & LIST -->
                 <div class="col-lg-8">
-                    <div class="ebm-card p-4">
-                        <div class="mb-3">
-                            <h2 class="h5 fw-bold mb-1">
+                    <div class="card border-0 shadow-sm p-4 bg-body-tertiary h-100 transition-all">
+                        <div class="mb-4">
+                            <h2 class="h5 text-body-emphasis fw-bold mb-1">
                                 Owner Accounts
                             </h2>
 
-                            <p class="ebm-muted small mb-0">
+                            <p class="text-body-secondary small mb-0">
                                 Active owners can log in to the owner portal. Inactive owners are blocked from logging in.
                             </p>
                         </div>
 
                         <div
                             v-if="owners.data && owners.data.length"
+                            class="d-flex flex-column justify-content-between h-100"
                         >
                             <div class="table-responsive">
-                                <table class="table align-middle owner-table mb-0">
+                                <table class="table table-hover align-middle mb-0">
                                     <thead>
                                         <tr>
-                                            <th>Owner</th>
-                                            <th>Contact</th>
-                                            <th>Assigned Listing</th>
-                                            <th>Status</th>
-                                            <th>Created</th>
-                                            <th>Action</th>
+                                            <th class="text-body-secondary text-uppercase small border-secondary-subtle">Owner</th>
+                                            <th class="text-body-secondary text-uppercase small border-secondary-subtle">Contact</th>
+                                            <th class="text-body-secondary text-uppercase small border-secondary-subtle">Assigned Listing</th>
+                                            <th class="text-body-secondary text-uppercase small border-secondary-subtle">Status</th>
+                                            <th class="text-body-secondary text-uppercase small border-secondary-subtle">Created</th>
+                                            <th class="text-body-secondary text-uppercase small border-secondary-subtle text-end">Action</th>
                                         </tr>
                                     </thead>
 
@@ -261,46 +265,46 @@ const cleanLabel = (label) => {
                                             v-for="owner in owners.data"
                                             :key="owner.id"
                                         >
-                                            <td>
-                                                <div class="fw-semibold">
+                                            <td class="border-secondary-subtle">
+                                                <div class="fw-semibold text-body-emphasis">
                                                     {{ owner.name }}
                                                 </div>
 
-                                                <div class="small ebm-muted">
+                                                <div class="small text-body-secondary mt-1">
                                                     ID: {{ owner.id }}
                                                 </div>
                                             </td>
 
-                                            <td>
-                                                <div>
+                                            <td class="border-secondary-subtle">
+                                                <div class="text-body-emphasis">
                                                     {{ owner.email }}
                                                 </div>
 
-                                                <div class="small ebm-muted">
+                                                <div class="small text-body-secondary mt-1">
                                                     {{ owner.phone || 'No phone' }}
                                                 </div>
                                             </td>
 
-                                            <td>
+                                            <td class="border-secondary-subtle">
                                                 <template v-if="owner.boarding_house">
-                                                    <div class="fw-semibold">
+                                                    <div class="fw-semibold text-body-emphasis">
                                                         {{ owner.boarding_house.name }}
                                                     </div>
 
-                                                    <div class="small ebm-muted">
+                                                    <div class="small text-body-secondary mt-1">
                                                         {{ owner.boarding_house.status }}
                                                     </div>
                                                 </template>
 
                                                 <span
                                                     v-else
-                                                    class="small ebm-muted"
+                                                    class="small text-body-secondary"
                                                 >
                                                     No assigned listing
                                                 </span>
                                             </td>
 
-                                            <td>
+                                            <td class="border-secondary-subtle">
                                                 <span
                                                     class="badge"
                                                     :class="statusBadgeClass(owner.status)"
@@ -309,11 +313,11 @@ const cleanLabel = (label) => {
                                                 </span>
                                             </td>
 
-                                            <td class="small ebm-muted">
+                                            <td class="small text-body-secondary border-secondary-subtle">
                                                 {{ owner.created_at }}
                                             </td>
 
-                                            <td>
+                                            <td class="border-secondary-subtle text-end">
                                                 <button
                                                     type="button"
                                                     class="btn btn-sm"
@@ -329,7 +333,8 @@ const cleanLabel = (label) => {
                                 </table>
                             </div>
 
-                            <nav v-if="owners.links && owners.links.length > 3" aria-label="Owner pagination" class="mt-4 border-top pt-3">
+                            <!-- PAGINATION -->
+                            <nav v-if="owners.links && owners.links.length > 3" aria-label="Owner pagination" class="mt-4 border-top border-secondary-subtle pt-3">
                                 <ul class="pagination justify-content-end mb-0">
                                     <li 
                                         v-for="(link, index) in owners.links" 
@@ -340,14 +345,14 @@ const cleanLabel = (label) => {
                                         <Link 
                                             v-if="link.url" 
                                             :href="link.url" 
-                                            class="page-link" 
+                                            class="page-link border-secondary-subtle bg-body text-body" 
                                             preserve-scroll 
                                         >
                                             {{ cleanLabel(link.label) }}
                                         </Link>
                                         <span 
                                             v-else 
-                                            class="page-link"
+                                            class="page-link border-secondary-subtle bg-body text-body opacity-50"
                                         >
                                             {{ cleanLabel(link.label) }}
                                         </span>
@@ -356,19 +361,20 @@ const cleanLabel = (label) => {
                             </nav>
                         </div>
 
+                        <!-- EMPTY STATE -->
                         <div
                             v-else
-                            class="empty-state"
+                            class="d-flex flex-column align-items-center justify-content-center text-center p-5 h-100 rounded border border-secondary-subtle bg-body transition-all"
                         >
-                            <div class="empty-state-icon">
+                            <div class="fs-1 mb-3">
                                 👤
                             </div>
 
-                            <h3 class="h5 fw-bold mb-2">
+                            <h3 class="h5 text-body-emphasis fw-bold mb-2">
                                 No owner accounts yet
                             </h3>
 
-                            <p class="ebm-muted mb-0">
+                            <p class="text-body-secondary mb-0">
                                 Create an owner account to assign and manage boarding house listings.
                             </p>
                         </div>
@@ -378,3 +384,10 @@ const cleanLabel = (label) => {
         </div>
     </AdminLayout>
 </template>
+
+<style scoped>
+/* Smooth fade transitions for colors when toggling dark mode */
+.transition-all {
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+}
+</style>

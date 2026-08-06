@@ -117,22 +117,22 @@ onBeforeUnmount(() => {
             <meta name="description" content="Find verified boarding houses near Talibon Polytechnic College and track your reservation online with E-BoardMate.">
         </Head>
 
-        <!-- 🚀 CONTAINED HERO SECTION (No more excessive stretching) -->
-        <section class="hero-section d-flex align-items-center min-vh-100">
+        <!-- 🚀 CONTAINED HERO SECTION -->
+        <section class="hero-section bg-body transition-all d-flex align-items-center min-vh-100">
             <div class="container py-5 mt-4 mt-lg-0">
                 <div class="row align-items-center g-5">
                     
                     <!-- Left Column: Content & Badges -->
                     <div class="col-lg-6 col-xl-6 z-1">
-                        <span class="badge rounded-pill badge-soft-green mb-3 px-3 py-2 border shadow-sm bg-white text-success">
+                        <span class="badge rounded-pill border border-success-subtle bg-body text-success shadow-sm mb-3 px-3 py-2 transition-all">
                             Verified boarding houses near TPC
                         </span>
 
-                        <h1 class="display-5 fw-bold mb-3 hero-title tracking-tight">
+                        <h1 class="display-5 fw-bold mb-3 text-body-emphasis tracking-tight transition-all">
                             Find trusted boarding houses near Talibon Polytechnic College faster, easier, and safer.
                         </h1>
 
-                        <p class="lead text-muted mb-4 pe-lg-4">
+                        <p class="lead text-body-secondary mb-4 pe-lg-4 transition-all">
                             E-BoardMate helps students view verified boarding houses, check details, submit reservations, and track reservation status online without creating a student account.
                         </p>
 
@@ -140,38 +140,38 @@ onBeforeUnmount(() => {
                             <Link href="/map" class="btn btn-ebm-primary btn-lg px-4 fw-medium shadow">
                                 View Map
                             </Link>
-                            <Link href="/track-reservation" class="btn btn-light border btn-lg px-4 fw-medium shadow-sm">
+                            <Link href="/track-reservation" class="btn bg-body border-secondary-subtle text-body-emphasis btn-lg px-4 fw-medium shadow-sm transition-all hover-bg-tertiary">
                                 Track Reservation
                             </Link>
                         </div>
 
                         <!-- MVP Trust Badges -->
-                        <div class="d-flex flex-wrap gap-4 trust-badges pt-4 border-top">
+                        <div class="d-flex flex-wrap gap-4 trust-badges pt-4 border-top border-secondary-subtle transition-all">
                             <div class="trust-badge-item d-flex align-items-center gap-2">
                                 <span class="fs-5 text-danger">❤️</span>
                                 <div>
-                                    <span class="d-block fw-bold small text-dark lh-1">Verified & Safe</span>
-                                    <span class="d-block small text-muted text-nowrap" style="font-size: 0.75rem;">Trusted owners</span>
+                                    <span class="d-block fw-bold small text-body-emphasis lh-1 transition-all">Verified & Safe</span>
+                                    <span class="d-block small text-body-secondary text-nowrap transition-all" style="font-size: 0.75rem;">Trusted owners</span>
                                 </div>
                             </div>
                             <div class="trust-badge-item d-flex align-items-center gap-2">
                                 <span class="fs-5 text-warning">🏷️</span>
                                 <div>
-                                    <span class="d-block fw-bold small text-dark lh-1">Affordable Rates</span>
-                                    <span class="d-block small text-muted text-nowrap" style="font-size: 0.75rem;">Student-friendly</span>
+                                    <span class="d-block fw-bold small text-body-emphasis lh-1 transition-all">Affordable Rates</span>
+                                    <span class="d-block small text-body-secondary text-nowrap transition-all" style="font-size: 0.75rem;">Student-friendly</span>
                                 </div>
                             </div>
                             <div class="trust-badge-item d-flex align-items-center gap-2">
                                 <span class="fs-5 text-success">🤝</span>
                                 <div>
-                                    <span class="d-block fw-bold small text-dark lh-1">Community</span>
-                                    <span class="d-block small text-muted text-nowrap" style="font-size: 0.75rem;">Support local</span>
+                                    <span class="d-block fw-bold small text-body-emphasis lh-1 transition-all">Community</span>
+                                    <span class="d-block small text-body-secondary text-nowrap transition-all" style="font-size: 0.75rem;">Support local</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Right Column: The Faded Map (Just like the reference image) -->
+                    <!-- Right Column: The Faded Map -->
                     <div class="col-lg-6 col-xl-6">
                         <div class="hero-map-wrapper">
                             <div ref="homeMapContainer" class="w-100 h-100"></div>
@@ -182,22 +182,22 @@ onBeforeUnmount(() => {
             </div>
         </section>
 
-        <!-- Snap Section: About & How It Works (Unchanged) -->
-        <section class="snap-section d-flex align-items-center py-5 min-vh-100 bg-white">
+        <!-- Snap Section: About & How It Works -->
+        <section class="snap-section-tertiary bg-body-tertiary d-flex align-items-center py-5 min-vh-100 transition-all">
             <div class="container py-5">
                 
                 <!-- Expanded About Story -->
                 <div class="row justify-content-center text-center mb-5">
                     <div class="col-lg-8">
-                        <span class="badge rounded-pill badge-soft-green border-ebm-primary mb-3 px-3 py-2">
+                        <span class="badge rounded-pill border border-success-subtle bg-body text-success mb-3 px-3 py-2 transition-all">
                             About E-BoardMate
                         </span>
 
-                        <h2 class="display-6 fw-bold mb-4 text-dark tracking-tight">
+                        <h2 class="display-6 fw-bold mb-4 text-body-emphasis tracking-tight transition-all">
                             Built exclusively for TPC students.
                         </h2>
 
-                        <p class="lead ebm-muted mb-0">
+                        <p class="lead text-body-secondary mb-0 transition-all">
                             Finding a safe and affordable place to stay shouldn't be a hassle. E-BoardMate bridges the gap between Talibon Polytechnic College students and verified local landlords. We provide a seamless, map-based platform where you can secure your bedspace online—<strong>completely free and with zero account registration required.</strong>
                         </p>
                     </div>
@@ -207,41 +207,41 @@ onBeforeUnmount(() => {
                 <div class="row g-4 mt-2">
                     
                     <div class="col-md-6 col-lg-3">
-                        <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift ebm-card">
+                        <div class="card h-100 border border-secondary-subtle bg-body shadow-sm rounded-4 hover-lift transition-all">
                             <div class="card-body p-4 text-center">
-                                <div class="step-icon mb-4 mx-auto">🗺️</div>
-                                <h3 class="h5 fw-bold mb-3">1. Explore the Map</h3>
-                                <p class="small ebm-muted mb-0">Browse the interactive map to find verified boarding houses near the TPC campus. View real-time availability, photos, and monthly rent prices.</p>
+                                <div class="step-icon mb-4 mx-auto transition-all">🗺️</div>
+                                <h3 class="h5 fw-bold mb-3 text-body-emphasis transition-all">1. Explore the Map</h3>
+                                <p class="small text-body-secondary mb-0 transition-all">Browse the interactive map to find verified boarding houses near the TPC campus. View real-time availability, photos, and monthly rent prices.</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="col-md-6 col-lg-3">
-                        <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift ebm-card">
+                        <div class="card h-100 border border-secondary-subtle bg-body shadow-sm rounded-4 hover-lift transition-all">
                             <div class="card-body p-4 text-center">
-                                <div class="step-icon mb-4 mx-auto">📝</div>
-                                <h3 class="h5 fw-bold mb-3">2. Submit a Request</h3>
-                                <p class="small ebm-muted mb-0">Found the perfect spot? Fill out a quick guest reservation form. All you need is your name and email. No student account or password required!</p>
+                                <div class="step-icon mb-4 mx-auto transition-all">📝</div>
+                                <h3 class="h5 fw-bold mb-3 text-body-emphasis transition-all">2. Submit a Request</h3>
+                                <p class="small text-body-secondary mb-0 transition-all">Found the perfect spot? Fill out a quick guest reservation form. All you need is your name and email. No student account or password required!</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="col-md-6 col-lg-3">
-                        <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift ebm-card">
+                        <div class="card h-100 border border-secondary-subtle bg-body shadow-sm rounded-4 hover-lift transition-all">
                             <div class="card-body p-4 text-center">
-                                <div class="step-icon mb-4 mx-auto">⏳</div>
-                                <h3 class="h5 fw-bold mb-3">3. Wait for Review</h3>
-                                <p class="small ebm-muted mb-0">The boarding house landlord will receive your request immediately. Please wait up to 24 hours for them to Approve or Reject based on slot availability.</p>
+                                <div class="step-icon mb-4 mx-auto transition-all">⏳</div>
+                                <h3 class="h5 fw-bold mb-3 text-body-emphasis transition-all">3. Wait for Review</h3>
+                                <p class="small text-body-secondary mb-0 transition-all">The boarding house landlord will receive your request immediately. Please wait up to 24 hours for them to Approve or Reject based on slot availability.</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="col-md-6 col-lg-3">
-                        <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift ebm-card">
+                        <div class="card h-100 border border-secondary-subtle bg-body shadow-sm rounded-4 hover-lift transition-all">
                             <div class="card-body p-4 text-center">
-                                <div class="step-icon mb-4 mx-auto">🔍</div>
-                                <h3 class="h5 fw-bold mb-3">4. Track Your Status</h3>
-                                <p class="small ebm-muted mb-0">After submitting, you will be given a unique <strong>EBM</strong> tracking code. Use it anytime on our tracking page to see live updates on your reservation.</p>
+                                <div class="step-icon mb-4 mx-auto transition-all">🔍</div>
+                                <h3 class="h5 fw-bold mb-3 text-body-emphasis transition-all">4. Track Your Status</h3>
+                                <p class="small text-body-secondary mb-0 transition-all">After submitting, you will be given a unique <strong>EBM</strong> tracking code. Use it anytime on our tracking page to see live updates on your reservation.</p>
                             </div>
                         </div>
                     </div>
@@ -253,21 +253,12 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-/* --- NEW HERO SECTION STYLES --- */
-.hero-section {
-    background-color: #FAF8F5; /* Warm, premium off-white from reference image */
-}
-
-.hero-title {
-    color: #2D3748; /* Softer, premium black */
-}
-
-/* 🪄 THE MAGIC FADE MASK (Matches samplebg.png!) */
+/* 🪄 THE MAGIC FADE MASK */
 .hero-map-wrapper {
     position: relative;
-    height: 400px; /* Constrained height */
+    height: 400px;
     width: 100%;
-    border-radius: 20px; /* Soft, modern corners */
+    border-radius: 20px;
     overflow: hidden;
     
     /* Mobile: Fades the top edge so it blends below the text */
@@ -284,7 +275,7 @@ onBeforeUnmount(() => {
     }
 }
 
-/* --- EXISTING STYLES --- */
+/* --- INTERACTIVE STYLES --- */
 .hover-lift {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -292,22 +283,50 @@ onBeforeUnmount(() => {
     transform: translateY(-8px);
     box-shadow: 0 15px 30px rgba(0,0,0,0.08) !important;
 }
+
+.hover-bg-tertiary:hover {
+    background-color: var(--bs-tertiary-bg) !important;
+}
+
 .step-icon {
     width: 70px;
     height: 70px;
-    background-color: #eaf5ee; 
+    background-color: rgba(25, 135, 84, 0.15); /* Transparent green adapts to both modes */
     color: #198754;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 28px;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, background-color 0.3s ease;
 }
+
 .hover-lift:hover .step-icon {
     transform: scale(1.1);
 }
+
 .tracking-tight {
     letter-spacing: -0.5px;
+}
+
+/* Smooth fade transitions for colors when toggling dark mode */
+.transition-all {
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+}
+</style>
+
+<!-- 🚀 THE FIX: UNSCOPED BRUTE-FORCE DARK MODE OVERRIDES -->
+<!-- Placed outside of <style scoped> to bypass Vue encapsulation and completely crush global CSS interference -->
+<style>
+html[data-bs-theme="dark"] .hero-section,
+body[data-bs-theme="dark"] .hero-section,
+[data-bs-theme="dark"] .hero-section {
+    background-color: #212529 !important;
+}
+
+html[data-bs-theme="dark"] .snap-section-tertiary,
+body[data-bs-theme="dark"] .snap-section-tertiary,
+[data-bs-theme="dark"] .snap-section-tertiary {
+    background-color: #2b3035 !important;
 }
 </style>

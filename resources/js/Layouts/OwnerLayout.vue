@@ -1,4 +1,5 @@
 <script setup>
+import ThemeToggle from '@/Components/ThemeToggle.vue';
 import { Link, useForm, router } from '@inertiajs/vue3';
 
 const logoutForm = useForm({});
@@ -14,15 +15,12 @@ const navLinks = [
     { name: 'Settings', url: '/owner/settings' },
 ];
 
-
 const mobileNavigate = (url) => {
     const closeBtn = document.querySelector('#mobileSidebar .btn-close');
     if (closeBtn) closeBtn.click();
     
-
     router.visit(url);
 };
-
 
 const mobileLogout = () => {
     const closeBtn = document.querySelector('#mobileSidebar .btn-close');
@@ -33,12 +31,11 @@ const mobileLogout = () => {
 </script>
 
 <template>
-    <div class="d-flex min-vh-100 bg-ebm">
+    <div class="d-flex min-vh-100 bg-body-tertiary">
         
-       
-        <aside class="bg-white border-end d-none d-md-flex flex-column p-3 shadow-sm" style="width: 260px; position: fixed; height: 100vh; overflow-y: auto;">
+        <!-- DESKTOP SIDEBAR -->
+        <aside class="bg-body border-end border-secondary d-none d-md-flex flex-column p-3 shadow-sm" style="width: 260px; position: fixed; height: 100vh; overflow-y: auto;">
             
-          
             <div class="d-flex align-items-center mb-2 px-2">
                 <Link href="/owner/dashboard" title="E-BoardMate Owner Dashboard">
                     <img 
@@ -54,22 +51,23 @@ const mobileLogout = () => {
                 Owner Portal
             </div>
 
-          
             <nav class="nav flex-column gap-2 mb-auto" aria-label="Desktop Sidebar Navigation">
                 <Link 
                     v-for="link in navLinks" 
                     :key="link.name" 
                     :href="link.url" 
                     class="nav-link rounded px-3 py-2 fw-semibold transition-all"
-                    :class="$page.url === link.url ? 'bg-success text-white' : 'text-dark hover-bg-light'"
+                    :class="$page.url === link.url ? 'bg-success text-white' : 'text-body hover-bg-nav'"
                 >
                     {{ link.name }}
                 </Link>
             </nav>
 
-            <hr>
+            <!-- Theme Toggle placed exactly like Admin Layout -->
+            <div class="px-2 mt-4 mb-3">
+                <ThemeToggle />
+            </div>
             
-           
             <div class="px-2 pb-2">
                 <button
                     type="button"
@@ -82,13 +80,13 @@ const mobileLogout = () => {
             </div>
         </aside>
 
-      
+        <!-- MAIN CONTENT AREA -->
         <div class="flex-grow-1 d-flex flex-column w-100" style="margin-left: 0;" :style="{'@media (min-width: 768px)': 'margin-left: 260px !important'}">
             
-    
-            <header class="navbar navbar-light bg-white border-bottom d-md-none px-3 py-2 shadow-sm sticky-top">
-                <div class="d-flex align-items-center w-100">
-                    <Link href="/owner/dashboard" class="me-auto">
+            <!-- MOBILE HEADER -->
+            <header class="navbar bg-body border-bottom border-secondary d-md-none px-3 py-2 shadow-sm sticky-top">
+                <div class="d-flex align-items-center justify-content-between w-100">
+                    <Link href="/owner/dashboard">
                         <img 
                             src="../Pages/Public/Images/eboarmatelogo.png" 
                             alt="E-BoardMate Logo" 
@@ -96,21 +94,21 @@ const mobileLogout = () => {
                             style="height: 50px; object-fit: contain;"
                         />
                     </Link>
-                    <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar" aria-label="Toggle navigation">
+                    
+                    <button class="navbar-toggler border-0 px-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                 </div>
             </header>
 
-          
             <main class="p-3 p-md-4 w-100" style="overflow-x: hidden;">
                 <slot />
             </main>
         </div>
 
-      
-        <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
-            <div class="offcanvas-header border-bottom">
+        <!-- MOBILE OFFCANVAS SIDEBAR -->
+        <div class="offcanvas offcanvas-start d-md-none text-body bg-body" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
+            <div class="offcanvas-header border-bottom border-secondary">
                 <img 
                     src="../Pages/Public/Images/eboarmatelogo.png" 
                     alt="E-BoardMate Logo" 
@@ -124,23 +122,24 @@ const mobileLogout = () => {
                     Owner Portal
                 </div>
                 
-                
                 <nav class="nav flex-column gap-2 mb-auto" aria-label="Mobile Sidebar Navigation">
                     <a 
                         v-for="link in navLinks" 
                         :key="link.name" 
                         href="#"
                         @click.prevent="mobileNavigate(link.url)"
-                        class="nav-link rounded px-3 py-2 fw-semibold"
-                        :class="$page.url === link.url ? 'bg-success text-white' : 'text-dark'"
+                        class="nav-link rounded px-3 py-2 fw-semibold transition-all"
+                        :class="$page.url === link.url ? 'bg-success text-white' : 'text-body hover-bg-nav'"
                     >
                         {{ link.name }}
                     </a>
                 </nav>
                 
-                <hr>
+                <!-- Theme Toggle placed exactly like Admin Layout for mobile -->
+                <div class="mb-3 px-1 mt-4">
+                    <ThemeToggle />
+                </div>
                 
-                <!-- Mobile Logout Button -->
                 <button
                     type="button"
                     class="btn btn-outline-danger w-100 fw-bold mb-3"
@@ -162,8 +161,8 @@ const mobileLogout = () => {
     }
 }
 
-.hover-bg-light:hover {
-    background-color: #f8f9fa;
+.hover-bg-nav:hover {
+    background-color: var(--bs-secondary-bg);
     transition: background-color 0.2s ease-in-out;
 }
 

@@ -280,7 +280,7 @@ const submitReservation = () => {
                                     </strong>
                                 </div>
                             </div>
-                            <hr>
+                            <hr class="border-secondary">
                             <h3 class="h6 fw-bold mb-3">Amenities</h3>
                             <div v-if="boardingHouse.amenities.length" class="d-flex flex-wrap gap-2 mb-4">
                                 <span v-for="amenity in boardingHouse.amenities" :key="amenity" class="badge badge-soft-green">
@@ -330,9 +330,10 @@ const submitReservation = () => {
         <!-- 📝 THE RESERVATION INPUT FORM MODAL -->
         <div id="reservationModal" class="modal fade" tabindex="-1" aria-labelledby="reservationModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-scrollable reservation-dialog">
-                <div class="modal-content reservation-modal-content">
+                <!-- Replaced basic modal-content with ebm-card for unified dark mode background and border -->
+                <div class="modal-content ebm-card reservation-modal-content">
                     <form @submit.prevent="submitReservation">
-                        <div class="modal-header border-bottom">
+                        <div class="modal-header border-bottom border-secondary">
                             <div class="pe-3">
                                 <span class="badge badge-soft-green mb-2">Guest Reservation</span>
                                 <h2 id="reservationModalLabel" class="modal-title h5 fw-bold">Reserve at {{ boardingHouse.name }}</h2>
@@ -341,7 +342,7 @@ const submitReservation = () => {
                         </div>
 
                         <div class="modal-body">
-                            <div class="alert alert-light border reservation-important-alert">
+                            <div class="alert alert-secondary border-secondary reservation-important-alert">
                                 <strong>Important:</strong> You can only have one active reservation for the same boarding house.
                             </div>
 
@@ -356,7 +357,7 @@ const submitReservation = () => {
                                     <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
                                     <input id="email" v-model="reservationForm.email" type="email" class="form-control" :class="{ 'is-invalid': reservationForm.errors.email }" placeholder="your-gmail@email.com">
                                     <div v-if="reservationForm.errors.email" class="invalid-feedback">{{ reservationForm.errors.email }}</div>
-                                    <div class="form-text">This email will be used for tracking notifications.</div>
+                                    <div class="form-text ebm-muted">This email will be used for tracking notifications.</div>
                                 </div>
 
                                 <div class="col-md-6">
@@ -382,9 +383,10 @@ const submitReservation = () => {
                                     <div class="accordion custom-legal-accordion shadow-sm" id="legalAccordion">
                                         
                                         <!-- Privacy Notice -->
-                                        <div class="accordion-item border border-bottom-0 rounded-top overflow-hidden">
+                                        <!-- Changed borders to use var(--bs-border-color) seamlessly -->
+                                        <div class="accordion-item border-bottom-0 rounded-top overflow-hidden">
                                             <h2 class="accordion-header">
-                                                <button class="accordion-button collapsed bg-light py-3 shadow-none text-dark fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePrivacy">
+                                                <button class="accordion-button collapsed py-3 shadow-none fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePrivacy">
                                                     <span class="me-2">🔒</span> Data Privacy Notice
                                                 </button>
                                             </h2>
@@ -401,9 +403,9 @@ const submitReservation = () => {
                                         </div>
 
                                         <!-- Terms & Conditions -->
-                                        <div class="accordion-item border rounded-bottom overflow-hidden">
+                                        <div class="accordion-item rounded-bottom overflow-hidden">
                                             <h2 class="accordion-header">
-                                                <button class="accordion-button collapsed bg-light py-3 shadow-none text-dark fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTerms">
+                                                <button class="accordion-button collapsed py-3 shadow-none fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTerms">
                                                     <span class="me-2">⚖️</span> Platform Terms & Conditions
                                                 </button>
                                             </h2>
@@ -422,10 +424,11 @@ const submitReservation = () => {
                                     </div>
                                 </div>
 
-                                <div class="col-12 mt-4 pt-4 border-top">
+                                <div class="col-12 mt-4 pt-4 border-top border-secondary">
                                     <div class="form-check custom-checkbox">
                                         <input id="accepted_terms" v-model="reservationForm.accepted_terms" class="form-check-input shadow-none cursor-pointer" :class="{ 'is-invalid': reservationForm.errors.accepted_terms }" type="checkbox" style="width: 1.25em; height: 1.25em; margin-top: 0.15em;">
-                                        <label class="form-check-label small text-dark fw-bold cursor-pointer user-select-none ps-2" for="accepted_terms">
+                                        <!-- Removed text-dark to allow variable inheritance -->
+                                        <label class="form-check-label small fw-bold cursor-pointer user-select-none ps-2" for="accepted_terms">
                                             I acknowledge that I have read and agree to the Data Privacy Notice and Platform Terms & Conditions above.
                                         </label>
                                         <div v-if="reservationForm.errors.accepted_terms" class="invalid-feedback d-block fw-medium mt-2">
@@ -437,7 +440,8 @@ const submitReservation = () => {
                             </div>
                         </div>
 
-                        <div class="modal-footer bg-light">
+                        <!-- Removed pure bg-light, relying on modal's dark mode background -->
+                        <div class="modal-footer border-top border-secondary">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="cleanupModalBackdrop" :disabled="reservationForm.processing">Cancel</button>
                             
                             <button type="submit" class="btn btn-ebm-primary px-4" :disabled="reservationForm.processing">
@@ -453,7 +457,8 @@ const submitReservation = () => {
         <!-- 🧾 THE RESULT RECEIPT MODAL -->
         <div id="reservationResultModal" class="modal fade" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
             <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow-lg">
+                <!-- Apply ebm-card for seamless dark mode -->
+                <div class="modal-content ebm-card border-secondary shadow-lg">
                     <div class="modal-header border-0 pb-0">
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="cleanupModalBackdrop" />
                     </div>
@@ -467,7 +472,7 @@ const submitReservation = () => {
                                 <span v-else>!</span>
                             </div>
                             <h2 class="h4 fw-bold mb-2">{{ resultModalData.title }}</h2>
-                            <p class="text-muted mb-0 px-3">{{ resultModalData.message }}</p>
+                            <p class="ebm-muted mb-0 px-3">{{ resultModalData.message }}</p>
                         </div>
 
                         <div v-if="hasReferenceCode" class="reference-code-box mb-4">
@@ -480,17 +485,17 @@ const submitReservation = () => {
 
                         <div class="receipt-details mb-4">
                             <div class="receipt-row">
-                                <span class="text-muted">Boarding House</span>
-                                <strong class="text-dark">{{ resultModalData.boarding_house_name || boardingHouse.name }}</strong>
+                                <span class="ebm-muted">Boarding House</span>
+                                <strong class="text-body">{{ resultModalData.boarding_house_name || boardingHouse.name }}</strong>
                             </div>
                             
                             <div v-if="resultModalData.tracking_email" class="receipt-row">
-                                <span class="text-muted">Tracking Email</span>
-                                <strong class="text-dark">{{ resultModalData.tracking_email }}</strong>
+                                <span class="ebm-muted">Tracking Email</span>
+                                <strong class="text-body">{{ resultModalData.tracking_email }}</strong>
                             </div>
 
-                            <div class="receipt-row">
-                                <span class="text-muted">Status</span>
+                            <div class="receipt-row border-0">
+                                <span class="ebm-muted">Status</span>
                                 <strong :class="resultModalData.type === 'success' ? 'text-success' : 'text-danger'">
                                     {{ resultModalData.status }}
                                 </strong>
@@ -501,7 +506,7 @@ const submitReservation = () => {
                             <Link v-if="resultModalData?.type === 'success'" href="/track-reservation" class="btn btn-ebm-primary w-100 py-2 fw-medium">
                                 Track Reservation Now
                             </Link>
-                            <button type="button" class="btn btn-light w-100 py-2 fw-medium" data-bs-dismiss="modal" @click="cleanupModalBackdrop">
+                            <button type="button" class="btn btn-secondary w-100 py-2 fw-medium" data-bs-dismiss="modal" @click="cleanupModalBackdrop">
                                 Close
                             </button>
                         </div>
@@ -601,10 +606,18 @@ const submitReservation = () => {
 }
 
 /* Legal Accordion Tweaks */
+.custom-legal-accordion .accordion-item {
+    background-color: transparent;
+    border-color: var(--bs-border-color);
+}
+.custom-legal-accordion .accordion-button {
+    background-color: transparent;
+    color: var(--bs-body-color);
+}
 .custom-legal-accordion .accordion-button:not(.collapsed) {
-    background-color: #f4fbf7;
+    background-color: rgba(25, 135, 84, 0.1);
     color: #198754;
-    box-shadow: inset 0 calc(-1 * var(--bs-accordion-border-width)) 0 var(--bs-accordion-border-color);
+    box-shadow: inset 0 calc(-1 * var(--bs-accordion-border-width)) 0 var(--bs-border-color);
 }
 .cursor-pointer {
     cursor: pointer;
@@ -615,16 +628,27 @@ const submitReservation = () => {
 
 /* Modal Receipts */
 .reference-code-box {
-    background-color: #f4fbf7;
+    background-color: rgba(25, 135, 84, 0.05);
     border: 2px dashed #198754;
     border-radius: 8px;
     padding: 24px;
     text-align: center;
 }
 .reference-label { color: #198754; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display: block; }
-.reference-code { display: block; font-size: 2.2rem; font-family: monospace; color: #0f5132; margin-top: 8px; letter-spacing: 3px; user-select: all; }
-.receipt-details { background: #ffffff; border: 1px solid #e9ecef; border-radius: 8px; padding: 16px; }
-.receipt-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f8f9fa; font-size: 0.95rem; }
+.reference-code { display: block; font-size: 2.2rem; font-family: monospace; color: #198754; margin-top: 8px; letter-spacing: 3px; user-select: all; }
+.receipt-details { 
+    background-color: transparent; 
+    border: 1px solid var(--bs-border-color); 
+    border-radius: 8px; 
+    padding: 16px; 
+}
+.receipt-row { 
+    display: flex; 
+    justify-content: space-between; 
+    padding: 10px 0; 
+    border-bottom: 1px solid var(--bs-border-color); 
+    font-size: 0.95rem; 
+}
 .receipt-row:last-child { border-bottom: none; padding-bottom: 0; }
 .receipt-row:first-child { padding-top: 0; }
 </style>

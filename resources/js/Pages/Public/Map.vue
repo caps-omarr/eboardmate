@@ -283,29 +283,40 @@ onBeforeUnmount(() => { if (mapInstance.value) mapInstance.value.remove(); });
     <PublicLayout>
         <Head title="Map of Verified Boarding Houses | E-BoardMate" />
 
-        <section class="py-5 bg-light">
+        <!-- 🚀 FIX: Removed bg-light, relying on global dark mode backgrounds -->
+        <section class="py-5 bg-body transition-all min-vh-100">
             <div class="container">
                 <div class="row justify-content-center mb-4">
                     <div class="col-lg-11">
                         <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center">
                             <div>
-                                <span class="badge rounded-pill badge-soft-green mb-2">Interactive Map</span>
-                                <h1 class="fw-bold mb-1">Explore Boarding Houses</h1>
-                                <p class="ebm-muted mb-0">Use the 3D map below to find the perfect location near Talibon Polytechnic College.</p>
+                                <!-- Updated Badge to adapt cleanly -->
+                                <span class="badge rounded-pill border border-success-subtle bg-body text-success shadow-sm mb-2 px-3 py-2 transition-all">
+                                    Interactive Map
+                                </span>
+                                <!-- Added text-body-emphasis for auto-adapting text color -->
+                                <h1 class="fw-bold mb-1 text-body-emphasis transition-all">Explore Boarding Houses</h1>
+                                <!-- Changed custom mute to Bootstrap's standard secondary text -->
+                                <p class="text-body-secondary mb-0 transition-all">Use the 3D map below to find the perfect location near Talibon Polytechnic College.</p>
                             </div>
-                            <div><Link href="/" class="btn btn-ebm-outline">Back to Home</Link></div>
+                            <div>
+                                <Link href="/" class="btn bg-body border-secondary-subtle text-body-emphasis shadow-sm transition-all hover-bg-tertiary">
+                                    Back to Home
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="row justify-content-center">
                     <div class="col-lg-11">
-                        <div class="ebm-card p-0 overflow-hidden border shadow-sm" style="border-radius: 16px;">
+                        <div class="ebm-card p-0 overflow-hidden border border-secondary-subtle shadow-sm transition-all" style="border-radius: 16px;">
                             
                             <div class="map-wrapper position-relative">
                                 
                                 <div class="position-absolute p-3" style="z-index: 10; top: 0; left: 0;">
-                                    <select @change="changeMapStyle" class="form-select form-select-sm shadow-sm border-0 fw-bold" style="width: 160px; background-color: rgba(255,255,255,0.95);">
+                                    <!-- 🚀 FIX: Removed hardcoded white style, added scoped custom class for frosted glass look -->
+                                    <select @change="changeMapStyle" class="form-select form-select-sm shadow-sm border-secondary-subtle fw-bold map-style-selector transition-all">
                                         <option value="mapbox://styles/mapbox/satellite-streets-v12">🛰️ Satellite 3D</option>
                                         <option value="mapbox://styles/mapbox/streets-v12">🗺️ Standard Map</option>
                                         <option value="mapbox://styles/mapbox/outdoors-v12">🏞️ Outdoors</option>
@@ -313,45 +324,47 @@ onBeforeUnmount(() => { if (mapInstance.value) mapInstance.value.remove(); });
                                     </select>
                                 </div>
 
-                                <div ref="mapContainer" class="ebm-map m-0" style="height: 75vh; min-height: 550px;" />
+                                <div ref="mapContainer" class="ebm-map m-0 transition-all" style="height: 75vh; min-height: 550px;" />
 
                                 <Transition name="slide-up">
-                                    <div v-if="selectedLocation" class="map-bottom-sheet">
+                                    <div v-if="selectedLocation" class="map-bottom-sheet transition-all">
+                                        <!-- Bootstrap handles dark mode toggle on .btn-close automatically via invert(1) -->
                                         <button @click="closeBottomSheet" class="btn-close shadow-none position-absolute top-0 end-0 m-3"></button>
 
                                         <div v-if="selectedLocation.type === 'tpc'" class="pt-2">
-                                            <h3 class="h5 fw-bold mb-2">🏛️ Talibon Polytechnic College</h3>
-                                            <p class="text-muted mb-0">Map center point for distance estimations.</p>
+                                            <h3 class="h5 fw-bold mb-2 text-body-emphasis transition-all">🏛️ Talibon Polytechnic College</h3>
+                                            <p class="text-body-secondary mb-0 transition-all">Map center point for distance estimations.</p>
                                         </div>
 
                                         <div v-if="selectedLocation.type === 'house'" class="pt-2">
                                             <div class="d-flex align-items-center gap-2 mb-2 pe-4">
-                                                <h3 class="h5 fw-bold mb-0 text-truncate">{{ selectedLocation.data.name }}</h3>
+                                                <h3 class="h5 fw-bold mb-0 text-truncate text-body-emphasis transition-all">{{ selectedLocation.data.name }}</h3>
                                                 <span v-if="selectedLocation.data.is_verified" class="badge bg-success"><small>Verified</small></span>
                                             </div>
                                             
-                                            <div class="bg-light border rounded p-2 mb-3 d-flex align-items-center gap-3">
+                                            <!-- 🚀 FIX: Replaced bg-light with bg-body-tertiary and border-secondary-subtle -->
+                                            <div class="bg-body-tertiary border border-secondary-subtle rounded p-2 mb-3 d-flex align-items-center gap-3 transition-all">
                                                 <div class="fs-3">🚶‍♂️</div>
-                                                <div v-if="walkingRouteDetails.loading" class="text-muted small">
+                                                <div v-if="walkingRouteDetails.loading" class="text-body-secondary small transition-all">
                                                     <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
                                                     Calculating exact walking route...
                                                 </div>
                                                 <div v-else class="lh-sm">
                                                     <div class="fw-bold text-primary">{{ walkingRouteDetails.duration }} min walk</div>
-                                                    <div class="text-muted small">{{ walkingRouteDetails.distance }} km to TPC campus</div>
+                                                    <div class="text-body-secondary small transition-all">{{ walkingRouteDetails.distance }} km to TPC campus</div>
                                                 </div>
                                             </div>
 
                                             <div class="row g-2 mb-3">
                                                 <div class="col-6">
-                                                    <div class="bg-light rounded p-2 text-center border">
-                                                        <span class="d-block text-muted small">Monthly Rent</span>
-                                                        <strong class="text-dark">₱{{ formatPrice(selectedLocation.data.rent_price) }}</strong>
+                                                    <div class="bg-body-tertiary rounded p-2 text-center border border-secondary-subtle transition-all">
+                                                        <span class="d-block text-body-secondary small transition-all">Monthly Rent</span>
+                                                        <strong class="text-body-emphasis transition-all">₱{{ formatPrice(selectedLocation.data.rent_price) }}</strong>
                                                     </div>
                                                 </div>
                                                 <div class="col-6">
-                                                    <div class="bg-light rounded p-2 text-center border">
-                                                        <span class="d-block text-muted small">Status</span>
+                                                    <div class="bg-body-tertiary rounded p-2 text-center border border-secondary-subtle transition-all">
+                                                        <span class="d-block text-body-secondary small transition-all">Status</span>
                                                         <strong :class="selectedLocation.data.is_full ? 'text-danger' : 'text-success'">
                                                             {{ selectedLocation.data.is_full ? 'Full' : 'Available' }}
                                                         </strong>
@@ -359,9 +372,9 @@ onBeforeUnmount(() => { if (mapInstance.value) mapInstance.value.remove(); });
                                                 </div>
                                             </div>
 
-                                            <div class="d-flex align-items-center justify-content-between pt-2 border-top">
-                                                <div class="small text-muted">
-                                                    <strong>{{ selectedLocation.data.available_rooms }}</strong> Rooms left
+                                            <div class="d-flex align-items-center justify-content-between pt-2 border-top border-secondary-subtle transition-all">
+                                                <div class="small text-body-secondary transition-all">
+                                                    <strong class="text-body-emphasis">{{ selectedLocation.data.available_rooms }}</strong> Rooms left
                                                 </div>
                                                 <Link :href="selectedLocation.data.detail_url || `/boarding-houses/${selectedLocation.data.slug}`" class="btn btn-ebm-primary px-4">
                                                     View Details
@@ -380,10 +393,12 @@ onBeforeUnmount(() => { if (mapInstance.value) mapInstance.value.remove(); });
 </template>
 
 <style scoped>
+/* 🚀 FIX: Swapped hardcoded #ffffff for CSS variables so it shifts in Dark Mode */
 .map-bottom-sheet {
     position: absolute;
     bottom: 0; left: 0; right: 0;
-    background: #ffffff;
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
     padding: 24px;
     border-top-left-radius: 24px;
     border-top-right-radius: 24px;
@@ -397,8 +412,28 @@ onBeforeUnmount(() => { if (mapInstance.value) mapInstance.value.remove(); });
         bottom: 24px; left: 24px; right: auto;
         width: 400px;
         border-radius: 16px;
+        border: 1px solid var(--bs-border-color);
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
     }
+}
+
+/* Force dark styling on the select dropdown when dark mode is active */
+:global([data-bs-theme="dark"]) .map-style-selector {
+    background-color: rgba(28, 28, 30, 0.90) !important;
+    color: #e4e4e7 !important;
+}
+
+/* Explicitly style the <option> dropdown list to prevent white-on-white text */
+:global([data-bs-theme="dark"]) .map-style-selector option {
+    background-color: #1c1c1e !important; /* Solid dark background */
+    color: #e4e4e7 !important; /* Light text */
+}
+.hover-bg-tertiary:hover {
+    background-color: var(--bs-tertiary-bg) !important;
+}
+
+.transition-all {
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out;
 }
 
 .slide-up-enter-active, .slide-up-leave-active { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease; }
