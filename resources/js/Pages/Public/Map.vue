@@ -225,6 +225,36 @@ const initializeMap = async () => {
         });
 
         new mapboxgl.Marker({ element: tpcMarkerEl, anchor: 'bottom' }).setLngLat([centerLng, centerLat]).addTo(mapInstance.value);
+
+        // 🚀 NEW: Auto-Zoom Logic
+        // Check if there is a "?house_id=" in the URL from the Reserve Now page
+        const urlParams = new URLSearchParams(window.location.search);
+        const houseIdFromUrl = urlParams.get('house_id');
+
+        if (houseIdFromUrl) {
+            // Find the specific boarding house data matching the ID in the URL
+            const targetHouse = props.boardingHouses.find(h => h.id == houseIdFromUrl);
+            
+            if (targetHouse && targetHouse.longitude && targetHouse.latitude) {
+                const lng = Number(targetHouse.longitude);
+                const lat = Number(targetHouse.latitude);
+
+                // Format the boolean values cleanly
+                targetHouse.is_verified = targetHouse.is_verified === true || targetHouse.is_verified === 'true';
+                targetHouse.is_full = targetHouse.is_full === true || targetHouse.is_full === 'true';
+
+                // Simulate the click to open the bottom sheet UI
+                selectedLocation.value = { type: 'house', data: targetHouse };
+
+                // Add a tiny delay so the map finishes rendering before flying
+                setTimeout(() => {
+                    mapInstance.value.flyTo({ center: [lng, lat], zoom: 17, offset: [0, -100], duration: 1500 });
+                }, 400);
+
+                // Automatically draw the walking route from TPC
+                fetchWalkingRoute(lng, lat);
+            }
+        }
     });
 
     mapInstance.value.on('click', 'clusters', (e) => {

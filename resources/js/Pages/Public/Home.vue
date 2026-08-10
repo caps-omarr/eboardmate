@@ -137,8 +137,8 @@ onBeforeUnmount(() => {
                         </p>
 
                         <div class="d-flex flex-column flex-sm-row gap-3 mb-5">
-                            <Link href="/map" class="btn btn-ebm-primary btn-lg px-4 fw-medium shadow">
-                                View Map
+                            <Link href="boarding-houses" class="btn btn-ebm-primary btn-lg px-4 fw-medium shadow">
+                               View Boarding Houses
                             </Link>
                             <Link href="/track-reservation" class="btn bg-body border-secondary-subtle text-body-emphasis btn-lg px-4 fw-medium shadow-sm transition-all hover-bg-tertiary">
                                 Track Reservation

@@ -40,7 +40,8 @@ const toggleOwnerStatus = (owner) => {
         return;
     }
 
-    statusForm.post(owner.toggle_status_url, {
+    // 🚀 FIXED: Changed .post to .patch to match your Laravel routing!
+    statusForm.patch(owner.toggle_status_url, {
         preserveScroll: true,
     });
 };

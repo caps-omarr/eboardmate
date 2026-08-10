@@ -32,6 +32,10 @@ Route::get('/', function () {
 Route::get('/map', PublicMapController::class)
     ->name('map');
 
+// 🚀 NEW: The Boarding House List Route (Reserve Now)
+Route::get('/boarding-houses', [PublicBoardingHouseController::class, 'index'])
+    ->name('boarding-houses.index');
+
 Route::get('/boarding-houses/{boardingHouse:slug}', [PublicBoardingHouseController::class, 'show'])
     ->name('boarding-houses.show');
 

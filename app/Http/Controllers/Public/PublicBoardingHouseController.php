@@ -10,22 +10,67 @@ use Inertia\Response;
 
 class PublicBoardingHouseController extends Controller
 {
+    public function index(): Response
+    {
+        // TPC Coordinates for distance calculation
+        $tpcLatitude = 10.1167;
+        $tpcLongitude = 124.2833;
+
+        $boardingHouses = BoardingHouse::with(['photos' => function ($query) {
+            $query->where('is_primary', true)->orWhere('is_primary', 1); 
+        }])
+        // 🚀 THE FIX: Only fetch boarding houses that have an 'approved' status
+        ->where('status', 'approved') 
+        ->get()
+        ->map(function ($house) use ($tpcLatitude, $tpcLongitude) {
+            $distance = $this->calculateDistanceInKilometers(
+                $tpcLatitude,
+                $tpcLongitude,
+                (float) $house->latitude,
+                (float) $house->longitude
+            );
+            
+            // Dynamic walking minutes calculation based on standard walking speed (~4.8 km/h)
+            $walkingMinutes = max(1, (int) round(($distance / 4.8) * 60));
+
+            return [
+                'id' => $house->id,
+                'name' => $house->name,
+                'slug' => $house->slug,
+                'address' => $house->address,
+                
+                // We MUST send the coordinates so Vue can call Mapbox!
+                'latitude' => (float) $house->latitude,
+                'longitude' => (float) $house->longitude,
+                
+                'rent_price' => (float) $house->rent_price,
+                'status' => $house->status,
+                'available_rooms' => $house->available_rooms,
+                'is_full' => $house->isFull(),
+                'estimated_distance_km' => $distance,
+                'estimated_walking_mins' => $walkingMinutes,
+                'photos' => $house->photos->map(function ($photo) {
+                    return [
+                        'id' => $photo->id,
+                        'url' => $photo->url,
+                        'is_primary' => $photo->is_primary,
+                    ];
+                })->values(),
+            ];
+        });
+
+        return Inertia::render('Public/BoardingHousesIndex', [
+            'boardingHouses' => $boardingHouses
+        ]);
+    }
+
     public function show(BoardingHouse $boardingHouse): Response
     {
-        // 1. Instantly block if not publicly visible (no heavy database lifting needed yet)
         abort_unless($boardingHouse->isPubliclyVisible(), 404);
 
-        // 2. 🚀 THE CONCURRENCY FIX: Cache the heavy lifting!
-        // We create a unique cache key for this specific boarding house.
         $cacheKey = "boarding_house_public_details_{$boardingHouse->id}";
 
-        // Cache the formatted data for 5 minutes. 
-        // If 50 phones click at the same time, MySQL is only queried ONCE. 
-        // The other 49 phones instantly get the data from RAM.
         $formattedBoardingHouse = Cache::remember($cacheKey, now()->addMinutes(5), function () use ($boardingHouse) {
-            
-            // 3. Eager load the relationships to prevent N+1 queries.
-            // Note: If 'amenities' is a separate database table, add it here too: e.g., ['photos', 'amenities']
             $boardingHouse->load([
                 'photos' => function ($query) {
                     $query->orderByDesc('is_primary')
@@ -38,7 +83,6 @@ class PublicBoardingHouseController extends Controller
             $tpcLatitude = 10.1167;
             $tpcLongitude = 124.2833;
 
-            // Return the perfectly formatted array to be stored in the Cache
             return [
                 'id' => $boardingHouse->id,
                 'name' => $boardingHouse->name,
@@ -76,7 +120,6 @@ class PublicBoardingHouseController extends Controller
             ];
         });
 
-        // 4. Return the (now lightning-fast) cached data to the frontend
         return Inertia::render('Public/BoardingHouseDetail', [
             'boardingHouse' => $formattedBoardingHouse,
         ]);

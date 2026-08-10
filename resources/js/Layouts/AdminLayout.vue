@@ -8,9 +8,11 @@ const logout = () => {
     logoutForm.post('/admin/logout');
 };
 
+
 const navLinks = [
     { name: 'Dashboard', url: '/admin/dashboard' },
     { name: 'Boarding Houses', url: '/admin/boarding-houses' },
+    { name: 'Owners', url: '/admin/owners' },
     { name: 'Reports', url: '/admin/reports' },
     { name: 'Activity Logs', url: '/admin/activity-logs' },
     { name: 'Public Site', url: '/' },
