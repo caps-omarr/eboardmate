@@ -107,9 +107,12 @@ Route::middleware(['auth', 'role:owner'])
         Route::post('/reservations/{reservation}/archive', [OwnerReservationController::class, 'archive'])
             ->name('reservations.archive');
 
-        // Added Settings Routes
+        // --- OWNER SETTINGS ROUTES ---
         Route::get('/settings', [OwnerSettingsController::class, 'edit'])
             ->name('settings.edit');
+            
+        Route::put('/settings/profile', [OwnerSettingsController::class, 'updateProfile'])
+            ->name('settings.update-profile');
 
         Route::put('/settings/password', [OwnerSettingsController::class, 'updatePassword'])
             ->name('settings.update-password');

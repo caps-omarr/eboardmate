@@ -12,51 +12,49 @@ class PublicBoardingHouseController extends Controller
 {
     public function index(): Response
     {
-        // TPC Coordinates for distance calculation
-        $tpcLatitude = 10.1167;
-        $tpcLongitude = 124.2833;
+        // 🚀 OPTIMIZATION: Cache the entire public listing index for 5 minutes
+        $boardingHouses = Cache::remember('public_boarding_houses_index', now()->addMinutes(5), function () {
+            $tpcLatitude = 10.1167;
+            $tpcLongitude = 124.2833;
 
-        $boardingHouses = BoardingHouse::with(['photos' => function ($query) {
-            $query->where('is_primary', true)->orWhere('is_primary', 1); 
-        }])
-        // 🚀 THE FIX: Only fetch boarding houses that have an 'approved' status
-        ->where('status', 'approved') 
-        ->get()
-        ->map(function ($house) use ($tpcLatitude, $tpcLongitude) {
-            $distance = $this->calculateDistanceInKilometers(
-                $tpcLatitude,
-                $tpcLongitude,
-                (float) $house->latitude,
-                (float) $house->longitude
-            );
-            
-            // Dynamic walking minutes calculation based on standard walking speed (~4.8 km/h)
-            $walkingMinutes = max(1, (int) round(($distance / 4.8) * 60));
+            return BoardingHouse::with(['photos' => function ($query) {
+                $query->where('is_primary', true);
+            }])
+                ->where('status', 'approved')
+                ->get()
+                ->map(function ($house) use ($tpcLatitude, $tpcLongitude) {
+                    $distance = $this->calculateDistanceInKilometers(
+                        $tpcLatitude,
+                        $tpcLongitude,
+                        (float) $house->latitude,
+                        (float) $house->longitude
+                    );
+                    
+                    // Dynamic walking minutes calculation based on standard walking speed (~4.8 km/h)
+                    $walkingMinutes = max(1, (int) round(($distance / 4.8) * 60));
 
-            return [
-                'id' => $house->id,
-                'name' => $house->name,
-                'slug' => $house->slug,
-                'address' => $house->address,
-                
-                // We MUST send the coordinates so Vue can call Mapbox!
-                'latitude' => (float) $house->latitude,
-                'longitude' => (float) $house->longitude,
-                
-                'rent_price' => (float) $house->rent_price,
-                'status' => $house->status,
-                'available_rooms' => $house->available_rooms,
-                'is_full' => $house->isFull(),
-                'estimated_distance_km' => $distance,
-                'estimated_walking_mins' => $walkingMinutes,
-                'photos' => $house->photos->map(function ($photo) {
                     return [
-                        'id' => $photo->id,
-                        'url' => $photo->url,
-                        'is_primary' => $photo->is_primary,
+                        'id' => $house->id,
+                        'name' => $house->name,
+                        'slug' => $house->slug,
+                        'address' => $house->address,
+                        'latitude' => (float) $house->latitude,
+                        'longitude' => (float) $house->longitude,
+                        'rent_price' => (float) $house->rent_price,
+                        'status' => $house->status,
+                        'available_rooms' => $house->available_rooms,
+                        'is_full' => $house->isFull(),
+                        'estimated_distance_km' => $distance,
+                        'estimated_walking_mins' => $walkingMinutes,
+                        'photos' => $house->photos->map(function ($photo) {
+                            return [
+                                'id' => $photo->id,
+                                'url' => $photo->url,
+                                'is_primary' => $photo->is_primary,
+                            ];
+                        })->values(),
                     ];
-                })->values(),
-            ];
+                });
         });
 
         return Inertia::render('Public/BoardingHousesIndex', [

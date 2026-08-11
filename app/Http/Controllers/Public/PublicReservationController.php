@@ -6,13 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\BoardingHouse;
 use App\Models\Reservation;
 use App\Mail\ReservationSubmittedMail;
+use App\Mail\NewReservationNotification; // 🚀 NEW: Import the Owner Notification Mail
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Database\QueryException; // 🚀 Required for the retry loop
+use Illuminate\Database\QueryException;
 
 class PublicReservationController extends Controller
 {
@@ -103,7 +104,6 @@ class PublicReservationController extends Controller
                 break; 
 
             } catch (QueryException $e) {
-                
                 if ($e->getCode() == 23000 && $attempts < $maxAttempts - 1) {
                     $attempts++;
                     usleep(100000); 
@@ -113,14 +113,23 @@ class PublicReservationController extends Controller
             }
         }
 
-        
+        // 3. Send Email to the GUEST
         try {
             Mail::to($reservation->guest_email)->queue(new ReservationSubmittedMail($reservation, $boardingHouse));
         } catch (\Exception $e) {
-            Log::error('Failed to queue submission email to ' . $reservation->guest_email . '. Error: ' . $e->getMessage());
+            Log::error('Failed to queue submission email to guest ' . $reservation->guest_email . '. Error: ' . $e->getMessage());
         }
 
-       
+        // 4. 🚀 NEW: Send Real-Time Email Notification to the OWNER
+        if ($boardingHouse->owner && $boardingHouse->owner->email) {
+            try {
+                Mail::to($boardingHouse->owner->email)->queue(new NewReservationNotification($reservation, $boardingHouse));
+            } catch (\Exception $e) {
+                Log::error('Failed to queue new reservation notification to owner ' . $boardingHouse->owner->email . '. Error: ' . $e->getMessage());
+            }
+        }
+
+        // 5. Redirect the student with a success message
         return redirect()
             ->route('boarding-houses.show', $boardingHouse->slug)
             ->with('reservation_result', [
@@ -153,7 +162,6 @@ class PublicReservationController extends Controller
     {
         $year = now()->format('Y');
 
-        
         $latestReservation = Reservation::query()
             ->withTrashed() 
             ->where('reference_code', 'like', 'EBM-' . $year . '-%')
