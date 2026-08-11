@@ -117,27 +117,33 @@ onBeforeUnmount(() => {
             <meta name="description" content="Find verified boarding houses near Talibon Polytechnic College and track your reservation online with E-BoardMate.">
         </Head>
 
-        <!-- 🚀 CONTAINED HERO SECTION -->
-        <section class="hero-section bg-body transition-all d-flex align-items-center min-vh-100">
-            <div class="container py-5 mt-4 mt-lg-0">
-                <div class="row align-items-center g-5">
-                    
-                    <!-- Left Column: Content & Badges -->
-                    <div class="col-lg-6 col-xl-6 z-1">
-                        <span class="badge rounded-pill border border-success-subtle bg-body text-success shadow-sm mb-3 px-3 py-2 transition-all">
-                            Verified boarding houses near TPC
-                        </span>
+        <!-- 🚀 FULL BACKGROUND HERO SECTION -->
+        <section class="hero-section hero-layout position-relative overflow-hidden bg-body">
+            
+            <!-- Layer 0: The Full Screen Map -->
+            <div class="hero-map-wrapper position-absolute top-0 start-0 w-100 h-100" style="z-index: 0;">
+                <div ref="homeMapContainer" class="w-100 h-100"></div>
+            </div>
 
-                        <h1 class="display-5 fw-bold mb-3 text-body-emphasis tracking-tight transition-all">
+            <!-- Layer 1: The Directional Theme Overlay -->
+            <div class="hero-map-overlay position-absolute top-0 start-0 w-100 h-100 transition-all" style="z-index: 1;"></div>
+
+            <!-- Layer 2: The Left-Aligned Content -->
+            <div class="container hero-content-container position-relative text-start" style="z-index: 2;">
+                <div class="row">
+                    <div class="col-lg-8 col-xl-6">
+                        
+                        <h1 class="display-4 fw-bold mb-4 text-body-emphasis tracking-tight transition-all">
                             Find trusted boarding houses near Talibon Polytechnic College faster, easier, and safer.
                         </h1>
 
-                        <p class="lead text-body-secondary mb-4 pe-lg-4 transition-all">
+                        <p class="lead text-body-secondary mb-4 transition-all pe-lg-4">
                             E-BoardMate helps students view verified boarding houses, check details, submit reservations, and track reservation status online without creating a student account.
                         </p>
 
-                        <div class="d-flex flex-column flex-sm-row gap-3 mb-5">
-                            <Link href="boarding-houses" class="btn btn-ebm-primary btn-lg px-4 fw-medium shadow">
+                        <!-- Buttons -->
+                        <div class="d-grid d-sm-flex gap-3 mb-5">
+                            <Link href="boarding-houses" class="btn btn-ebm-primary btn-lg px-4 fw-medium shadow transition-all">
                                View Boarding Houses
                             </Link>
                             <Link href="/track-reservation" class="btn bg-body border-secondary-subtle text-body-emphasis btn-lg px-4 fw-medium shadow-sm transition-all hover-bg-tertiary">
@@ -145,39 +151,38 @@ onBeforeUnmount(() => {
                             </Link>
                         </div>
 
-                        <!-- MVP Trust Badges -->
-                        <div class="d-flex flex-wrap gap-4 trust-badges pt-4 border-top border-secondary-subtle transition-all">
-                            <div class="trust-badge-item d-flex align-items-center gap-2">
-                                <span class="fs-5 text-danger">❤️</span>
-                                <div>
-                                    <span class="d-block fw-bold small text-body-emphasis lh-1 transition-all">Verified & Safe</span>
-                                    <span class="d-block small text-body-secondary text-nowrap transition-all" style="font-size: 0.75rem;">Trusted owners</span>
+                        <!-- Trust Badges -->
+                        <div class="row g-4 pt-4 border-top border-secondary-subtle transition-all">
+                            <div class="col-6 col-md-auto">
+                                <div class="trust-badge-item d-flex align-items-start gap-2">
+                                    <span class="fs-5 text-danger lh-1">❤️</span>
+                                    <div>
+                                        <span class="d-block fw-bold small text-body-emphasis lh-1 mb-1 transition-all">Verified & Safe</span>
+                                        <span class="d-block small text-body-secondary text-nowrap transition-all" style="font-size: 0.75rem;">Trusted owners</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="trust-badge-item d-flex align-items-center gap-2">
-                                <span class="fs-5 text-warning">🏷️</span>
-                                <div>
-                                    <span class="d-block fw-bold small text-body-emphasis lh-1 transition-all">Affordable Rates</span>
-                                    <span class="d-block small text-body-secondary text-nowrap transition-all" style="font-size: 0.75rem;">Student-friendly</span>
+                            <div class="col-6 col-md-auto">
+                                <div class="trust-badge-item d-flex align-items-start gap-2">
+                                    <span class="fs-5 text-warning lh-1">🏷️</span>
+                                    <div>
+                                        <span class="d-block fw-bold small text-body-emphasis lh-1 mb-1 transition-all">Affordable Rates</span>
+                                        <span class="d-block small text-body-secondary text-nowrap transition-all" style="font-size: 0.75rem;">Student-friendly</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="trust-badge-item d-flex align-items-center gap-2">
-                                <span class="fs-5 text-success">🤝</span>
-                                <div>
-                                    <span class="d-block fw-bold small text-body-emphasis lh-1 transition-all">Community</span>
-                                    <span class="d-block small text-body-secondary text-nowrap transition-all" style="font-size: 0.75rem;">Support local</span>
+                            <div class="col-6 col-md-auto">
+                                <div class="trust-badge-item d-flex align-items-start gap-2">
+                                    <span class="fs-5 text-success lh-1">🤝</span>
+                                    <div>
+                                        <span class="d-block fw-bold small text-body-emphasis lh-1 mb-1 transition-all">Community</span>
+                                        <span class="d-block small text-body-secondary text-nowrap transition-all" style="font-size: 0.75rem;">Support local</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Right Column: The Faded Map -->
-                    <div class="col-lg-6 col-xl-6">
-                        <div class="hero-map-wrapper">
-                            <div ref="homeMapContainer" class="w-100 h-100"></div>
-                        </div>
                     </div>
-
                 </div>
             </div>
         </section>
@@ -186,7 +191,6 @@ onBeforeUnmount(() => {
         <section class="snap-section-tertiary bg-body-tertiary d-flex align-items-center py-5 min-vh-100 transition-all">
             <div class="container py-5">
                 
-                <!-- Expanded About Story -->
                 <div class="row justify-content-center text-center mb-5">
                     <div class="col-lg-8">
                         <span class="badge rounded-pill border border-success-subtle bg-body text-success mb-3 px-3 py-2 transition-all">
@@ -203,7 +207,6 @@ onBeforeUnmount(() => {
                     </div>
                 </div>
 
-                <!-- 4-Step User Manual Grid -->
                 <div class="row g-4 mt-2">
                     
                     <div class="col-md-6 col-lg-3">
@@ -253,25 +256,51 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-/* 🪄 THE MAGIC FADE MASK */
-.hero-map-wrapper {
-    position: relative;
-    height: 400px;
+/* 🪄 RESPONSIVE HERO LAYOUT (Fixes the massive top gap on mobile) */
+.hero-layout {
+    min-height: 100vh;
+    min-height: 100dvh; /* Uses dynamic viewport height for perfect mobile sizing */
+    display: flex;
+    align-items: flex-start; /* Mobile: Pushes content cleanly to the top */
+}
+
+.hero-content-container {
+    padding-top: 1.5rem; /* 🚀 MOBILE FIX: Extremely tight padding to pull text up to the navbar */
+    padding-bottom: 25vh; /* Mobile: Leaves the bottom 25% of the screen strictly for the map */
     width: 100%;
-    border-radius: 20px;
-    overflow: hidden;
-    
-    /* Mobile: Fades the top edge so it blends below the text */
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 100%);
-    mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 100%);
 }
 
 @media (min-width: 992px) {
-    .hero-map-wrapper {
-        height: 550px;
-        /* Desktop: Fades the left edge so it perfectly blends next to the text */
-        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 20%, black 100%);
-        mask-image: linear-gradient(to right, transparent 0%, black 20%, black 100%);
+    .hero-layout {
+        align-items: center; /* Desktop: Perfectly centers content vertically */
+    }
+    .hero-content-container {
+        padding-top: 0; /* Desktop: Flex-center handles the spacing */
+        padding-bottom: 0;
+    }
+}
+
+/* 🪄 THE DIRECTIONAL THEME OVERLAY */
+.hero-map-overlay {
+    pointer-events: none;
+    /* Mobile: Solid background at the top, fades faster to reveal more map at the bottom */
+    background: linear-gradient(
+        to bottom,
+        rgba(var(--bs-body-bg-rgb), 1) 0%,
+        rgba(var(--bs-body-bg-rgb), 0.95) 45%, 
+        rgba(var(--bs-body-bg-rgb), 0) 100%
+    );
+}
+
+@media (min-width: 992px) {
+    .hero-map-overlay {
+        /* Desktop: Solid background on the left, clear on the right */
+        background: linear-gradient(
+            to right,
+            rgba(var(--bs-body-bg-rgb), 1) 0%,
+            rgba(var(--bs-body-bg-rgb), 0.95) 45%,
+            rgba(var(--bs-body-bg-rgb), 0) 100%
+        );
     }
 }
 
@@ -291,7 +320,7 @@ onBeforeUnmount(() => {
 .step-icon {
     width: 70px;
     height: 70px;
-    background-color: rgba(25, 135, 84, 0.15); /* Transparent green adapts to both modes */
+    background-color: rgba(25, 135, 84, 0.15);
     color: #198754;
     border-radius: 50%;
     display: flex;
@@ -309,21 +338,14 @@ onBeforeUnmount(() => {
     letter-spacing: -0.5px;
 }
 
-/* Smooth fade transitions for colors when toggling dark mode */
+/* Smooth fade transitions */
 .transition-all {
-    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+    transition: background-color 0.4s ease-in-out, color 0.4s ease-in-out, border-color 0.4s ease-in-out;
 }
 </style>
 
-<!-- 🚀 THE FIX: UNSCOPED BRUTE-FORCE DARK MODE OVERRIDES -->
-<!-- Placed outside of <style scoped> to bypass Vue encapsulation and completely crush global CSS interference -->
+<!-- 🚀 UNSCOPED BRUTE-FORCE DARK MODE OVERRIDES -->
 <style>
-html[data-bs-theme="dark"] .hero-section,
-body[data-bs-theme="dark"] .hero-section,
-[data-bs-theme="dark"] .hero-section {
-    background-color: #212529 !important;
-}
-
 html[data-bs-theme="dark"] .snap-section-tertiary,
 body[data-bs-theme="dark"] .snap-section-tertiary,
 [data-bs-theme="dark"] .snap-section-tertiary {

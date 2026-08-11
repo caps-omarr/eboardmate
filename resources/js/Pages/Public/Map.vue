@@ -330,8 +330,8 @@ onBeforeUnmount(() => { if (mapInstance.value) mapInstance.value.remove(); });
                                 <p class="text-body-secondary mb-0 transition-all">Use the 3D map below to find the perfect location near Talibon Polytechnic College.</p>
                             </div>
                             <div>
-                                <Link href="/" class="btn bg-body border-secondary-subtle text-body-emphasis shadow-sm transition-all hover-bg-tertiary">
-                                    Back to Home
+                                <Link href="/boarding-houses" class="btn bg-body border-secondary-subtle text-body-emphasis shadow-sm transition-all hover-bg-tertiary">
+                                    Back to List
                                 </Link>
                             </div>
                         </div>

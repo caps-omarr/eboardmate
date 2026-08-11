@@ -34,7 +34,8 @@ const mobileLogout = () => {
     <div class="d-flex min-vh-100 bg-body-tertiary">
         
         <!-- DESKTOP SIDEBAR -->
-        <aside class="bg-body border-end border-secondary d-none d-md-flex flex-column p-3 shadow-sm" style="width: 260px; position: fixed; height: 100vh; overflow-y: auto;">
+        <!-- Added z-index to prevent overlapping issues -->
+        <aside class="bg-body border-end border-secondary d-none d-md-flex flex-column p-3 shadow-sm" style="width: 260px; position: fixed; height: 100vh; overflow-y: auto; z-index: 1030;">
             
             <div class="d-flex align-items-center mb-2 px-2">
                 <Link href="/owner/dashboard" title="E-BoardMate Owner Dashboard">
@@ -63,7 +64,7 @@ const mobileLogout = () => {
                 </Link>
             </nav>
 
-            <!-- Theme Toggle placed exactly like Admin Layout -->
+            <!-- Theme Toggle -->
             <div class="px-2 mt-4 mb-3">
                 <ThemeToggle />
             </div>
@@ -81,10 +82,11 @@ const mobileLogout = () => {
         </aside>
 
         <!-- MAIN CONTENT AREA -->
-        <div class="flex-grow-1 d-flex flex-column w-100" style="margin-left: 0;" :style="{'@media (min-width: 768px)': 'margin-left: 260px !important'}">
+        <!-- 🚀 FIX: Removed the broken inline media query and replaced it with the 'main-content' class -->
+        <div class="main-content flex-grow-1 d-flex flex-column w-100">
             
             <!-- MOBILE HEADER -->
-            <header class="navbar bg-body border-bottom border-secondary d-md-none px-3 py-2 shadow-sm sticky-top">
+            <header class="navbar bg-body border-bottom border-secondary d-md-none px-3 py-2 shadow-sm sticky-top" style="z-index: 1020;">
                 <div class="d-flex align-items-center justify-content-between w-100">
                     <Link href="/owner/dashboard">
                         <img 
@@ -95,26 +97,27 @@ const mobileLogout = () => {
                         />
                     </Link>
                     
-                    <button class="navbar-toggler border-0 px-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar" aria-label="Toggle navigation">
+                    <button class="navbar-toggler border-0 px-2 shadow-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                 </div>
             </header>
 
+            <!-- 🚀 FIX: Kept overflow-x: hidden to contain wide tables on mobile screens -->
             <main class="p-3 p-md-4 w-100" style="overflow-x: hidden;">
                 <slot />
             </main>
         </div>
 
         <!-- MOBILE OFFCANVAS SIDEBAR -->
-        <div class="offcanvas offcanvas-start d-md-none text-body bg-body" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
+        <div class="offcanvas offcanvas-start d-md-none text-body bg-body border-end-0" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
             <div class="offcanvas-header border-bottom border-secondary">
                 <img 
                     src="../Pages/Public/Images/eboarmatelogo.png" 
                     alt="E-BoardMate Logo" 
                     style="height: 45px; object-fit: contain;"
                 />
-                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                <button type="button" class="btn-close text-reset shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             
             <div class="offcanvas-body d-flex flex-column">
@@ -135,7 +138,6 @@ const mobileLogout = () => {
                     </a>
                 </nav>
                 
-                <!-- Theme Toggle placed exactly like Admin Layout for mobile -->
                 <div class="mb-3 px-1 mt-4">
                     <ThemeToggle />
                 </div>
@@ -155,9 +157,14 @@ const mobileLogout = () => {
 </template>
 
 <style scoped>
+/* 🚀 FIX: Proper responsive margin logic for the main content area */
+.main-content {
+    margin-left: 0;
+}
+
 @media (min-width: 768px) {
-    .flex-grow-1 {
-        margin-left: 260px !important;
+    .main-content {
+        margin-left: 260px; /* Exact width of the desktop sidebar */
     }
 }
 

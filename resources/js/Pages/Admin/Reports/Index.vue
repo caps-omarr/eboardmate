@@ -23,8 +23,8 @@ const printReport = () => {
     window.print();
 };
 
-// Make Chart.js labels readable in both light and dark mode by defaulting to a neutral gray
-Chart.defaults.color = '#8a9097'; 
+// Make Chart.js labels readable in both light and dark mode by defaulting to a neutral slate gray
+Chart.defaults.color = '#9ca3af'; 
 
 // --- CHART.JS LOGIC ---
 const reservationChartCanvas = ref(null);
@@ -98,35 +98,35 @@ const statusBadgeClass = (status) => {
     <AdminLayout>
         <Head title="Reports | E-BoardMate" />
 
-        <div class="container-fluid py-2">
+        <div class="container pb-5 pt-2">
             
             <!-- HEADER SECTION -->
-            <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center mb-4 no-print">
+            <header class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center mb-4 no-print">
                 <div>
-                    <span class="badge text-bg-dark mb-3 px-3 py-2">
+                    <span class="badge bg-body text-body border border-secondary-subtle mb-3 px-3 py-2 rounded-pill shadow-sm">
                         Super Admin
                     </span>
 
-                    <h1 class="text-body-emphasis fw-bold mb-2 transition-all">
+                    <h1 class="text-body-emphasis fw-bold mb-2 tracking-tight">
                         Reports
                     </h1>
 
-                    <p class="text-body-secondary mb-0 transition-all">
+                    <p class="text-body-secondary mb-0 lead" style="font-size: 1.1rem;">
                         View and print reservation and boarding house summary reports.
                     </p>
                 </div>
 
                 <button
                     type="button"
-                    class="btn btn-ebm-primary px-4 py-2 fw-semibold"
+                    class="btn btn-success px-4 py-2 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2"
                     @click="printReport"
                 >
-                    <i class="bi bi-printer me-2"></i> Print Report
+                    <i class="bi bi-printer"></i> Print Report
                 </button>
-            </div>
+            </header>
 
             <!-- PRINT HEADER -->
-            <div class="print-report-header text-body-emphasis">
+            <div class="print-report-header text-body-emphasis mb-4">
                 <h1 class="fw-bold mb-1">
                     E-BoardMate Reservation Summary Report
                 </h1>
@@ -138,61 +138,60 @@ const statusBadgeClass = (status) => {
                 </p>
             </div>
 
-            <!-- STAT CARDS SECTION -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-6 col-xl-3">
-                    <div class="card border-0 shadow-sm p-4 bg-body-tertiary h-100 transition-all">
-                        <span class="text-body-secondary text-uppercase fw-semibold small mb-2 d-block">Total Owners</span>
-                        <strong class="fs-2 text-body-emphasis fw-bold mb-1">{{ stats.total_owners }}</strong>
+            <!-- 🚀 UX FIX: 2x2 Grid on Mobile (col-6), 1-Row on Desktop (col-lg-3) -->
+            <section class="row g-3 mb-4" aria-label="Summary Statistics">
+                <div class="col-6 col-xl-3">
+                    <div class="card border-0 shadow-sm p-3 p-md-4 bg-body-tertiary h-100 transition-all d-flex flex-column justify-content-center border border-secondary-subtle">
+                        <span class="text-body-secondary text-uppercase fw-bold small mb-2 d-block tracking-tight">Total Owners</span>
+                        <strong class="fs-2 text-body-emphasis fw-bold lh-1">{{ stats.total_owners }}</strong>
                     </div>
                 </div>
 
-                <div class="col-md-6 col-xl-3">
-                    <div class="card border-0 shadow-sm p-4 bg-body-tertiary h-100 transition-all">
-                        <span class="text-body-secondary text-uppercase fw-semibold small mb-2 d-block">Boarding Houses</span>
-                        <strong class="fs-2 text-body-emphasis fw-bold mb-1">{{ stats.total_boarding_houses }}</strong>
+                <div class="col-6 col-xl-3">
+                    <div class="card border-0 shadow-sm p-3 p-md-4 bg-body-tertiary h-100 transition-all d-flex flex-column justify-content-center border border-secondary-subtle">
+                        <span class="text-body-secondary text-uppercase fw-bold small mb-2 d-block tracking-tight">Boarding Houses</span>
+                        <strong class="fs-2 text-body-emphasis fw-bold lh-1">{{ stats.total_boarding_houses }}</strong>
                     </div>
                 </div>
 
-                <div class="col-md-6 col-xl-3">
-                    <div class="card border-0 shadow-sm p-4 bg-body-tertiary h-100 transition-all">
-                        <span class="text-body-secondary text-uppercase fw-semibold small mb-2 d-block">Approved Listings</span>
-                        <strong class="fs-2 text-success fw-bold mb-1">{{ stats.approved_boarding_houses }}</strong>
+                <div class="col-6 col-xl-3">
+                    <div class="card border-0 shadow-sm p-3 p-md-4 bg-body-tertiary h-100 transition-all d-flex flex-column justify-content-center border border-success-subtle">
+                        <span class="text-body-secondary text-uppercase fw-bold small mb-2 d-block tracking-tight">Approved Listings</span>
+                        <strong class="fs-2 text-success fw-bold lh-1">{{ stats.approved_boarding_houses }}</strong>
                     </div>
                 </div>
 
-                <div class="col-md-6 col-xl-3">
-                    <div class="card border-0 shadow-sm p-4 bg-body-tertiary h-100 transition-all">
-                        <span class="text-body-secondary text-uppercase fw-semibold small mb-2 d-block">Pending Listings</span>
-                        <strong class="fs-2 text-warning fw-bold mb-1">{{ stats.pending_boarding_houses }}</strong>
+                <div class="col-6 col-xl-3">
+                    <div class="card border-0 shadow-sm p-3 p-md-4 bg-body-tertiary h-100 transition-all d-flex flex-column justify-content-center border border-warning-subtle">
+                        <span class="text-body-secondary text-uppercase fw-bold small mb-2 d-block tracking-tight">Pending Listings</span>
+                        <strong class="fs-2 text-warning fw-bold lh-1">{{ stats.pending_boarding_houses }}</strong>
                     </div>
                 </div>
-            </div>
+            </section>
 
             <!-- CHARTS & TOTALS SECTION -->
-            <div class="row g-4 mb-4">
+            <section class="row g-4 mb-4" aria-label="Reservation Breakdown">
                 <div class="col-xl-4">
-                    <div class="card border-0 shadow-sm p-4 bg-body-tertiary h-100 transition-all d-flex flex-column justify-content-center align-items-center text-center">
-                        <span class="text-body-secondary text-uppercase fw-semibold small mb-2 d-block">Total Reservations</span>
-                        <!-- Removed text-dark here to allow the text to switch to white in dark mode -->
-                        <strong class="display-4 fw-bold text-body-emphasis">{{ stats.total_reservations }}</strong>
-                        <p class="text-body-secondary mt-2 mb-0">All-time reservation requests</p>
+                    <div class="card border-0 shadow-sm p-4 bg-body-tertiary h-100 transition-all d-flex flex-column justify-content-center align-items-center text-center border border-secondary-subtle">
+                        <span class="text-body-secondary text-uppercase fw-bold small mb-2 d-block tracking-tight">Total Reservations</span>
+                        <strong class="display-4 fw-bold text-body-emphasis lh-1 mb-2">{{ stats.total_reservations }}</strong>
+                        <p class="text-body-secondary small mb-0">All-time reservation requests</p>
                     </div>
                 </div>
                 
                 <div class="col-xl-8">
-                    <div class="card border-0 shadow-sm p-4 bg-body-tertiary h-100 transition-all">
+                    <div class="card border-0 shadow-sm p-4 bg-body-tertiary h-100 transition-all border border-secondary-subtle">
                         <h2 class="h5 text-body-emphasis fw-bold mb-4">Reservation Status Breakdown</h2>
-                        <div style="height: 250px; position: relative;">
+                        <div style="height: 250px; position: relative; width: 100%;">
                             <canvas ref="reservationChartCanvas"></canvas>
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
             <!-- TABLE SECTION -->
-            <div class="card border-0 shadow-sm p-4 bg-body-tertiary transition-all">
-                <div class="mb-4">
+            <section class="card border-0 shadow-sm p-0 overflow-hidden bg-body-tertiary transition-all border border-secondary-subtle" aria-label="Latest Reservation Records">
+                <div class="p-4 border-bottom border-secondary-subtle bg-body-tertiary">
                     <h2 class="h5 text-body-emphasis fw-bold mb-1">
                         Latest Reservation Records
                     </h2>
@@ -201,27 +200,28 @@ const statusBadgeClass = (status) => {
                     </p>
                 </div>
 
-                <div v-if="reservations.length" class="table-responsive">
-                    <table class="table table-hover align-middle mb-0 report-table">
+                <!-- 🚀 UX FIX: The "Window Box" Table Scroll Wrapper -->
+                <div v-if="reservations.length" class="table-responsive custom-table-scroll bg-body">
+                    <table class="table table-hover align-middle mb-0">
                         <thead>
                             <tr>
-                                <th class="text-body-secondary text-uppercase small border-secondary-subtle">Reference</th>
-                                <th class="text-body-secondary text-uppercase small border-secondary-subtle">Guest</th>
-                                <th class="text-body-secondary text-uppercase small border-secondary-subtle">Boarding House</th>
-                                <th class="text-body-secondary text-uppercase small border-secondary-subtle">Move-in Date</th>
-                                <th class="text-body-secondary text-uppercase small border-secondary-subtle">Status</th>
-                                <th class="text-body-secondary text-uppercase small border-secondary-subtle">Submitted</th>
-                                <th class="text-body-secondary text-uppercase small border-secondary-subtle">Responded</th>
+                                <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase ps-4">Reference</th>
+                                <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Guest</th>
+                                <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Boarding House</th>
+                                <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Move-in Date</th>
+                                <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Status</th>
+                                <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Submitted</th>
+                                <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase pe-4">Responded</th>
                             </tr>
                         </thead>
 
-                        <tbody>
+                        <tbody class="border-top-0">
                             <tr v-for="reservation in reservations" :key="reservation.id">
-                                <td class="border-secondary-subtle">
-                                    <strong class="text-body-emphasis">{{ reservation.reference_code }}</strong>
+                                <td class="text-nowrap ps-4 border-secondary-subtle">
+                                    <strong class="text-body-emphasis font-monospace">{{ reservation.reference_code }}</strong>
                                 </td>
 
-                                <td class="border-secondary-subtle">
+                                <td class="text-nowrap border-secondary-subtle">
                                     <div class="fw-semibold text-body-emphasis">
                                         {{ reservation.guest_name }}
                                     </div>
@@ -233,25 +233,25 @@ const statusBadgeClass = (status) => {
                                     </div>
                                 </td>
 
-                                <td class="border-secondary-subtle text-body-emphasis fw-medium">
+                                <td class="text-nowrap border-secondary-subtle text-body-emphasis fw-medium">
                                     {{ reservation.boarding_house_name }}
                                 </td>
 
-                                <td class="border-secondary-subtle text-body-secondary">
+                                <td class="text-nowrap border-secondary-subtle text-body-secondary">
                                     {{ reservation.preferred_move_in_date }}
                                 </td>
 
-                                <td class="border-secondary-subtle">
-                                    <span class="badge" :class="statusBadgeClass(reservation.status)">
+                                <td class="text-nowrap border-secondary-subtle">
+                                    <span class="badge shadow-sm" :class="statusBadgeClass(reservation.status)">
                                         {{ reservation.status_label }}
                                     </span>
                                 </td>
 
-                                <td class="small text-body-secondary border-secondary-subtle">
+                                <td class="small text-body-secondary text-nowrap border-secondary-subtle">
                                     {{ reservation.created_at }}
                                 </td>
 
-                                <td class="small text-body-secondary border-secondary-subtle">
+                                <td class="small text-body-secondary text-nowrap border-secondary-subtle pe-4">
                                     {{ reservation.responded_at || 'Not yet' }}
                                 </td>
                             </tr>
@@ -260,17 +260,55 @@ const statusBadgeClass = (status) => {
                 </div>
 
                 <!-- Empty State -->
-                <div v-else class="d-flex flex-column align-items-center justify-content-center text-center p-5 h-100 rounded border border-secondary-subtle bg-body">
-                    <div class="fs-1 mb-3">📋</div>
+                <div v-else class="d-flex flex-column align-items-center justify-content-center text-center p-5 bg-body">
+                    <div class="fs-1 mb-3 opacity-50">📋</div>
                     <h3 class="h5 text-body-emphasis fw-bold mb-2">No reservation records yet</h3>
                     <p class="text-body-secondary mb-0">Reservation records will appear here.</p>
                 </div>
-            </div>
+            </section>
         </div>
     </AdminLayout>
 </template>
 
 <style scoped>
+/* 🪄 UX FIX: The Custom "Window Box" Table Scroll */
+.custom-table-scroll {
+    max-height: 500px;
+    overflow-y: auto;
+    overflow-x: auto;
+    
+    /* Sleek slim scrollbars for modern UI */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(108, 117, 125, 0.5) transparent;
+}
+
+.custom-table-scroll::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.custom-table-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-table-scroll::-webkit-scrollbar-thumb {
+    background-color: rgba(108, 117, 125, 0.5);
+    border-radius: 10px;
+}
+
+/* 🪄 UX FIX: Sticky Header */
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    box-shadow: inset 0 -1px 0 var(--bs-border-color);
+}
+
+/* Typography refinements */
+.tracking-tight {
+    letter-spacing: -0.02em;
+}
+
 /* Smooth fade transitions for colors when toggling dark mode */
 .transition-all {
     transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out;

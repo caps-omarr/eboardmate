@@ -60,6 +60,9 @@ import { Link } from '@inertiajs/vue3';
                                 <Link href="/" class="text-decoration-none text-body-secondary text-hover-primary fw-medium transition-all">Home</Link>
                             </li>
                             <li>
+                                <Link href="/boarding-houses" class="text-decoration-none text-body-secondary text-hover-primary fw-medium transition-all">View List</Link>
+                            </li>
+                            <li>
                                 <Link href="/map" class="text-decoration-none text-body-secondary text-hover-primary fw-medium transition-all">View Map</Link>
                             </li>
                             <li>

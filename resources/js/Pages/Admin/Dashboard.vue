@@ -61,6 +61,10 @@ const overviewCanvas = ref(null);
 const distributionCanvas = ref(null);
 let chartInstances = { overview: null, distribution: null };
 
+// Universal Chart Colors (Readable in both Light and Dark modes)
+const CHART_TEXT_COLOR = '#9ca3af'; // Slate gray
+const CHART_GRID_COLOR = 'rgba(156, 163, 175, 0.15)'; // Transparent slate gray
+
 const renderCharts = () => {
     // 1. Bar Chart: System Overview
     if (overviewCanvas.value) {
@@ -85,8 +89,14 @@ const renderCharts = () => {
                     legend: { display: false } 
                 },
                 scales: {
-                    x: { ticks: { color: 'var(--bs-body-color)' } },
-                    y: { ticks: { color: 'var(--bs-body-color)' } }
+                    x: { 
+                        ticks: { color: CHART_TEXT_COLOR, font: { weight: '500' } }, 
+                        grid: { color: CHART_GRID_COLOR, drawBorder: false } 
+                    },
+                    y: { 
+                        ticks: { color: CHART_TEXT_COLOR, font: { weight: '500' } }, 
+                        grid: { color: CHART_GRID_COLOR, drawBorder: false } 
+                    }
                 }
             }
         });
@@ -117,7 +127,9 @@ const renderCharts = () => {
                 responsive: true, 
                 cutout: '70%',
                 plugins: {
-                    legend: { labels: { color: 'var(--bs-body-color)' } }
+                    legend: { 
+                        labels: { color: CHART_TEXT_COLOR, font: { weight: '500' } } 
+                    }
                 }
             }
         });
@@ -186,128 +198,139 @@ const formatPrice = (price) => {
     <AdminLayout>
         <Head title="Super Admin Dashboard | E-BoardMate" />
 
-        <div class="container">
-            <div class="mb-4">
-                <span class="badge text-bg-dark mb-3">Super Admin</span>
-                <h1 class="fw-bold mb-2">Super Admin Dashboard</h1>
-                <p class="ebm-muted mb-0">
-                    Welcome, {{ admin.name }}. Monitor owners, boarding houses, listings, and reservations.
+        <div class="container pb-5">
+            
+            <!-- HEADER SECTION -->
+            <header class="mb-4 pt-2">
+                <span class="badge bg-body text-body border border-secondary-subtle mb-3 px-3 py-2 rounded-pill shadow-sm">
+                    Super Admin
+                </span>
+
+                <h1 class="fw-bold mb-2 tracking-tight">
+                    Super Admin Dashboard
+                </h1>
+
+                <p class="text-body-secondary mb-0 lead" style="font-size: 1.1rem;">
+                    Welcome, <strong>{{ admin.name }}</strong>. Monitor owners, boarding houses, listings, and reservations.
                 </p>
-            </div>
+            </header>
 
-            <div class="row g-3 mb-4">
-                <div class="col-md-6 col-xl-3">
-                    <div class="ebm-card p-4">
-                        <span class="dashboard-stat-label">Total Owners</span>
-                        <strong class="dashboard-stat-value">{{ stats.owners }}</strong>
-                        <small class="ebm-muted">{{ stats.active_owners }} active</small>
+            <!-- 🚀 UX FIX: 2x2 Grid on Mobile (col-6), 1-Row on Desktop (col-lg-3) -->
+            <section class="row g-3 mb-4" aria-label="System Statistics">
+                <div class="col-6 col-xl-3">
+                    <div class="ebm-card p-3 p-md-4 shadow-sm border border-secondary-subtle h-100 d-flex flex-column justify-content-center">
+                        <span class="text-body-secondary small fw-bold text-uppercase tracking-tight mb-2">Total Owners</span>
+                        <strong class="fs-2 fw-bold lh-1 text-body-emphasis mb-1">{{ stats.owners }}</strong>
+                        <small class="text-body-secondary">{{ stats.active_owners }} active</small>
                     </div>
                 </div>
 
-                <div class="col-md-6 col-xl-3">
-                    <div class="ebm-card p-4">
-                        <span class="dashboard-stat-label">Boarding Houses</span>
-                        <strong class="dashboard-stat-value">{{ stats.boarding_houses }}</strong>
-                        <small class="ebm-muted">Total listings</small>
+                <div class="col-6 col-xl-3">
+                    <div class="ebm-card p-3 p-md-4 shadow-sm border border-secondary-subtle h-100 d-flex flex-column justify-content-center">
+                        <span class="text-body-secondary small fw-bold text-uppercase tracking-tight mb-2">Boarding Houses</span>
+                        <strong class="fs-2 fw-bold lh-1 text-body-emphasis mb-1">{{ stats.boarding_houses }}</strong>
+                        <small class="text-body-secondary">Total listings</small>
                     </div>
                 </div>
 
-                <div class="col-md-6 col-xl-3">
-                    <div class="ebm-card p-4">
-                        <span class="dashboard-stat-label">Pending Listings</span>
-                        <strong class="dashboard-stat-value text-warning">{{ stats.pending_listings }}</strong>
-                        <small class="ebm-muted">Need admin review</small>
+                <div class="col-6 col-xl-3">
+                    <div class="ebm-card p-3 p-md-4 shadow-sm border border-warning-subtle h-100 d-flex flex-column justify-content-center">
+                        <span class="text-body-secondary small fw-bold text-uppercase tracking-tight mb-2">Pending Listings</span>
+                        <strong class="fs-2 fw-bold lh-1 text-warning mb-1">{{ stats.pending_listings }}</strong>
+                        <small class="text-body-secondary">Need admin review</small>
                     </div>
                 </div>
 
-                <div class="col-md-6 col-xl-3">
-                    <div class="ebm-card p-4">
-                        <span class="dashboard-stat-label">Total Reservations</span>
-                        <strong class="dashboard-stat-value">{{ stats.reservations }}</strong>
-                        <small class="ebm-muted">{{ stats.pending_reservations }} pending</small>
+                <div class="col-6 col-xl-3">
+                    <div class="ebm-card p-3 p-md-4 shadow-sm border border-secondary-subtle h-100 d-flex flex-column justify-content-center">
+                        <span class="text-body-secondary small fw-bold text-uppercase tracking-tight mb-2">Total Reservations</span>
+                        <strong class="fs-2 fw-bold lh-1 text-body-emphasis mb-1">{{ stats.reservations }}</strong>
+                        <small class="text-body-secondary">{{ stats.pending_reservations }} pending</small>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div class="row g-4 mb-4">
+            <!-- CHARTS SECTION -->
+            <section class="row g-4 mb-4" aria-label="Analytical Charts">
                 <div class="col-xl-8">
-                    <div class="ebm-card p-4 h-100">
+                    <div class="ebm-card p-4 h-100 shadow-sm border border-secondary-subtle">
                         <h2 class="h5 fw-bold mb-4">System Overview</h2>
-                        <div style="height: 300px; position: relative;">
+                        <div style="height: 300px; position: relative; width: 100%;">
                             <canvas ref="overviewCanvas"></canvas>
                         </div>
                     </div>
                 </div>
                 
                 <div class="col-xl-4">
-                    <div class="ebm-card p-4 h-100">
+                    <div class="ebm-card p-4 h-100 shadow-sm border border-secondary-subtle">
                         <h2 class="h5 fw-bold mb-4">Listings Distribution</h2>
-                        <div style="height: 300px; position: relative;">
+                        <div style="height: 300px; position: relative; width: 100%;">
                             <canvas ref="distributionCanvas"></canvas>
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
             <div class="row g-4">
-                <!-- Boarding Houses Table Segment -->
-                <div class="col-xl-7">
-                    <div class="ebm-card p-4">
-                        <div class="mb-3">
+                <!-- LATEST BOARDING HOUSES TABLE -->
+                <section class="col-xl-7" aria-label="Latest Boarding Houses">
+                    <div class="ebm-card p-0 overflow-hidden shadow-sm border border-secondary-subtle h-100 d-flex flex-column">
+                        <div class="p-4 border-bottom border-secondary-subtle bg-body-tertiary">
                             <h2 class="h5 fw-bold mb-1">Latest Boarding Houses</h2>
-                            <p class="ebm-muted small mb-0">Recent listings submitted or managed in the system.</p>
+                            <p class="text-body-secondary small mb-0">Recent listings submitted or managed in the system.</p>
                         </div>
 
-                        <!-- Scrollable Table Container -->
-                        <div v-if="latestBoardingHouses.length" class="table-responsive custom-scrollbar" style="max-height: 400px; overflow-y: auto;">
-                            <table class="table align-middle table-hover owner-table mb-0">
-                                <thead class="sticky-top bg-body">
+                        <!-- 🚀 UX FIX: The "Window Box" Table Scroll Wrapper -->
+                        <div v-if="latestBoardingHouses.length" class="table-responsive custom-table-scroll flex-grow-1 bg-body">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Owner</th>
-                                        <th>Rent</th>
-                                        <th>Status</th>
-                                        <th class="text-end">Actions</th>
+                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase ps-4">Name</th>
+                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Owner</th>
+                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Rent</th>
+                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Status</th>
+                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase text-end pe-4">Actions</th>
                                     </tr>
                                 </thead>
 
-                                <tbody>
+                                <tbody class="border-top-0">
                                     <tr v-for="boardingHouse in latestBoardingHouses" :key="boardingHouse.id">
-                                        <td>
-                                            <div class="fw-semibold">{{ boardingHouse.name }}</div>
-                                            <div class="small ebm-muted">{{ boardingHouse.created_at }}</div>
+                                        <td class="text-nowrap ps-4">
+                                            <div class="fw-bold text-body-emphasis">{{ boardingHouse.name }}</div>
+                                            <div class="small text-body-secondary">{{ boardingHouse.created_at }}</div>
                                         </td>
 
-                                        <td>
-                                            <div>{{ boardingHouse.owner_name }}</div>
-                                            <div class="small ebm-muted">{{ boardingHouse.owner_email || 'No email' }}</div>
+                                        <td class="text-nowrap">
+                                            <div class="fw-medium text-body-emphasis">{{ boardingHouse.owner_name }}</div>
+                                            <div class="small text-body-secondary">{{ boardingHouse.owner_email || 'No email' }}</div>
                                         </td>
 
-                                        <td>₱{{ formatPrice(boardingHouse.rent_price) }}</td>
+                                        <td class="text-nowrap fw-medium text-body-emphasis">
+                                            ₱{{ formatPrice(boardingHouse.rent_price) }}
+                                        </td>
 
-                                        <td>
-                                            <span class="badge" :class="listingStatusBadgeClass(boardingHouse.status)">
+                                        <td class="text-nowrap">
+                                            <span class="badge shadow-sm" :class="listingStatusBadgeClass(boardingHouse.status)">
                                                 {{ boardingHouse.status }}
                                             </span>
-                                            <div v-if="boardingHouse.is_verified" class="small text-success mt-1 fw-semibold">
+                                            <div v-if="boardingHouse.is_verified" class="small text-success mt-1 fw-bold tracking-tight">
                                                 Verified
                                             </div>
                                         </td>
 
-                                        <!-- Approve and Reject Actions Column -->
-                                        <td class="text-end">
-                                            <div class="d-flex justify-content-end gap-2">
+                                        <td class="text-nowrap text-end pe-4">
+                                            <div class="d-flex flex-column gap-2 justify-content-end align-items-end">
                                                 <button 
                                                     v-if="boardingHouse.status === 'pending'" 
                                                     @click="approveBoardingHouse(boardingHouse.id)" 
-                                                    class="btn btn-sm btn-success fw-semibold shadow-sm"
+                                                    class="btn btn-sm btn-success fw-medium shadow-sm w-100"
                                                 >
                                                     Approve
                                                 </button>
                                                 <button 
                                                     v-if="boardingHouse.status === 'pending'" 
                                                     @click="rejectBoardingHouse(boardingHouse.id)" 
-                                                    class="btn btn-sm btn-danger fw-semibold shadow-sm"
+                                                    class="btn btn-sm btn-outline-danger fw-medium w-100"
                                                 >
                                                     Reject
                                                 </button>
@@ -318,73 +341,92 @@ const formatPrice = (price) => {
                             </table>
                         </div>
 
-                        <div v-else class="empty-state text-center py-4">
-                            <div class="empty-state-icon fs-1 mb-2">🏠</div>
+                        <div v-else class="empty-state text-center p-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center bg-body">
+                            <div class="fs-1 mb-3 opacity-50">🏠</div>
                             <h3 class="h6 fw-bold mb-1">No boarding houses yet</h3>
-                            <p class="ebm-muted small mb-0">Boarding house listings will appear here.</p>
+                            <p class="text-body-secondary small mb-0">Boarding house listings will appear here.</p>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <!-- Latest Reservations Segment -->
-                <div class="col-xl-5">
-                    <div class="ebm-card p-4">
-                        <div class="mb-3">
+                <!-- LATEST RESERVATIONS LIST -->
+                <section class="col-xl-5" aria-label="Latest Reservations">
+                    <div class="ebm-card p-0 overflow-hidden shadow-sm border border-secondary-subtle h-100 d-flex flex-column">
+                        <div class="p-4 border-bottom border-secondary-subtle bg-body-tertiary">
                             <h2 class="h5 fw-bold mb-1">Latest Reservations</h2>
-                            <p class="ebm-muted small mb-0">Recent reservation activity across all boarding houses.</p>
+                            <p class="text-body-secondary small mb-0">Recent reservation activity across all boarding houses.</p>
                         </div>
 
-                        <!-- Scrollable Reservations List Container -->
-                        <div v-if="latestReservations.length" class="admin-reservation-list custom-scrollbar" style="max-height: 400px; overflow-y: auto;">
-                            <div v-for="reservation in latestReservations" :key="reservation.id" class="admin-reservation-item border-bottom py-3">
-                                <div class="d-flex justify-content-between gap-3">
-                                    <div>
-                                        <strong class="d-block mb-1">{{ reservation.reference_code }}</strong>
-                                        <p class="small ebm-muted mb-1">{{ reservation.boarding_house_name }}</p>
-                                        <p class="small mb-0">Guest: {{ reservation.guest_name }}</p>
-                                    </div>
+                        <!-- 🚀 UX FIX: The "Window Box" List Scroll Wrapper -->
+                        <div v-if="latestReservations.length" class="custom-table-scroll flex-grow-1 bg-body p-0">
+                            <div class="list-group list-group-flush">
+                                <div v-for="reservation in latestReservations" :key="reservation.id" class="list-group-item bg-transparent p-4 border-bottom border-secondary-subtle">
+                                    <div class="d-flex justify-content-between gap-3 align-items-start">
+                                        <div>
+                                            <strong class="d-block mb-1 font-monospace">{{ reservation.reference_code }}</strong>
+                                            <p class="small text-body-secondary fw-bold text-uppercase tracking-tight mb-1">{{ reservation.boarding_house_name }}</p>
+                                            <p class="small mb-0 text-body-emphasis">Guest: <span class="fw-medium">{{ reservation.guest_name }}</span></p>
+                                        </div>
 
-                                    <div class="text-end">
-                                        <span class="badge" :class="reservationStatusBadgeClass(reservation.status)">
-                                            {{ reservation.status_label }}
-                                        </span>
-                                        <div class="small ebm-muted mt-2">{{ reservation.created_at }}</div>
+                                        <div class="text-end">
+                                            <span class="badge shadow-sm" :class="reservationStatusBadgeClass(reservation.status)">
+                                                {{ reservation.status_label }}
+                                            </span>
+                                            <div class="small text-body-secondary mt-2">{{ reservation.created_at }}</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div v-else class="empty-state text-center py-4">
-                            <div class="empty-state-icon fs-1 mb-2">📋</div>
+                        <div v-else class="empty-state text-center p-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center bg-body">
+                            <div class="fs-1 mb-3 opacity-50">📋</div>
                             <h3 class="h6 fw-bold mb-1">No reservations yet</h3>
-                            <p class="ebm-muted small mb-0">Reservation activity will appear here.</p>
+                            <p class="text-body-secondary small mb-0">Reservation activity will appear here.</p>
                         </div>
                     </div>
-                </div>
+                </section>
             </div>
         </div>
     </AdminLayout>
 </template>
 
 <style scoped>
-.table {
-    color: var(--bs-body-color);
-    border-color: var(--bs-border-color);
-}
-.empty-state {
-    opacity: 0.8;
+/* 🪄 UX FIX: The Custom "Window Box" Table Scroll */
+.custom-table-scroll {
+    max-height: 450px;
+    overflow-y: auto;
+    overflow-x: auto;
+    
+    /* Sleek slim scrollbars for modern UI */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(108, 117, 125, 0.5) transparent;
 }
 
-/* Custom Scrollbar Styling */
-.custom-scrollbar::-webkit-scrollbar {
+.custom-table-scroll::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
-.custom-scrollbar::-webkit-scrollbar-track {
+
+.custom-table-scroll::-webkit-scrollbar-track {
     background: transparent;
 }
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: var(--bs-border-color);
+
+.custom-table-scroll::-webkit-scrollbar-thumb {
+    background-color: rgba(108, 117, 125, 0.5);
     border-radius: 10px;
+}
+
+/* 🪄 UX FIX: Sticky Header */
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    box-shadow: inset 0 -1px 0 var(--bs-border-color); /* Adds the bottom border cleanly under the sticky header */
+}
+
+/* Typography refinements */
+.tracking-tight {
+    letter-spacing: -0.02em;
 }
 </style>

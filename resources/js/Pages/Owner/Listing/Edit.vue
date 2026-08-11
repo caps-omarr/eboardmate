@@ -14,6 +14,7 @@ const page = usePage();
 
 const flashSuccess = computed(() => page.props.flash?.success || null);
 const photoInput = ref(null);
+const photoPreview = ref(null); // 🚀 FIX: Added local state for instant file preview
 
 const form = useForm({
     description: props.boardingHouse?.description || '',
@@ -48,6 +49,7 @@ const submitPhoto = () => {
         forceFormData: true,
         onSuccess: () => {
             photoForm.reset();
+            photoPreview.value = null; // Clear local preview on success
 
             if (photoInput.value) {
                 photoInput.value.value = '';
@@ -57,7 +59,15 @@ const submitPhoto = () => {
 };
 
 const setPhotoFile = (event) => {
-    photoForm.photo = event.target.files[0] || null;
+    const file = event.target.files[0] || null;
+    photoForm.photo = file;
+
+    // 🚀 FIX: Generate an instant preview URL so the chosen photo appears immediately
+    if (file) {
+        photoPreview.value = URL.createObjectURL(file);
+    } else {
+        photoPreview.value = null;
+    }
 };
 
 const setPrimaryPhoto = (photo) => {
@@ -236,6 +246,12 @@ const statusBadgeClass = computed(() => {
 
                                 <div class="form-text">
                                     Allowed: JPG, PNG, WebP. Maximum file size: 4MB.
+                                </div>
+
+                                <!-- 🚀 FIX: Instant local preview container -->
+                                <div v-if="photoPreview" class="mt-3 text-center p-2 bg-body-tertiary rounded border">
+                                    <p class="small fw-bold mb-2 text-muted">Preview:</p>
+                                    <img :src="photoPreview" alt="Selected Preview" class="img-fluid rounded" style="max-height: 140px; object-fit: contain;">
                                 </div>
 
                                 <div

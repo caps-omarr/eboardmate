@@ -114,22 +114,10 @@ const submitEditListing = () => {
 };
 
 const statusBadgeClass = (status) => {
-    if (status === 'approved') {
-        return 'text-bg-success';
-    }
-
-    if (status === 'pending') {
-        return 'text-bg-warning';
-    }
-
-    if (status === 'rejected') {
-        return 'text-bg-danger';
-    }
-
-    if (status === 'deactivated') {
-        return 'text-bg-secondary';
-    }
-
+    if (status === 'approved') return 'text-bg-success';
+    if (status === 'pending') return 'text-bg-warning';
+    if (status === 'rejected') return 'text-bg-danger';
+    if (status === 'deactivated') return 'text-bg-secondary';
     return 'text-bg-secondary';
 };
 
@@ -163,55 +151,25 @@ const closeActionModal = () => {
 };
 
 const actionTitle = computed(() => {
-    if (actionType.value === 'approve') {
-        return 'Approve and Verify Listing';
-    }
-
-    if (actionType.value === 'reject') {
-        return 'Reject Listing';
-    }
-
-    if (actionType.value === 'deactivate') {
-        return 'Deactivate Listing';
-    }
-
-    if (actionType.value === 'reactivate') {
-        return 'Reactivate Listing';
-    }
-
+    if (actionType.value === 'approve') return 'Approve and Verify Listing';
+    if (actionType.value === 'reject') return 'Reject Listing';
+    if (actionType.value === 'deactivate') return 'Deactivate Listing';
+    if (actionType.value === 'reactivate') return 'Reactivate Listing';
     return 'Listing Action';
 });
 
-const actionBadgeClass = computed(() => {
-    if (actionType.value === 'approve' || actionType.value === 'reactivate') {
-        return 'text-bg-success';
-    }
-
-    if (actionType.value === 'reject') {
-        return 'text-bg-danger';
-    }
-
-    if (actionType.value === 'deactivate') {
-        return 'text-bg-secondary';
-    }
-
-    return 'text-bg-dark';
+const actionHeaderClass = computed(() => {
+    if (actionType.value === 'approve' || actionType.value === 'reactivate') return 'bg-success';
+    if (actionType.value === 'reject') return 'bg-danger';
+    if (actionType.value === 'deactivate') return 'bg-warning text-dark';
+    return 'bg-dark';
 });
 
 const actionButtonClass = computed(() => {
-    if (actionType.value === 'approve' || actionType.value === 'reactivate') {
-        return 'btn-success';
-    }
-
-    if (actionType.value === 'reject') {
-        return 'btn-danger';
-    }
-
-    if (actionType.value === 'deactivate') {
-        return 'btn-secondary';
-    }
-
-    return 'btn-ebm-primary';
+    if (actionType.value === 'approve' || actionType.value === 'reactivate') return 'btn-success';
+    if (actionType.value === 'reject') return 'btn-danger';
+    if (actionType.value === 'deactivate') return 'btn-warning';
+    return 'btn-primary';
 });
 
 const actionNeedsReason = computed(() => {
@@ -219,22 +177,10 @@ const actionNeedsReason = computed(() => {
 });
 
 const actionMessage = computed(() => {
-    if (actionType.value === 'approve') {
-        return 'This will approve and verify the listing. It will become visible on the public map if it has valid coordinates.';
-    }
-
-    if (actionType.value === 'reject') {
-        return 'This will reject the listing and hide it from the public map. A reason is required.';
-    }
-
-    if (actionType.value === 'deactivate') {
-        return 'This will deactivate the listing and remove it from the public map. A reason is required.';
-    }
-
-    if (actionType.value === 'reactivate') {
-        return 'This will reactivate and verify the listing again. It will appear on the public map if it has valid coordinates.';
-    }
-
+    if (actionType.value === 'approve') return 'This will approve and verify the listing. It will become visible on the public map if it has valid coordinates.';
+    if (actionType.value === 'reject') return 'This will reject the listing and hide it from the public map. A reason is required.';
+    if (actionType.value === 'deactivate') return 'This will deactivate the listing and remove it from the public map. A reason is required.';
+    if (actionType.value === 'reactivate') return 'This will reactivate and verify the listing again. It will appear on the public map if it has valid coordinates.';
     return '';
 });
 
@@ -260,7 +206,8 @@ const submitAction = () => {
     <AdminLayout>
         <Head title="Boarding House Listings | E-BoardMate" />
 
-        <div class="container-fluid py-2">
+        <div class="container pb-5 pt-2">
+            
             <!-- ALERTS -->
             <div v-if="flashSuccess" class="alert alert-success mb-4 border-0 shadow-sm">
                 {{ flashSuccess }}
@@ -271,343 +218,178 @@ const submitAction = () => {
             </div>
 
             <!-- HEADER SECTION -->
-            <div class="mb-4">
-                <span class="badge text-bg-dark mb-3 px-3 py-2">
+            <header class="mb-4">
+                <span class="badge bg-body text-body border border-secondary-subtle mb-3 px-3 py-2 rounded-pill shadow-sm">
                     Super Admin
                 </span>
 
-                <h1 class="text-body-emphasis fw-bold mb-2 transition-all">
-                    Boarding House Listing Management
+                <h1 class="text-body-emphasis fw-bold mb-2 tracking-tight">
+                    Boarding House Listings
                 </h1>
 
-                <p class="text-body-secondary mb-0 transition-all">
+                <p class="text-body-secondary mb-0 lead" style="font-size: 1.1rem;">
                     Create, edit, assign owners, verify, reject, deactivate, or reactivate boarding house listings.
                 </p>
-            </div>
+            </header>
 
             <div class="row g-4">
+                
                 <!-- LEFT COLUMN: CREATE FORM -->
-                <div class="col-lg-4">
-                    <div class="card border-0 shadow-sm p-4 bg-body-tertiary h-100 transition-all">
-                        <h2 class="h5 text-body-emphasis fw-bold mb-4">
+                <section class="col-lg-4" aria-label="Create Boarding House Form">
+                    <div class="ebm-card border border-secondary-subtle shadow-sm p-4 bg-body-tertiary h-100">
+                        <h2 class="h5 text-body-emphasis fw-bold mb-4 border-bottom border-secondary-subtle pb-2">
                             Create Boarding House
                         </h2>
 
                         <form @submit.prevent="submitListing">
                             <div class="mb-3">
-                                <label for="owner_id" class="form-label text-body-emphasis fw-medium">
-                                    Assign Owner
-                                </label>
-                                <select
-                                    id="owner_id"
-                                    v-model="listingForm.owner_id"
-                                    class="form-select border-secondary-subtle bg-body"
-                                    :class="{ 'is-invalid': listingForm.errors.owner_id }"
-                                >
+                                <label for="owner_id" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Assign Owner</label>
+                                <select id="owner_id" v-model="listingForm.owner_id" class="form-select border-secondary-subtle bg-body shadow-sm" :class="{ 'is-invalid': listingForm.errors.owner_id }">
                                     <option value="">No owner assigned yet</option>
                                     <option v-for="owner in owners" :key="owner.id" :value="owner.id">
                                         {{ owner.name }} - {{ owner.email }}
                                     </option>
                                 </select>
-                                <div v-if="listingForm.errors.owner_id" class="invalid-feedback">
-                                    {{ listingForm.errors.owner_id }}
-                                </div>
+                                <div v-if="listingForm.errors.owner_id" class="invalid-feedback">{{ listingForm.errors.owner_id }}</div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="name" class="form-label text-body-emphasis fw-medium">
-                                    Boarding House Name
-                                </label>
-                                <input
-                                    id="name"
-                                    v-model="listingForm.name"
-                                    type="text"
-                                    class="form-control border-secondary-subtle bg-body"
-                                    :class="{ 'is-invalid': listingForm.errors.name }"
-                                    placeholder="Example Boarding House"
-                                >
-                                <div v-if="listingForm.errors.name" class="invalid-feedback">
-                                    {{ listingForm.errors.name }}
-                                </div>
+                                <label for="name" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Name</label>
+                                <input id="name" v-model="listingForm.name" type="text" class="form-control border-secondary-subtle bg-body shadow-sm" :class="{ 'is-invalid': listingForm.errors.name }" placeholder="Example Boarding House">
+                                <div v-if="listingForm.errors.name" class="invalid-feedback">{{ listingForm.errors.name }}</div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="description" class="form-label text-body-emphasis fw-medium">
-                                    Description
-                                </label>
-                                <textarea
-                                    id="description"
-                                    v-model="listingForm.description"
-                                    class="form-control border-secondary-subtle bg-body"
-                                    :class="{ 'is-invalid': listingForm.errors.description }"
-                                    rows="3"
-                                    placeholder="Short description"
-                                />
-                                <div v-if="listingForm.errors.description" class="invalid-feedback">
-                                    {{ listingForm.errors.description }}
-                                </div>
+                                <label for="description" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Description</label>
+                                <textarea id="description" v-model="listingForm.description" class="form-control border-secondary-subtle bg-body shadow-sm" :class="{ 'is-invalid': listingForm.errors.description }" rows="3" placeholder="Short description" />
+                                <div v-if="listingForm.errors.description" class="invalid-feedback">{{ listingForm.errors.description }}</div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="location_description" class="form-label text-body-emphasis fw-medium">
-                                    Location Description
-                                </label>
-                                <textarea
-                                    id="location_description"
-                                    v-model="listingForm.location_description"
-                                    class="form-control border-secondary-subtle bg-body"
-                                    :class="{ 'is-invalid': listingForm.errors.location_description }"
-                                    rows="2"
-                                    placeholder="Near TPC, beside main road, etc."
-                                />
-                                <div v-if="listingForm.errors.location_description" class="invalid-feedback">
-                                    {{ listingForm.errors.location_description }}
-                                </div>
+                                <label for="location_description" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Location Description</label>
+                                <textarea id="location_description" v-model="listingForm.location_description" class="form-control border-secondary-subtle bg-body shadow-sm" :class="{ 'is-invalid': listingForm.errors.location_description }" rows="2" placeholder="Near TPC, beside main road, etc." />
+                                <div v-if="listingForm.errors.location_description" class="invalid-feedback">{{ listingForm.errors.location_description }}</div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="address" class="form-label text-body-emphasis fw-medium">
-                                    Address
-                                </label>
-                                <input
-                                    id="address"
-                                    v-model="listingForm.address"
-                                    type="text"
-                                    class="form-control border-secondary-subtle bg-body"
-                                    :class="{ 'is-invalid': listingForm.errors.address }"
-                                    placeholder="Talibon, Bohol"
-                                >
-                                <div v-if="listingForm.errors.address" class="invalid-feedback">
-                                    {{ listingForm.errors.address }}
-                                </div>
+                                <label for="address" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Address</label>
+                                <input id="address" v-model="listingForm.address" type="text" class="form-control border-secondary-subtle bg-body shadow-sm" :class="{ 'is-invalid': listingForm.errors.address }" placeholder="Talibon, Bohol">
+                                <div v-if="listingForm.errors.address" class="invalid-feedback">{{ listingForm.errors.address }}</div>
                             </div>
 
                             <div class="row g-3 mb-3">
-                                <div class="col-md-6">
-                                    <label for="latitude" class="form-label text-body-emphasis fw-medium">
-                                        Latitude
-                                    </label>
-                                    <input
-                                        id="latitude"
-                                        v-model="listingForm.latitude"
-                                        type="number"
-                                        step="0.0000001"
-                                        class="form-control border-secondary-subtle bg-body"
-                                        :class="{ 'is-invalid': listingForm.errors.latitude }"
-                                        placeholder="10.1167"
-                                    >
-                                    <div v-if="listingForm.errors.latitude" class="invalid-feedback">
-                                        {{ listingForm.errors.latitude }}
-                                    </div>
+                                <div class="col-6">
+                                    <label for="latitude" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Latitude</label>
+                                    <input id="latitude" v-model="listingForm.latitude" type="number" step="0.0000001" class="form-control border-secondary-subtle bg-body shadow-sm" :class="{ 'is-invalid': listingForm.errors.latitude }" placeholder="10.1167">
+                                    <div v-if="listingForm.errors.latitude" class="invalid-feedback">{{ listingForm.errors.latitude }}</div>
                                 </div>
-
-                                <div class="col-md-6">
-                                    <label for="longitude" class="form-label text-body-emphasis fw-medium">
-                                        Longitude
-                                    </label>
-                                    <input
-                                        id="longitude"
-                                        v-model="listingForm.longitude"
-                                        type="number"
-                                        step="0.0000001"
-                                        class="form-control border-secondary-subtle bg-body"
-                                        :class="{ 'is-invalid': listingForm.errors.longitude }"
-                                        placeholder="124.2833"
-                                    >
-                                    <div v-if="listingForm.errors.longitude" class="invalid-feedback">
-                                        {{ listingForm.errors.longitude }}
-                                    </div>
+                                <div class="col-6">
+                                    <label for="longitude" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Longitude</label>
+                                    <input id="longitude" v-model="listingForm.longitude" type="number" step="0.0000001" class="form-control border-secondary-subtle bg-body shadow-sm" :class="{ 'is-invalid': listingForm.errors.longitude }" placeholder="124.2833">
+                                    <div v-if="listingForm.errors.longitude" class="invalid-feedback">{{ listingForm.errors.longitude }}</div>
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="rent_price" class="form-label text-body-emphasis fw-medium">
-                                    Monthly Rent (₱)
-                                </label>
-                                <input
-                                    id="rent_price"
-                                    v-model="listingForm.rent_price"
-                                    type="number"
-                                    step="0.01"
-                                    min="0"
-                                    class="form-control border-secondary-subtle bg-body"
-                                    :class="{ 'is-invalid': listingForm.errors.rent_price }"
-                                    placeholder="2500"
-                                >
-                                <div v-if="listingForm.errors.rent_price" class="invalid-feedback">
-                                    {{ listingForm.errors.rent_price }}
-                                </div>
+                                <label for="rent_price" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Monthly Rent (₱)</label>
+                                <input id="rent_price" v-model="listingForm.rent_price" type="number" step="0.01" min="0" class="form-control border-secondary-subtle bg-body shadow-sm" :class="{ 'is-invalid': listingForm.errors.rent_price }" placeholder="2500">
+                                <div v-if="listingForm.errors.rent_price" class="invalid-feedback">{{ listingForm.errors.rent_price }}</div>
                             </div>
 
                             <div class="row g-3 mb-3">
-                                <div class="col-md-6">
-                                    <label for="total_rooms" class="form-label text-body-emphasis fw-medium">
-                                        Total Rooms
-                                    </label>
-                                    <input
-                                        id="total_rooms"
-                                        v-model="listingForm.total_rooms"
-                                        type="number"
-                                        min="0"
-                                        class="form-control border-secondary-subtle bg-body"
-                                        :class="{ 'is-invalid': listingForm.errors.total_rooms }"
-                                    >
-                                    <div v-if="listingForm.errors.total_rooms" class="invalid-feedback">
-                                        {{ listingForm.errors.total_rooms }}
-                                    </div>
+                                <div class="col-6">
+                                    <label for="total_rooms" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Total Rooms</label>
+                                    <input id="total_rooms" v-model="listingForm.total_rooms" type="number" min="0" class="form-control border-secondary-subtle bg-body shadow-sm" :class="{ 'is-invalid': listingForm.errors.total_rooms }">
                                 </div>
-
-                                <div class="col-md-6">
-                                    <label for="available_rooms" class="form-label text-body-emphasis fw-medium">
-                                        Available Rooms
-                                    </label>
-                                    <input
-                                        id="available_rooms"
-                                        v-model="listingForm.available_rooms"
-                                        type="number"
-                                        min="0"
-                                        class="form-control border-secondary-subtle bg-body"
-                                        :class="{ 'is-invalid': listingForm.errors.available_rooms }"
-                                    >
-                                    <div v-if="listingForm.errors.available_rooms" class="invalid-feedback">
-                                        {{ listingForm.errors.available_rooms }}
-                                    </div>
+                                <div class="col-6">
+                                    <label for="available_rooms" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Available Rooms</label>
+                                    <input id="available_rooms" v-model="listingForm.available_rooms" type="number" min="0" class="form-control border-secondary-subtle bg-body shadow-sm" :class="{ 'is-invalid': listingForm.errors.available_rooms }">
                                 </div>
                             </div>
 
                             <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label for="total_bedspaces" class="form-label text-body-emphasis fw-medium">
-                                        Total Bedspaces
-                                    </label>
-                                    <input
-                                        id="total_bedspaces"
-                                        v-model="listingForm.total_bedspaces"
-                                        type="number"
-                                        min="0"
-                                        class="form-control border-secondary-subtle bg-body"
-                                        :class="{ 'is-invalid': listingForm.errors.total_bedspaces }"
-                                    >
-                                    <div v-if="listingForm.errors.total_bedspaces" class="invalid-feedback">
-                                        {{ listingForm.errors.total_bedspaces }}
-                                    </div>
+                                <div class="col-6">
+                                    <label for="total_bedspaces" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Total Beds</label>
+                                    <input id="total_bedspaces" v-model="listingForm.total_bedspaces" type="number" min="0" class="form-control border-secondary-subtle bg-body shadow-sm" :class="{ 'is-invalid': listingForm.errors.total_bedspaces }">
                                 </div>
-
-                                <div class="col-md-6">
-                                    <label for="available_bedspaces" class="form-label text-body-emphasis fw-medium">
-                                        Available Bedspaces
-                                    </label>
-                                    <input
-                                        id="available_bedspaces"
-                                        v-model="listingForm.available_bedspaces"
-                                        type="number"
-                                        min="0"
-                                        class="form-control border-secondary-subtle bg-body"
-                                        :class="{ 'is-invalid': listingForm.errors.available_bedspaces }"
-                                    >
-                                    <div v-if="listingForm.errors.available_bedspaces" class="invalid-feedback">
-                                        {{ listingForm.errors.available_bedspaces }}
-                                    </div>
+                                <div class="col-6">
+                                    <label for="available_bedspaces" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Available Beds</label>
+                                    <input id="available_bedspaces" v-model="listingForm.available_bedspaces" type="number" min="0" class="form-control border-secondary-subtle bg-body shadow-sm" :class="{ 'is-invalid': listingForm.errors.available_bedspaces }">
                                 </div>
                             </div>
 
-                            <button
-                                type="submit"
-                                class="btn btn-ebm-primary w-100 mt-4 py-2 fw-semibold"
-                                :disabled="listingForm.processing"
-                            >
-                                <span v-if="listingForm.processing">Creating...</span>
-                                <span v-else>Create Listing</span>
+                            <button type="submit" class="btn btn-success w-100 mt-4 py-2 fw-bold shadow-sm" :disabled="listingForm.processing">
+                                <span v-if="listingForm.processing" class="spinner-border spinner-border-sm me-2"></span>
+                                {{ listingForm.processing ? 'Creating...' : 'Create Listing' }}
                             </button>
                         </form>
                     </div>
-                </div>
+                </section>
 
                 <!-- RIGHT COLUMN: DATA TABLE -->
-                <div class="col-lg-8">
-                    <div class="card border-0 shadow-sm p-4 bg-body-tertiary h-100 transition-all">
-                        <div class="mb-4">
-                            <h2 class="h5 text-body-emphasis fw-bold mb-1">
-                                Boarding House Listings
-                            </h2>
-                            <p class="text-body-secondary small mb-0">
-                                Only approved and verified listings with coordinates appear on the public map.
-                            </p>
+                <section class="col-lg-8" aria-label="Boarding Houses Data Table">
+                    <div class="ebm-card p-0 overflow-hidden shadow-sm border border-secondary-subtle h-100 d-flex flex-column">
+                        <div class="p-4 border-bottom border-secondary-subtle bg-body-tertiary">
+                            <h2 class="h5 text-body-emphasis fw-bold mb-1">Boarding House Listings</h2>
+                            <p class="text-body-secondary small mb-0">Only approved and verified listings with coordinates appear on the public map.</p>
                         </div>
 
-                        <!-- Data Table -->
-                        <div v-if="boardingHouses.length" class="table-responsive">
+                        <!-- 🚀 UX FIX: The "Window Box" Table Scroll -->
+                        <div v-if="boardingHouses.length" class="table-responsive custom-table-scroll flex-grow-1 bg-body">
                             <table class="table table-hover align-middle mb-0">
                                 <thead>
                                     <tr>
-                                        <th class="text-body-secondary text-uppercase small border-secondary-subtle">Name</th>
-                                        <th class="text-body-secondary text-uppercase small border-secondary-subtle">Owner</th>
-                                        <th class="text-body-secondary text-uppercase small border-secondary-subtle">Rent</th>
-                                        <th class="text-body-secondary text-uppercase small border-secondary-subtle">Slots</th>
-                                        <th class="text-body-secondary text-uppercase small border-secondary-subtle">Coordinates</th>
-                                        <th class="text-body-secondary text-uppercase small border-secondary-subtle">Status</th>
-                                        <th class="text-body-secondary text-uppercase small border-secondary-subtle">Reason</th>
-                                        <th class="text-body-secondary text-uppercase small border-secondary-subtle text-end">Action</th>
+                                        <!-- 🚀 UX FIX: Sticky headers and text-nowrap -->
+                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase ps-4">Name</th>
+                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Owner</th>
+                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Rent & Slots</th>
+                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Status</th>
+                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Reason</th>
+                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase text-end pe-4">Action</th>
                                     </tr>
                                 </thead>
 
-                                <tbody>
+                                <tbody class="border-top-0">
                                     <tr v-for="boardingHouse in boardingHouses" :key="boardingHouse.id">
-                                        <td class="border-secondary-subtle">
-                                            <div class="fw-semibold text-body-emphasis">
-                                                {{ boardingHouse.name }}
-                                            </div>
+                                        
+                                        <!-- Name & Coordinates -->
+                                        <td class="text-nowrap ps-4 border-secondary-subtle">
+                                            <div class="fw-bold text-body-emphasis">{{ boardingHouse.name }}</div>
                                             <div class="small text-body-secondary mt-1">
-                                                {{ boardingHouse.address || 'No address' }}
+                                                <template v-if="boardingHouse.latitude && boardingHouse.longitude">
+                                                    <span class="font-monospace">{{ boardingHouse.latitude }}, {{ boardingHouse.longitude }}</span>
+                                                </template>
+                                                <span v-else class="text-danger fw-bold"><i class="bi bi-geo-alt-fill"></i> Missing Coords</span>
                                             </div>
-                                            <div class="small text-body-secondary mt-1">
-                                                {{ boardingHouse.created_at }}
-                                            </div>
+                                            <div class="small text-body-secondary mt-1">{{ boardingHouse.created_at }}</div>
                                         </td>
 
-                                        <td class="border-secondary-subtle">
-                                            <div class="text-body-emphasis">
-                                                {{ boardingHouse.owner_name }}
-                                            </div>
-                                            <div class="small text-body-secondary mt-1">
-                                                {{ boardingHouse.owner_email || 'No email' }}
-                                            </div>
+                                        <!-- Owner -->
+                                        <td class="text-nowrap border-secondary-subtle">
+                                            <div class="fw-medium text-body-emphasis">{{ boardingHouse.owner_name }}</div>
+                                            <div class="small text-body-secondary mt-1">{{ boardingHouse.owner_email || 'No email' }}</div>
                                         </td>
 
-                                        <td class="border-secondary-subtle text-body-emphasis fw-medium">
-                                            ₱{{ formatPrice(boardingHouse.rent_price) }}
+                                        <!-- Rent & Slots combined for space -->
+                                        <td class="text-nowrap border-secondary-subtle">
+                                            <div class="text-body-emphasis fw-bold mb-1">₱{{ formatPrice(boardingHouse.rent_price) }}</div>
+                                            <div class="small text-body-secondary">Rms: <span class="fw-medium text-body-emphasis">{{ boardingHouse.available_rooms }}/{{ boardingHouse.total_rooms }}</span></div>
+                                            <div class="small text-body-secondary">Beds: <span class="fw-medium text-body-emphasis">{{ boardingHouse.available_bedspaces }}/{{ boardingHouse.total_bedspaces }}</span></div>
                                         </td>
 
-                                        <td class="small text-body-secondary border-secondary-subtle">
-                                            Rooms: <span class="text-body-emphasis">{{ boardingHouse.available_rooms }} / {{ boardingHouse.total_rooms }}</span>
-                                            <br>
-                                            Beds: <span class="text-body-emphasis">{{ boardingHouse.available_bedspaces }} / {{ boardingHouse.total_bedspaces }}</span>
-                                        </td>
-
-                                        <td class="small text-body-secondary border-secondary-subtle">
-                                            <template v-if="boardingHouse.latitude && boardingHouse.longitude">
-                                                {{ boardingHouse.latitude }}
-                                                <br>
-                                                {{ boardingHouse.longitude }}
-                                            </template>
-                                            <span v-else class="text-danger fw-medium">
-                                                Missing
-                                            </span>
-                                        </td>
-
-                                        <td class="border-secondary-subtle">
-                                            <span class="badge" :class="statusBadgeClass(boardingHouse.status)">
+                                        <!-- Status -->
+                                        <td class="text-nowrap border-secondary-subtle">
+                                            <span class="badge shadow-sm" :class="statusBadgeClass(boardingHouse.status)">
                                                 {{ boardingHouse.status }}
                                             </span>
-                                            <div v-if="boardingHouse.is_verified" class="small text-success mt-1 fw-medium">
+                                            <div v-if="boardingHouse.is_verified" class="small text-success mt-1 fw-bold tracking-tight">
                                                 <i class="bi bi-check-circle-fill"></i> Verified
                                             </div>
-                                            <div v-else class="small text-body-secondary mt-1">
-                                                Not verified
-                                            </div>
+                                            <div v-else class="small text-body-secondary mt-1">Not verified</div>
                                         </td>
 
-                                        <td class="small border-secondary-subtle">
+                                        <!-- Reason (Wrapped to prevent stretching) -->
+                                        <td class="small border-secondary-subtle" style="min-width: 200px; max-width: 250px;">
                                             <template v-if="boardingHouse.rejection_reason">
                                                 <strong class="text-danger">Rejected:</strong>
                                                 <span class="text-body-secondary d-block mt-1">{{ boardingHouse.rejection_reason }}</span>
@@ -616,60 +398,33 @@ const submitAction = () => {
                                                 <strong class="text-warning">Deactivated:</strong>
                                                 <span class="text-body-secondary d-block mt-1">{{ boardingHouse.deactivated_reason }}</span>
                                             </template>
-                                            <span v-else class="text-body-secondary">
-                                                None
-                                            </span>
+                                            <span v-else class="text-body-secondary fst-italic">None</span>
                                         </td>
 
-                                        <td class="border-secondary-subtle text-end">
-                                            <div class="d-flex flex-column gap-2 justify-content-end">
-                                                <button
-                                                    type="button"
-                                                    class="btn btn-sm btn-outline-secondary"
-                                                    @click="openEditModal(boardingHouse)"
-                                                >
+                                        <!-- Actions -->
+                                        <td class="border-secondary-subtle text-end pe-4">
+                                            <div class="d-flex flex-column gap-2 justify-content-end align-items-end">
+                                                <button type="button" class="btn btn-sm btn-secondary w-100 shadow-sm" @click="openEditModal(boardingHouse)">
                                                     Edit
                                                 </button>
 
-                                                <button
-                                                    v-if="boardingHouse.status === 'pending' || boardingHouse.status === 'rejected'"
-                                                    type="button"
-                                                    class="btn btn-sm btn-success"
-                                                    @click="openActionModal(boardingHouse, 'approve')"
-                                                >
+                                                <button v-if="boardingHouse.status === 'pending' || boardingHouse.status === 'rejected'" type="button" class="btn btn-sm btn-success w-100 shadow-sm" @click="openActionModal(boardingHouse, 'approve')">
                                                     Approve
                                                 </button>
 
-                                                <button
-                                                    v-if="boardingHouse.status === 'pending' || boardingHouse.status === 'approved'"
-                                                    type="button"
-                                                    class="btn btn-sm btn-outline-danger"
-                                                    @click="openActionModal(boardingHouse, 'reject')"
-                                                >
+                                                <button v-if="boardingHouse.status === 'pending' || boardingHouse.status === 'approved'" type="button" class="btn btn-sm btn-outline-danger w-100 bg-body" @click="openActionModal(boardingHouse, 'reject')">
                                                     Reject
                                                 </button>
 
-                                                <button
-                                                    v-if="boardingHouse.status === 'approved'"
-                                                    type="button"
-                                                    class="btn btn-sm btn-outline-warning"
-                                                    @click="openActionModal(boardingHouse, 'deactivate')"
-                                                >
+                                                <button v-if="boardingHouse.status === 'approved'" type="button" class="btn btn-sm btn-outline-warning w-100 bg-body text-dark" @click="openActionModal(boardingHouse, 'deactivate')">
                                                     Deactivate
                                                 </button>
 
-                                                <button
-                                                    v-if="boardingHouse.status === 'deactivated'"
-                                                    type="button"
-                                                    class="btn btn-sm btn-success"
-                                                    @click="openActionModal(boardingHouse, 'reactivate')"
-                                                >
+                                                <button v-if="boardingHouse.status === 'deactivated'" type="button" class="btn btn-sm btn-success w-100 shadow-sm" @click="openActionModal(boardingHouse, 'reactivate')">
                                                     Reactivate
                                                 </button>
 
-                                                <span v-if="boardingHouse.status === 'deactivated'" class="small text-body-secondary">
-                                                    Hidden publicly
-                                                </span>
+                                                <span v-if="boardingHouse.status === 'deactivated'" class="small text-body-secondary mt-1">Hidden publicly</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -677,138 +432,89 @@ const submitAction = () => {
                             </table>
                         </div>
 
-                        <!-- Empty State -->
-                        <div v-else class="d-flex flex-column align-items-center justify-content-center text-center p-5 h-100 rounded border border-secondary-subtle bg-body">
-                            <div class="fs-1 mb-3">🏠</div>
+                        <div v-else class="d-flex flex-column align-items-center justify-content-center text-center p-5 h-100 bg-body">
+                            <div class="fs-1 mb-3 opacity-50">🏠</div>
                             <h3 class="h5 text-body-emphasis fw-bold mb-2">No boarding houses yet</h3>
                             <p class="text-body-secondary mb-0">Create the first boarding house listing using the form.</p>
                         </div>
                     </div>
-                </div>
+                </section>
             </div>
         </div>
 
-        <!-- EDIT LISTING MODAL -->
-        <div
-            id="editListingModal"
-            class="modal fade"
-            tabindex="-1"
-            aria-labelledby="editListingModalLabel"
-            aria-hidden="true"
-        >
-            <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                <div class="modal-content bg-body border-secondary-subtle">
+        <!-- 🚀 UX FIX: PREMIUM EDIT MODAL -->
+        <div id="editListingModal" class="modal fade" tabindex="-1" aria-labelledby="editListingModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered border-0">
+                <div class="modal-content bg-body shadow-lg border-0 overflow-hidden">
                     <form @submit.prevent="submitEditListing">
-                        <div class="modal-header border-secondary-subtle">
+                        
+                        <div class="modal-header border-secondary-subtle bg-body-tertiary pb-4">
                             <div>
-                                <span class="badge text-bg-dark mb-2 px-2 py-1">
-                                    Edit Listing
-                                </span>
-                                <h2 id="editListingModalLabel" class="modal-title h5 fw-bold text-body-emphasis">
+                                <span class="badge text-bg-secondary mb-2 px-2 py-1 shadow-sm">Edit Listing</span>
+                                <h2 id="editListingModalLabel" class="modal-title h4 fw-bold text-body-emphasis mb-0">
                                     {{ selectedEditListing?.name }}
                                 </h2>
                             </div>
-                            <button
-                                type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal"
-                                aria-label="Close"
-                            />
+                            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
 
-                        <div class="modal-body">
-                            <!-- Changed from alert-light to alert-secondary so it adapts to dark mode -->
-                            <div class="alert alert-secondary border-secondary-subtle mb-4">
-                                Update owner assignment, coordinates, rent, room count, and listing details. If the listing is already approved, changes will be saved immediately.
+                        <div class="modal-body p-4">
+                            <div class="alert alert-secondary border-secondary-subtle mb-4 d-flex align-items-start gap-2 bg-body-tertiary">
+                                <span><i class="bi bi-info-circle"></i></span>
+                                <small>Update owner assignment, coordinates, rent, room count, and listing details. If the listing is already approved, changes will be saved immediately to the public map.</small>
                             </div>
 
-                            <div class="mb-3">
-                                <label for="edit_owner_id" class="form-label text-body-emphasis fw-medium">Assign Owner</label>
-                                <select id="edit_owner_id" v-model="editForm.owner_id" class="form-select border-secondary-subtle bg-body" :class="{ 'is-invalid': editForm.errors.owner_id }">
-                                    <option value="">No owner assigned</option>
-                                    <option v-for="owner in owners" :key="owner.id" :value="owner.id">{{ owner.name }} - {{ owner.email }}</option>
-                                </select>
-                                <div v-if="editForm.errors.owner_id" class="invalid-feedback">{{ editForm.errors.owner_id }}</div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="edit_name" class="form-label text-body-emphasis fw-medium">Boarding House Name</label>
-                                <input id="edit_name" v-model="editForm.name" type="text" class="form-control border-secondary-subtle bg-body" :class="{ 'is-invalid': editForm.errors.name }">
-                                <div v-if="editForm.errors.name" class="invalid-feedback">{{ editForm.errors.name }}</div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="edit_description" class="form-label text-body-emphasis fw-medium">Description</label>
-                                <textarea id="edit_description" v-model="editForm.description" class="form-control border-secondary-subtle bg-body" :class="{ 'is-invalid': editForm.errors.description }" rows="3" />
-                                <div v-if="editForm.errors.description" class="invalid-feedback">{{ editForm.errors.description }}</div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="edit_location_description" class="form-label text-body-emphasis fw-medium">Location Description</label>
-                                <textarea id="edit_location_description" v-model="editForm.location_description" class="form-control border-secondary-subtle bg-body" :class="{ 'is-invalid': editForm.errors.location_description }" rows="2" />
-                                <div v-if="editForm.errors.location_description" class="invalid-feedback">{{ editForm.errors.location_description }}</div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="edit_address" class="form-label text-body-emphasis fw-medium">Address</label>
-                                <input id="edit_address" v-model="editForm.address" type="text" class="form-control border-secondary-subtle bg-body" :class="{ 'is-invalid': editForm.errors.address }">
-                                <div v-if="editForm.errors.address" class="invalid-feedback">{{ editForm.errors.address }}</div>
-                            </div>
-
-                            <div class="row g-3 mb-3">
-                                <div class="col-md-6">
-                                    <label for="edit_latitude" class="form-label text-body-emphasis fw-medium">Latitude</label>
-                                    <input id="edit_latitude" v-model="editForm.latitude" type="number" step="0.0000001" class="form-control border-secondary-subtle bg-body" :class="{ 'is-invalid': editForm.errors.latitude }">
-                                    <div v-if="editForm.errors.latitude" class="invalid-feedback">{{ editForm.errors.latitude }}</div>
+                            <div class="row g-4">
+                                <div class="col-md-12">
+                                    <label for="edit_owner_id" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Assign Owner</label>
+                                    <select id="edit_owner_id" v-model="editForm.owner_id" class="form-select border-secondary-subtle bg-body shadow-sm" :class="{ 'is-invalid': editForm.errors.owner_id }">
+                                        <option value="">No owner assigned</option>
+                                        <option v-for="owner in owners" :key="owner.id" :value="owner.id">{{ owner.name }} - {{ owner.email }}</option>
+                                    </select>
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="edit_longitude" class="form-label text-body-emphasis fw-medium">Longitude</label>
-                                    <input id="edit_longitude" v-model="editForm.longitude" type="number" step="0.0000001" class="form-control border-secondary-subtle bg-body" :class="{ 'is-invalid': editForm.errors.longitude }">
-                                    <div v-if="editForm.errors.longitude" class="invalid-feedback">{{ editForm.errors.longitude }}</div>
-                                </div>
-                            </div>
 
-                            <div class="mb-3">
-                                <label for="edit_rent_price" class="form-label text-body-emphasis fw-medium">Monthly Rent</label>
-                                <input id="edit_rent_price" v-model="editForm.rent_price" type="number" step="0.01" min="0" class="form-control border-secondary-subtle bg-body" :class="{ 'is-invalid': editForm.errors.rent_price }">
-                                <div v-if="editForm.errors.rent_price" class="invalid-feedback">{{ editForm.errors.rent_price }}</div>
-                            </div>
+                                <div class="col-md-6">
+                                    <label for="edit_name" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Boarding House Name</label>
+                                    <input id="edit_name" v-model="editForm.name" type="text" class="form-control border-secondary-subtle bg-body shadow-sm" :class="{ 'is-invalid': editForm.errors.name }">
+                                </div>
 
-                            <div class="row g-3 mb-3">
                                 <div class="col-md-6">
-                                    <label for="edit_total_rooms" class="form-label text-body-emphasis fw-medium">Total Rooms</label>
-                                    <input id="edit_total_rooms" v-model="editForm.total_rooms" type="number" min="0" class="form-control border-secondary-subtle bg-body" :class="{ 'is-invalid': editForm.errors.total_rooms }">
-                                    <div v-if="editForm.errors.total_rooms" class="invalid-feedback">{{ editForm.errors.total_rooms }}</div>
+                                    <label for="edit_address" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Address</label>
+                                    <input id="edit_address" v-model="editForm.address" type="text" class="form-control border-secondary-subtle bg-body shadow-sm" :class="{ 'is-invalid': editForm.errors.address }">
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="edit_available_rooms" class="form-label text-body-emphasis fw-medium">Available Rooms</label>
-                                    <input id="edit_available_rooms" v-model="editForm.available_rooms" type="number" min="0" class="form-control border-secondary-subtle bg-body" :class="{ 'is-invalid': editForm.errors.available_rooms }">
-                                    <div v-if="editForm.errors.available_rooms" class="invalid-feedback">{{ editForm.errors.available_rooms }}</div>
-                                </div>
-                            </div>
 
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label for="edit_total_bedspaces" class="form-label text-body-emphasis fw-medium">Total Bedspaces</label>
-                                    <input id="edit_total_bedspaces" v-model="editForm.total_bedspaces" type="number" min="0" class="form-control border-secondary-subtle bg-body" :class="{ 'is-invalid': editForm.errors.total_bedspaces }">
-                                    <div v-if="editForm.errors.total_bedspaces" class="invalid-feedback">{{ editForm.errors.total_bedspaces }}</div>
+                                <div class="col-md-12">
+                                    <label for="edit_description" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Description</label>
+                                    <textarea id="edit_description" v-model="editForm.description" class="form-control border-secondary-subtle bg-body shadow-sm" :class="{ 'is-invalid': editForm.errors.description }" rows="3" />
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="edit_available_bedspaces" class="form-label text-body-emphasis fw-medium">Available Bedspaces</label>
-                                    <input id="edit_available_bedspaces" v-model="editForm.available_bedspaces" type="number" min="0" class="form-control border-secondary-subtle bg-body" :class="{ 'is-invalid': editForm.errors.available_bedspaces }">
-                                    <div v-if="editForm.errors.available_bedspaces" class="invalid-feedback">{{ editForm.errors.available_bedspaces }}</div>
+
+                                <div class="col-md-12">
+                                    <label for="edit_location_description" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Location Description</label>
+                                    <textarea id="edit_location_description" v-model="editForm.location_description" class="form-control border-secondary-subtle bg-body shadow-sm" :class="{ 'is-invalid': editForm.errors.location_description }" rows="2" />
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="edit_rent_price" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Monthly Rent</label>
+                                    <input id="edit_rent_price" v-model="editForm.rent_price" type="number" step="0.01" min="0" class="form-control border-secondary-subtle bg-body shadow-sm" :class="{ 'is-invalid': editForm.errors.rent_price }">
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="edit_latitude" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Latitude</label>
+                                    <input id="edit_latitude" v-model="editForm.latitude" type="number" step="0.0000001" class="form-control border-secondary-subtle bg-body shadow-sm" :class="{ 'is-invalid': editForm.errors.latitude }">
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="edit_longitude" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Longitude</label>
+                                    <input id="edit_longitude" v-model="editForm.longitude" type="number" step="0.0000001" class="form-control border-secondary-subtle bg-body shadow-sm" :class="{ 'is-invalid': editForm.errors.longitude }">
                                 </div>
                             </div>
                         </div>
 
-                        <div class="modal-footer border-secondary-subtle">
-                            <!-- Swapped btn-light for btn-outline-secondary -->
-                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" :disabled="editForm.processing">
-                                Cancel
-                            </button>
-                            <button type="submit" class="btn btn-ebm-primary" :disabled="editForm.processing">
-                                <span v-if="editForm.processing">Updating...</span>
-                                <span v-else>Save Changes</span>
+                        <div class="modal-footer border-secondary-subtle bg-body-tertiary">
+                            <button type="button" class="btn btn-outline-secondary fw-medium" data-bs-dismiss="modal" :disabled="editForm.processing">Cancel</button>
+                            <button type="submit" class="btn btn-success fw-bold shadow-sm px-4" :disabled="editForm.processing">
+                                <span v-if="editForm.processing" class="spinner-border spinner-border-sm me-2"></span>
+                                {{ editForm.processing ? 'Updating...' : 'Save Changes' }}
                             </button>
                         </div>
                     </form>
@@ -816,82 +522,95 @@ const submitAction = () => {
             </div>
         </div>
 
-        <!-- ACTION (APPROVE/REJECT) MODAL -->
-        <div
-            id="listingActionModal"
-            class="modal fade"
-            tabindex="-1"
-            aria-labelledby="listingActionModalLabel"
-            aria-hidden="true"
-        >
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content bg-body border-secondary-subtle">
+        <!-- 🚀 UX FIX: PREMIUM ACTION (APPROVE/REJECT) MODAL -->
+        <div id="listingActionModal" class="modal fade" tabindex="-1" aria-labelledby="listingActionModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered border-0">
+                <div class="modal-content bg-body shadow-lg border-0 overflow-hidden">
                     <form @submit.prevent="submitAction">
-                        <div class="modal-header border-secondary-subtle">
+                        
+                        <div class="modal-header border-bottom-0 text-white" :class="actionHeaderClass">
                             <div>
-                                <span class="badge mb-2 px-2 py-1" :class="actionBadgeClass">
+                                <h2 id="listingActionModalLabel" class="modal-title h5 fw-bold mb-0">
                                     {{ actionTitle }}
-                                </span>
-                                <h2 id="listingActionModalLabel" class="modal-title h5 fw-bold text-body-emphasis">
-                                    {{ selectedListing?.name }}
                                 </h2>
+                                <div class="small opacity-75 mt-1">{{ selectedListing?.name }}</div>
                             </div>
-                            <button
-                                type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal"
-                                aria-label="Close"
-                            />
+                            <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal" aria-label="Close" :class="{'btn-close-dark': actionType === 'deactivate'}"></button>
                         </div>
 
-                        <div class="modal-body">
-                            <div v-if="actionForm.errors.listing" class="alert alert-danger mb-3">
-                                {{ actionForm.errors.listing }}
+                        <div class="modal-body p-4">
+                            <div v-if="actionForm.errors.listing" class="alert alert-danger mb-3 border-0 shadow-sm">{{ actionForm.errors.listing }}</div>
+
+                            <p class="text-body-emphasis lead fs-6 mb-4">{{ actionMessage }}</p>
+
+                            <div v-if="selectedListing && (!selectedListing.latitude || !selectedListing.longitude) && (actionType === 'approve' || actionType === 'reactivate')" class="alert alert-warning border-warning-subtle shadow-sm d-flex align-items-start gap-2">
+                                <span>⚠️</span>
+                                <small class="text-dark fw-medium">This listing has missing coordinates. It cannot be approved or reactivated until latitude and longitude are provided via the Edit menu.</small>
                             </div>
 
-                            <p class="text-body-emphasis">
-                                {{ actionMessage }}
-                            </p>
-
-                            <div v-if="selectedListing && (!selectedListing.latitude || !selectedListing.longitude) && (actionType === 'approve' || actionType === 'reactivate')" class="alert alert-warning">
-                                <i class="bi bi-exclamation-triangle-fill me-2"></i> This listing has missing coordinates. It cannot be approved or reactivated until latitude and longitude are provided.
-                            </div>
-
-                            <div v-if="actionNeedsReason" class="mb-4">
-                                <label for="reason" class="form-label text-body-emphasis fw-medium">
-                                    Reason <span class="text-danger">*</span>
-                                </label>
-                                <textarea
-                                    id="reason"
-                                    v-model="actionForm.reason"
-                                    class="form-control border-secondary-subtle bg-body"
-                                    :class="{ 'is-invalid': actionForm.errors.reason }"
-                                    rows="4"
-                                    placeholder="Write the reason here"
-                                />
-                                <div v-if="actionForm.errors.reason" class="invalid-feedback">
-                                    {{ actionForm.errors.reason }}
-                                </div>
-                            </div>
-
-                            <!-- Changed alert-light to alert-secondary -->
-                            <div class="alert alert-secondary border-secondary-subtle mb-0 small">
-                                <i class="bi bi-info-circle me-1"></i> This action will be recorded in the activity logs for accountability.
+                            <div v-if="actionNeedsReason" class="mb-2">
+                                <label for="reason" class="form-label text-body-emphasis fw-bold">Reason <span class="text-danger">*</span></label>
+                                <textarea id="reason" v-model="actionForm.reason" class="form-control border-secondary-subtle bg-body-tertiary focus-ring focus-ring-danger shadow-sm" :class="{ 'is-invalid': actionForm.errors.reason }" rows="4" placeholder="Write the reason here..." />
+                                <div v-if="actionForm.errors.reason" class="invalid-feedback fw-bold">{{ actionForm.errors.reason }}</div>
                             </div>
                         </div>
 
-                        <div class="modal-footer border-secondary-subtle">
-                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" :disabled="actionForm.processing">
-                                Cancel
-                            </button>
-                            <button type="submit" class="btn" :class="actionButtonClass" :disabled="actionForm.processing">
-                                <span v-if="actionForm.processing">Saving...</span>
-                                <span v-else>{{ actionTitle }}</span>
+                        <div class="modal-footer border-secondary-subtle bg-body-tertiary">
+                            <button type="button" class="btn btn-outline-secondary fw-medium" data-bs-dismiss="modal" :disabled="actionForm.processing">Cancel</button>
+                            <button type="submit" class="btn fw-bold shadow-sm px-4" :class="actionButtonClass" :disabled="actionForm.processing">
+                                <span v-if="actionForm.processing" class="spinner-border spinner-border-sm me-2"></span>
+                                {{ actionForm.processing ? 'Saving...' : 'Confirm Action' }}
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
+
     </AdminLayout>
 </template>
+
+<style scoped>
+/* 🪄 UX FIX: The Custom "Window Box" Table Scroll */
+.custom-table-scroll {
+    max-height: 600px;
+    overflow-y: auto;
+    overflow-x: auto;
+    
+    /* Sleek slim scrollbars for modern UI */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(108, 117, 125, 0.5) transparent;
+}
+
+.custom-table-scroll::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.custom-table-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-table-scroll::-webkit-scrollbar-thumb {
+    background-color: rgba(108, 117, 125, 0.5);
+    border-radius: 10px;
+}
+
+/* 🪄 UX FIX: Sticky Header */
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    box-shadow: inset 0 -1px 0 var(--bs-border-color);
+}
+
+/* Typography refinements */
+.tracking-tight {
+    letter-spacing: -0.02em;
+}
+
+/* Ensure the dark theme close button looks correct on warning backgrounds */
+.btn-close-dark {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+</style>

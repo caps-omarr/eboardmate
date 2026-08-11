@@ -176,8 +176,8 @@ const submitReservation = () => {
         <section class="py-5">
             <div class="container">
                 <div class="mb-4">
-                    <Link href="/map" class="btn btn-ebm-outline">
-                        Back to Map
+                    <Link href="/boarding-houses" class="btn btn-ebm-outline">
+                        Back to List
                     </Link>
                 </div>
 
