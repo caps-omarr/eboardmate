@@ -4,7 +4,7 @@ import OwnerLayout from '@/Layouts/OwnerLayout.vue';
 import { Modal } from 'bootstrap';
 import { computed, ref } from 'vue';
 
-defineProps({
+const props = defineProps({
     owner: {
         type: Object,
         required: true,
@@ -24,7 +24,6 @@ defineProps({
 });
 
 const page = usePage();
-
 const flashSuccess = computed(() => page.props.flash?.success || null);
 
 const selectedReservation = ref(null);
@@ -34,33 +33,47 @@ const responseForm = useForm({
     owner_response: '',
 });
 
+// --- UI HELPER FUNCTIONS ---
+
+// 🚀 FIX: Safely generates Initials for the Avatar (prevents "UNDEFINED" bug)
+const getInitials = (name) => {
+    if (!name) return '??';
+    // The /\s+/ regex safely splits by any amount of spaces
+    const parts = name.trim().split(/\s+/); 
+    if (parts.length >= 2 && parts[0] && parts[1]) {
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return parts[0].substring(0, 2).toUpperCase();
+};
+
+// Calculates percentages for the mini progress bars
+const getPercentage = (value, total) => {
+    if (!total || total === 0) return 0;
+    return Math.round((value / total) * 100);
+};
+
+// Calculates Occupancy Rate
+const occupancyRate = computed(() => {
+    if (!props.boardingHouse || props.boardingHouse.total_rooms === 0) return 0;
+    const occupied = props.boardingHouse.total_rooms - props.boardingHouse.available_rooms;
+    return getPercentage(occupied, props.boardingHouse.total_rooms);
+});
+
 const statusBadgeClass = (status) => {
-    if (status === 'pending') {
-        return 'text-bg-warning';
-    }
-
-    if (status === 'approved') {
-        return 'text-bg-success';
-    }
-
-    if (status === 'rejected') {
-        return 'text-bg-danger';
-    }
-
-    if (status === 'expired' || status === 'cancelled') {
-        return 'text-bg-secondary';
-    }
-
-    return 'text-bg-secondary';
+    if (status === 'pending') return 'badge-soft-warning';
+    if (status === 'approved') return 'badge-soft-success';
+    if (status === 'rejected') return 'badge-soft-danger';
+    return 'badge-soft-secondary';
 };
 
 const formatPrice = (price) => {
     return Number(price || 0).toLocaleString('en-PH', {
-        minimumFractionDigits: 2,
+        minimumFractionDigits: 0,
         maximumFractionDigits: 2,
     });
 };
 
+// --- MODAL LOGIC ---
 const openResponseModal = (reservation, type) => {
     selectedReservation.value = reservation;
     actionType.value = type;
@@ -73,7 +86,6 @@ const openResponseModal = (reservation, type) => {
     }
 
     const modalElement = document.getElementById('reservationResponseModal');
-
     if (modalElement) {
         Modal.getOrCreateInstance(modalElement).show();
     }
@@ -81,16 +93,13 @@ const openResponseModal = (reservation, type) => {
 
 const closeResponseModal = () => {
     const modalElement = document.getElementById('reservationResponseModal');
-
     if (modalElement) {
         Modal.getOrCreateInstance(modalElement).hide();
     }
 };
 
 const submitResponse = () => {
-    if (!selectedReservation.value) {
-        return;
-    }
+    if (!selectedReservation.value) return;
 
     const targetUrl = actionType.value === 'approve'
         ? selectedReservation.value.approve_url
@@ -110,221 +119,178 @@ const submitResponse = () => {
     <OwnerLayout>
         <Head title="Owner Dashboard | E-BoardMate" />
 
-        <div class="container pb-5">
+        <div class="container-fluid pb-5 px-0 px-md-3 max-w-desktop mx-auto">
             
             <!-- ALERTS -->
-            <div v-if="flashSuccess" class="alert alert-success mb-4 shadow-sm border-0">
+            <div v-if="flashSuccess" class="alert alert-success mx-3 mx-md-0 mb-4 shadow-sm border-0 rounded-4">
                 {{ flashSuccess }}
             </div>
-
-            <div v-if="responseForm.errors.reservation" class="alert alert-danger mb-4 shadow-sm border-0">
+            <div v-if="responseForm.errors.reservation" class="alert alert-danger mx-3 mx-md-0 mb-4 shadow-sm border-0 rounded-4">
                 {{ responseForm.errors.reservation }}
             </div>
 
-            <!-- HEADER SECTION -->
-            <header class="mb-4 pt-2">
-                <span class="badge bg-success bg-opacity-10 text-success border border-success-subtle mb-3 px-3 py-2 rounded-pill shadow-sm">
-                    Boarding House Owner
-                </span>
-
-                <h1 class="fw-bold mb-2 tracking-tight">
-                    Owner Dashboard
-                </h1>
-
-                <p class="text-body-secondary mb-0 lead" style="font-size: 1.1rem;">
-                    Welcome, <strong>{{ owner.name }}</strong>. Manage your assigned boarding house and monitor student reservations.
-                </p>
+            <!-- NATIVE HEADER SECTION -->
+            <header class="d-flex justify-content-between align-items-center px-3 px-md-0 mb-4 pt-3">
+                <h1 class="fw-bold mb-0 text-body-emphasis" style="font-size: 1.75rem;">Dashboard</h1>
+                <!-- Owner Avatar (Circle image or initials) -->
+                <div class="owner-avatar shadow-sm border border-2 border-white bg-success text-white fw-bold d-flex align-items-center justify-content-center overflow-hidden flex-shrink-0">
+                    <img v-if="owner.profile_photo_url || owner.avatar" :src="owner.profile_photo_url || owner.avatar" :alt="owner.name" class="w-100 h-100 object-fit-cover">
+                    <span v-else>{{ getInitials(owner.name) }}</span>
+                </div>
             </header>
 
             <!-- NO BOARDING HOUSE ASSIGNED -->
-            <section v-if="!boardingHouse" class="ebm-card p-4 p-md-5 text-center shadow-sm border border-secondary-subtle">
+            <section v-if="!boardingHouse" class="mx-3 mx-md-0 ebm-card p-4 p-md-5 text-center shadow-sm rounded-4">
                 <div class="fs-1 mb-3">🏠</div>
-                <h2 class="h4 fw-bold mb-2">No assigned boarding house yet</h2>
-                <p class="text-body-secondary mb-0">
-                    Your owner account does not have an assigned boarding house listing yet. Please contact the super admin to link your property.
-                </p>
+                <h2 class="h4 fw-bold mb-2">No assigned boarding house</h2>
+                <p class="text-body-secondary mb-0">Contact the super admin to link your property.</p>
             </section>
 
             <!-- MAIN DASHBOARD CONTENT -->
             <template v-else>
                 
-                <!-- 🚀 UX FIX: 2x2 Grid on Mobile (col-6), 1-Row on Desktop (col-lg-3) -->
-                <section class="row g-3 mb-4" aria-label="Dashboard Statistics">
-                    <div class="col-6 col-lg-3">
-                        <div class="ebm-card p-3 p-md-4 shadow-sm border border-secondary-subtle h-100 d-flex flex-column justify-content-center">
-                            <span class="text-body-secondary small fw-bold text-uppercase tracking-tight mb-2">
-                                Total Reservations
-                            </span>
-                            <strong class="fs-2 fw-bold lh-1 text-body-emphasis">
-                                {{ stats.total }}
-                            </strong>
+                <!-- 2x2 NATIVE STATS GRID -->
+                <section class="native-grid px-3 px-md-0 mb-5" aria-label="Dashboard Statistics">
+                    
+                    <!-- Highlight Card (Deep Green) -->
+                    <div class="native-card card-highlight d-flex flex-column justify-content-between">
+                        <div>
+                            <strong class="fs-1 fw-bold lh-1 mb-1 d-block">{{ stats.total }}</strong>
+                            <span class="small opacity-75">Total Reservations</span>
+                        </div>
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between small opacity-75 mb-1 font-monospace" style="font-size: 0.7rem;">
+                                <span>0%</span>
+                                <span>{{ getPercentage(stats.approved, stats.total) }}% Apprv</span>
+                            </div>
+                            <div class="native-progress bg-black bg-opacity-25">
+                                <div class="native-progress-bar bg-white" :style="`width: ${getPercentage(stats.approved, stats.total)}%`"></div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="col-6 col-lg-3">
-                        <div class="ebm-card p-3 p-md-4 shadow-sm border border-warning-subtle h-100 d-flex flex-column justify-content-center">
-                            <span class="text-body-secondary small fw-bold text-uppercase tracking-tight mb-2">
-                                Pending
-                            </span>
-                            <strong class="fs-2 fw-bold lh-1 text-warning">
-                                {{ stats.pending }}
-                            </strong>
+                    <!-- Pending Card -->
+                    <div class="native-card bg-body shadow-sm d-flex flex-column justify-content-between">
+                        <div>
+                            <strong class="fs-1 fw-bold lh-1 mb-1 text-body-emphasis d-block">{{ stats.pending }}</strong>
+                            <span class="small text-body-secondary">Pending Action</span>
+                        </div>
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between small text-body-secondary mb-1 font-monospace" style="font-size: 0.7rem;">
+                                <span>0%</span>
+                                <span>{{ getPercentage(stats.pending, stats.total) }}%</span>
+                            </div>
+                            <div class="native-progress bg-secondary bg-opacity-10">
+                                <div class="native-progress-bar bg-warning" :style="`width: ${getPercentage(stats.pending, stats.total)}%`"></div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="col-6 col-lg-3">
-                        <div class="ebm-card p-3 p-md-4 shadow-sm border border-success-subtle h-100 d-flex flex-column justify-content-center">
-                            <span class="text-body-secondary small fw-bold text-uppercase tracking-tight mb-2">
-                                Approved
-                            </span>
-                            <strong class="fs-2 fw-bold lh-1 text-success">
-                                {{ stats.approved }}
+                    <!-- Occupancy Card -->
+                    <div class="native-card bg-body shadow-sm d-flex flex-column justify-content-between">
+                        <div>
+                            <strong class="fs-1 fw-bold lh-1 mb-1 text-body-emphasis d-block">
+                                {{ boardingHouse.total_rooms - boardingHouse.available_rooms }}/{{ boardingHouse.total_rooms }}
                             </strong>
+                            <span class="small text-body-secondary">Rooms Occupied</span>
+                        </div>
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between small text-body-secondary mb-1 font-monospace" style="font-size: 0.7rem;">
+                                <span>0%</span>
+                                <span>{{ occupancyRate }}%</span>
+                            </div>
+                            <div class="native-progress bg-secondary bg-opacity-10">
+                                <div class="native-progress-bar bg-success" :style="`width: ${occupancyRate}%`"></div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="col-6 col-lg-3">
-                        <div class="ebm-card p-3 p-md-4 shadow-sm border border-secondary-subtle h-100 d-flex flex-column justify-content-center">
-                            <span class="text-body-secondary small fw-bold text-uppercase tracking-tight mb-2">
-                                Rejected / Expired
-                            </span>
-                            <strong class="fs-2 fw-bold lh-1 text-secondary">
-                                {{ stats.rejected + stats.expired }}
-                            </strong>
+                    <!-- Revenue / Property Info Card -->
+                    <div class="native-card bg-body shadow-sm d-flex flex-column justify-content-between">
+                        <div>
+                            <strong class="fs-3 fw-bold lh-1 mb-1 text-success d-block">₱{{ formatPrice(boardingHouse.rent_price) }}</strong>
+                            <span class="small text-body-secondary">Monthly Rent</span>
+                        </div>
+                        <div class="mt-3">
+                            <div class="d-flex align-items-center gap-1">
+                                <span v-if="boardingHouse.is_verified" class="badge bg-success bg-opacity-10 text-success rounded-pill px-2">Verified</span>
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-2">{{ boardingHouse.status }}</span>
+                            </div>
                         </div>
                     </div>
                 </section>
 
-                <div class="row g-4">
-                    
-                    <!-- PROPERTY DETAILS -->
-                    <section class="col-lg-4" aria-label="Property Details">
-                        <div class="ebm-card p-4 shadow-sm border border-secondary-subtle h-100">
-                            <h2 class="h5 fw-bold mb-3">Assigned Boarding House</h2>
-
-                            <div class="d-flex flex-wrap gap-2 mb-3">
-                                <span v-if="boardingHouse.is_verified" class="badge text-bg-success shadow-sm">Verified</span>
-                                <span v-else class="badge text-bg-warning shadow-sm">Not Verified</span>
-                                <span class="badge bg-body-secondary text-body border border-secondary-subtle shadow-sm">{{ boardingHouse.status }}</span>
-                            </div>
-
-                            <h3 class="h4 fw-bold mb-4 text-body-emphasis">{{ boardingHouse.name }}</h3>
-
-                            <ul class="list-group list-group-flush border-top border-secondary-subtle pt-2">
-                                <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0 py-3 border-secondary-subtle">
-                                    <span class="text-body-secondary">Monthly Rent</span>
-                                    <strong class="text-body-emphasis fs-5">₱{{ formatPrice(boardingHouse.rent_price) }}</strong>
-                                </li>
-                                <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0 py-3 border-secondary-subtle">
-                                    <span class="text-body-secondary">Rooms</span>
-                                    <strong class="text-body-emphasis">{{ boardingHouse.available_rooms }} / {{ boardingHouse.total_rooms }}</strong>
-                                </li>
-                                <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0 py-3 border-secondary-subtle">
-                                    <span class="text-body-secondary">Bedspaces</span>
-                                    <strong class="text-body-emphasis">{{ boardingHouse.available_bedspaces }} / {{ boardingHouse.total_bedspaces }}</strong>
-                                </li>
-                            </ul>
+                <!-- MOBILE-FIRST RESPONSIVE SCROLLABLE RESERVATION LIST -->
+                <section class="px-3 px-md-0 mb-5" aria-label="Latest Reservations">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h2 class="h5 fw-bold mb-0 text-body-emphasis">Recent Activity</h2>
+                            <span class="small text-body-secondary">Latest guest reservation requests</span>
                         </div>
-                    </section>
+                        <Link href="/owner/reservations" class="btn btn-sm btn-outline-success rounded-pill fw-semibold px-3">
+                            View All <i class="bi bi-arrow-right ms-1"></i>
+                        </Link>
+                    </div>
 
-                    <!-- LATEST RESERVATIONS TABLE -->
-                    <section class="col-lg-8" aria-label="Latest Reservations">
-                        <div class="ebm-card p-0 overflow-hidden shadow-sm border border-secondary-subtle h-100 d-flex flex-column">
+                    <div v-if="reservations.length" class="recent-activity-scroll-container pe-1">
+                        <div class="native-list-group d-flex flex-column gap-3">
                             
-                            <div class="p-4 border-bottom border-secondary-subtle bg-body-tertiary">
-                                <h2 class="h5 fw-bold mb-1">Latest Reservations</h2>
-                                <p class="text-body-secondary small mb-0">These are the latest reservation requests for your assigned boarding house.</p>
+                            <!-- Reservation Item Card -->
+                            <div v-for="reservation in reservations" :key="reservation.id" class="native-list-item bg-body shadow-sm p-3 rounded-4 d-flex align-items-center gap-3 border border-secondary-subtle">
+                                
+                                <!-- Guest Avatar -->
+                                <div class="guest-avatar bg-success-subtle text-success fw-bold flex-shrink-0 border border-success-subtle">
+                                    {{ getInitials(reservation.guest_name) }}
+                                </div>
+
+                                <!-- Info -->
+                                <div class="flex-grow-1 min-w-0">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <h3 class="h6 fw-bold mb-0 text-truncate text-body-emphasis pe-2" style="line-height: 1.2;">{{ reservation.guest_name }}</h3>
+                                        <span class="small font-monospace text-body-secondary flex-shrink-0">{{ reservation.created_at.split(' ')[0] }}</span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <span class="small text-body-secondary text-truncate">Move-in: <strong class="text-body-emphasis">{{ reservation.preferred_move_in_date }}</strong></span>
+                                        <span class="badge rounded-pill px-2 py-1" :class="statusBadgeClass(reservation.status)">
+                                            {{ reservation.status_label }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div v-if="reservation.can_respond" class="d-flex flex-column gap-2 ms-2 flex-shrink-0">
+                                    <button type="button" class="btn btn-sm btn-native-primary rounded-pill px-3 fw-bold shadow-sm" @click="openResponseModal(reservation, 'approve')">
+                                        Approve
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-native-outline-danger rounded-pill px-3 fw-bold" @click="openResponseModal(reservation, 'reject')">
+                                        Reject
+                                    </button>
+                                </div>
                             </div>
-
-                            <!-- 🚀 UX FIX: The "Window Box" Table Scroll Wrapper -->
-                            <div v-if="reservations.length" class="table-responsive custom-table-scroll flex-grow-1 bg-body">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead>
-                                        <tr>
-                                            <!-- 🚀 UX FIX: Sticky headers and text-nowrap prevent squishing -->
-                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Reference</th>
-                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Guest</th>
-                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Move-in Date</th>
-                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Status</th>
-                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Email</th>
-                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Submitted</th>
-                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase text-end pe-4">Action</th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody class="border-top-0">
-                                        <tr v-for="reservation in reservations" :key="reservation.id">
-                                            
-                                            <td class="text-nowrap ps-3">
-                                                <strong class="font-monospace">{{ reservation.reference_code }}</strong>
-                                            </td>
-
-                                            <td class="text-nowrap">
-                                                <div class="fw-bold text-body-emphasis">{{ reservation.guest_name }}</div>
-                                                <div class="small text-body-secondary">{{ reservation.guest_email }}</div>
-                                                <div class="small text-body-secondary">{{ reservation.guest_phone }}</div>
-                                            </td>
-
-                                            <td class="text-nowrap">
-                                                <span class="fw-medium">{{ reservation.preferred_move_in_date }}</span>
-                                            </td>
-
-                                            <td class="text-nowrap">
-                                                <span class="badge shadow-sm" :class="statusBadgeClass(reservation.status)">
-                                                    {{ reservation.status_label }}
-                                                </span>
-                                            </td>
-
-                                            <td class="text-nowrap">
-                                                <span v-if="reservation.email_notification_status" class="badge bg-body-secondary text-body border border-secondary-subtle">
-                                                    {{ reservation.email_notification_status }}
-                                                </span>
-                                                <span v-else class="small text-body-secondary fst-italic">Not sent</span>
-                                            </td>
-
-                                            <td class="small text-body-secondary text-nowrap">
-                                                {{ reservation.created_at }}
-                                            </td>
-
-                                            <td class="text-nowrap text-end pe-3">
-                                                <div v-if="reservation.can_respond" class="d-flex flex-column gap-2 justify-content-end align-items-end">
-                                                    <button type="button" class="btn btn-sm btn-success shadow-sm w-100" @click="openResponseModal(reservation, 'approve')">
-                                                        Approve
-                                                    </button>
-                                                    <button type="button" class="btn btn-sm btn-outline-danger w-100" @click="openResponseModal(reservation, 'reject')">
-                                                        Reject
-                                                    </button>
-                                                </div>
-                                                <span v-else class="small text-body-secondary fw-medium bg-body-tertiary px-2 py-1 rounded border border-secondary-subtle">
-                                                    Responded
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <div v-else class="empty-state text-center p-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
-                                <div class="fs-1 mb-3 opacity-50">📋</div>
-                                <h3 class="h5 fw-bold mb-2">No reservations yet</h3>
-                                <p class="text-body-secondary mb-0">New student reservation requests will appear here.</p>
-                            </div>
+                            
                         </div>
-                    </section>
-                </div>
+                    </div>
+
+                    <div v-else class="text-center p-5 bg-body rounded-4 shadow-sm border border-secondary-subtle">
+                        <div class="fs-1 mb-3 opacity-50">📋</div>
+                        <h3 class="h6 fw-bold mb-1">No reservations yet</h3>
+                        <p class="text-body-secondary small mb-0">Student requests will appear here.</p>
+                    </div>
+                </section>
+                
             </template>
         </div>
 
         <!-- MODAL -->
-        <div id="reservationResponseModal" class="modal fade" tabindex="-1" aria-labelledby="reservationResponseModalLabel" aria-hidden="true">
+        <div id="reservationResponseModal" class="modal fade" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered border-0">
-                <div class="modal-content shadow-lg border-0 overflow-hidden">
+                <div class="modal-content shadow-lg border-0 rounded-4 overflow-hidden">
                     <form @submit.prevent="submitResponse">
                         
-                        <!-- Dynamic Header Color based on Action -->
+                        <!-- Dynamic Header Color -->
                         <div class="modal-header border-bottom-0 text-white" :class="actionType === 'approve' ? 'bg-success' : 'bg-danger'">
                             <div>
-                                <h2 id="reservationResponseModalLabel" class="modal-title h5 fw-bold mb-0">
+                                <h2 class="modal-title h5 fw-bold mb-0">
                                     {{ actionType === 'approve' ? 'Approve' : 'Reject' }} Reservation
                                 </h2>
                                 <div class="small opacity-75 mt-1 font-monospace">Ref: {{ selectedReservation?.reference_code }}</div>
@@ -333,8 +299,10 @@ const submitResponse = () => {
                         </div>
 
                         <div class="modal-body p-4 bg-body">
-                            <div class="d-flex align-items-center gap-3 mb-4 p-3 bg-body-tertiary rounded border border-secondary-subtle">
-                                <div class="fs-2 lh-1">👤</div>
+                            <div class="d-flex align-items-center gap-3 mb-4 p-3 bg-body-tertiary rounded-4 border border-secondary-subtle">
+                                <div class="guest-avatar bg-white border border-secondary-subtle fw-bold text-body-secondary shadow-sm">
+                                    {{ getInitials(selectedReservation?.guest_name) }}
+                                </div>
                                 <div>
                                     <div class="small text-body-secondary fw-bold text-uppercase tracking-tight">Guest Name</div>
                                     <div class="fw-bold fs-5 text-body-emphasis">{{ selectedReservation?.guest_name }}</div>
@@ -348,26 +316,21 @@ const submitResponse = () => {
                             <textarea
                                 id="owner_response"
                                 v-model="responseForm.owner_response"
-                                class="form-control bg-body-tertiary focus-ring focus-ring-success"
-                                :class="{ 'is-invalid': responseForm.errors.owner_response, 'focus-ring-danger': actionType === 'reject' }"
+                                class="form-control bg-body-tertiary rounded-4 focus-ring focus-ring-success"
+                                :class="{ 'is-invalid': responseForm.errors.owner_response }"
                                 rows="4"
-                                placeholder="Write a short message for the guest explaining the approval or rejection..."
+                                placeholder="Write a short message for the guest..."
                             />
                             <div v-if="responseForm.errors.owner_response" class="invalid-feedback fw-bold">
                                 {{ responseForm.errors.owner_response }}
                             </div>
-
-                            <div class="alert alert-primary bg-primary bg-opacity-10 text-primary border-primary border-opacity-25 mt-4 mb-0 d-flex align-items-start gap-2">
-                                <span>📧</span>
-                                <small>After saving, the system will attempt to instantly send an email notification with your message to the guest.</small>
-                            </div>
                         </div>
 
                         <div class="modal-footer bg-body-tertiary border-top border-secondary-subtle p-3">
-                            <button type="button" class="btn btn-outline-secondary fw-medium" data-bs-dismiss="modal" :disabled="responseForm.processing">
+                            <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-medium" data-bs-dismiss="modal" :disabled="responseForm.processing">
                                 Cancel
                             </button>
-                            <button type="submit" class="btn fw-bold shadow-sm px-4" :class="actionType === 'approve' ? 'btn-success' : 'btn-danger'" :disabled="responseForm.processing">
+                            <button type="submit" class="btn rounded-pill fw-bold shadow-sm px-4" :class="actionType === 'approve' ? 'btn-success' : 'btn-danger'" :disabled="responseForm.processing">
                                 <span v-if="responseForm.processing" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                                 {{ responseForm.processing ? 'Saving...' : 'Confirm ' + (actionType === 'approve' ? 'Approval' : 'Rejection') }}
                             </button>
@@ -380,41 +343,127 @@ const submitResponse = () => {
 </template>
 
 <style scoped>
-/* 🪄 UX FIX: The Custom "Window Box" Table Scroll */
-.custom-table-scroll {
-    max-height: 500px;
-    overflow-y: auto;
-    overflow-x: auto;
-    
-    /* Sleek slim scrollbars for modern UI */
-    scrollbar-width: thin;
-    scrollbar-color: rgba(108, 117, 125, 0.5) transparent;
+/* Restrict max width on desktop */
+.max-w-desktop {
+    max-width: 1200px;
 }
 
-.custom-table-scroll::-webkit-scrollbar {
-    width: 6px;
+/* =========================================
+   NATIVE APP UI COMPONENTS
+========================================== */
+
+/* Owner Avatar Header */
+.owner-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    font-size: 1.1rem;
+}
+
+/* 2x2 Grid System */
+.native-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+@media (min-width: 768px) {
+    .native-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.native-card {
+    border-radius: 20px;
+    padding: 20px;
+    min-height: 140px;
+}
+
+/* Deep Emerald Highlight Card */
+.card-highlight {
+    background: linear-gradient(135deg, #022c22 0%, #065f46 100%);
+    color: #ffffff;
+    box-shadow: 0 10px 25px rgba(6, 95, 70, 0.4);
+}
+
+/* Mini Progress Bars */
+.native-progress {
     height: 6px;
-}
-
-.custom-table-scroll::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.custom-table-scroll::-webkit-scrollbar-thumb {
-    background-color: rgba(108, 117, 125, 0.5);
     border-radius: 10px;
+    width: 100%;
+    overflow: hidden;
+}
+.native-progress-bar {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 🪄 UX FIX: Sticky Header */
-.sticky-header {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    box-shadow: inset 0 -1px 0 var(--bs-border-color); /* Adds the bottom border cleanly under the sticky header */
+/* Segmented Control (Monthly/Weekly/Today style) */
+.native-segmented-control {
+    background-color: rgba(var(--bs-secondary-bg-rgb), 1);
+    padding: 4px;
+    border-radius: 12px;
+}
+.native-segmented-control button {
+    background: transparent;
+    border: none;
+    padding: 6px 16px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+.native-segmented-control button.active {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-/* Typography refinements */
-.tracking-tight {
-    letter-spacing: -0.02em;
+/* List View Enhancements */
+.guest-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.badge-soft-success { background: rgba(25, 135, 84, 0.15); color: #198754; border: 1px solid rgba(25, 135, 84, 0.2); }
+.badge-soft-warning { background: rgba(255, 193, 7, 0.15); color: #b08000; border: 1px solid rgba(255, 193, 7, 0.3); }
+.badge-soft-danger { background: rgba(220, 53, 69, 0.15); color: #dc3545; border: 1px solid rgba(220, 53, 69, 0.2); }
+.badge-soft-secondary { background: rgba(108, 117, 125, 0.15); color: #6c757d; border: 1px solid rgba(108, 117, 125, 0.2); }
+
+/* Native-style buttons */
+.btn-native-primary {
+    background-color: #10b981;
+    color: white;
+    border: none;
+    font-size: 0.75rem;
+}
+.btn-native-primary:hover { background-color: #059669; color: white; }
+.btn-native-outline-danger {
+    background-color: transparent;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    font-size: 0.75rem;
+}
+.btn-native-outline-danger:hover { background-color: #dc3545; color: white; }
+
+.recent-activity-scroll-container {
+    max-height: 420px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    padding-bottom: 30px;
+}
+
+/* Custom smooth scrollbar */
+.recent-activity-scroll-container::-webkit-scrollbar {
+    width: 5px;
+}
+.recent-activity-scroll-container::-webkit-scrollbar-thumb {
+    background-color: rgba(var(--bs-secondary-rgb), 0.3);
+    border-radius: 10px;
 }
 </style>

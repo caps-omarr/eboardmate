@@ -63,6 +63,10 @@ Route::post('/owner/login', [OwnerAuthController::class, 'store'])
     ->middleware('guest')
     ->name('owner.login.store');
 
+Route::get('/owner/install', function () {
+    return Inertia::render('Owner/Install');
+})->name('owner.install');
+
 Route::post('/owner/logout', [OwnerAuthController::class, 'destroy'])
     ->middleware(['auth', 'role:owner'])
     ->name('owner.logout');

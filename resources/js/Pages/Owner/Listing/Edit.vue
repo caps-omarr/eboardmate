@@ -14,7 +14,7 @@ const page = usePage();
 
 const flashSuccess = computed(() => page.props.flash?.success || null);
 const photoInput = ref(null);
-const photoPreview = ref(null); // 🚀 FIX: Added local state for instant file preview
+const photoPreview = ref(null); 
 
 const form = useForm({
     description: props.boardingHouse?.description || '',
@@ -49,8 +49,7 @@ const submitPhoto = () => {
         forceFormData: true,
         onSuccess: () => {
             photoForm.reset();
-            photoPreview.value = null; // Clear local preview on success
-
+            photoPreview.value = null; 
             if (photoInput.value) {
                 photoInput.value.value = '';
             }
@@ -62,7 +61,6 @@ const setPhotoFile = (event) => {
     const file = event.target.files[0] || null;
     photoForm.photo = file;
 
-    // 🚀 FIX: Generate an instant preview URL so the chosen photo appears immediately
     if (file) {
         photoPreview.value = URL.createObjectURL(file);
     } else {
@@ -86,598 +84,286 @@ const deletePhoto = (photo) => {
     });
 };
 
+// UI: Native Soft Badges
 const statusBadgeClass = computed(() => {
-    if (!props.boardingHouse) {
-        return 'text-bg-secondary';
-    }
-
-    if (props.boardingHouse.status === 'approved') {
-        return 'text-bg-success';
-    }
-
-    if (props.boardingHouse.status === 'pending') {
-        return 'text-bg-warning';
-    }
-
-    if (props.boardingHouse.status === 'rejected') {
-        return 'text-bg-danger';
-    }
-
-    if (props.boardingHouse.status === 'deactivated') {
-        return 'text-bg-secondary';
-    }
-
-    return 'text-bg-secondary';
+    if (!props.boardingHouse) return 'badge-soft-secondary';
+    if (props.boardingHouse.status === 'approved') return 'badge-soft-success';
+    if (props.boardingHouse.status === 'pending') return 'badge-soft-warning';
+    if (props.boardingHouse.status === 'rejected') return 'badge-soft-danger';
+    if (props.boardingHouse.status === 'deactivated') return 'badge-soft-secondary';
+    return 'badge-soft-secondary';
 });
 </script>
 
 <template>
     <OwnerLayout>
-        <Head title="My Boarding House Listing | E-BoardMate" />
+        <Head title="My Listing | E-BoardMate" />
 
-        <div class="container">
-            <div
-                v-if="flashSuccess"
-                class="alert alert-success mb-4"
-            >
+        <div class="container-fluid pb-5 px-0 px-md-3 max-w-desktop mx-auto">
+            
+            <!-- ALERTS -->
+            <div v-if="flashSuccess" class="alert alert-success mx-3 mx-md-0 mb-4 shadow-sm border-0 rounded-4">
                 {{ flashSuccess }}
             </div>
 
-            <div class="mb-4">
-                <span class="badge badge-soft-green mb-3">
-                    Owner Listing
-                </span>
+            <!-- NATIVE HEADER SECTION -->
+            <header class="d-flex justify-content-between align-items-center px-3 px-md-0 mb-4 pt-3">
+                <div>
+                    <h1 class="fw-bold mb-0 text-body-emphasis" style="font-size: 1.75rem;">Property</h1>
+                    <span class="small text-body-secondary">Manage your listing</span>
+                </div>
+                <!-- Action Icon -->
+                <button class="btn btn-light bg-body shadow-sm border border-secondary-subtle rounded-circle d-flex align-items-center justify-content-center p-0" style="width: 45px; height: 45px;">
+                    <i class="bi bi-house-gear text-body-emphasis fs-5"></i>
+                </button>
+            </header>
 
-                <h1 class="fw-bold mb-2">
-                    My Boarding House Listing
-                </h1>
+            <!-- NO BOARDING HOUSE ASSIGNED -->
+            <section v-if="!boardingHouse" class="mx-3 mx-md-0 ebm-card p-4 p-md-5 text-center shadow-sm rounded-4">
+                <div class="fs-1 mb-3">🏠</div>
+                <h2 class="h4 fw-bold mb-2">No assigned property</h2>
+                <p class="text-body-secondary mb-0">Your owner account does not have an assigned boarding house listing yet. Please contact the super admin.</p>
+            </section>
 
-                <p class="ebm-muted mb-0">
-                    Update your boarding house details, availability, amenities, house rules, and photos.
-                </p>
-            </div>
-
-            <div
-                v-if="!boardingHouse"
-                class="ebm-card p-4 p-md-5"
-            >
-                <h2 class="h4 fw-bold mb-2">
-                    No assigned boarding house yet
-                </h2>
-
-                <p class="ebm-muted mb-0">
-                    Your owner account does not have an assigned boarding house listing yet. Please contact the super admin.
-                </p>
-            </div>
-
-            <div
-                v-else
-                class="row g-4"
-            >
-                <div class="col-lg-4">
-                    <div class="ebm-card p-4 mb-4">
-                        <h2 class="h5 fw-bold mb-3">
-                            Listing Status
-                        </h2>
-
-                        <div class="d-flex flex-wrap gap-2 mb-3">
-                            <span
-                                class="badge"
-                                :class="statusBadgeClass"
-                            >
+            <div v-else class="row g-4 px-3 px-md-0 m-0 w-100">
+                
+                <!-- LEFT COLUMN: STATUS & PHOTOS -->
+                <div class="col-lg-5 p-0 pe-lg-3">
+                    
+                    <!-- Hero Status Card -->
+                    <div class="bg-body p-4 rounded-4 shadow-sm mb-4 border border-secondary-subtle">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h2 class="h5 fw-bold mb-0 text-body-emphasis pe-3">{{ boardingHouse.name }}</h2>
+                            <span class="badge rounded-pill px-3 py-2 shadow-sm" :class="statusBadgeClass">
                                 {{ boardingHouse.status }}
                             </span>
-
-                            <span
-                                v-if="boardingHouse.is_verified"
-                                class="badge text-bg-success"
-                            >
-                                Verified
-                            </span>
-
-                            <span
-                                v-else
-                                class="badge text-bg-light border text-dark"
-                            >
-                                Not Verified
-                            </span>
                         </div>
 
-                        <h3 class="h5 fw-bold mb-2">
-                            {{ boardingHouse.name }}
-                        </h3>
+                        <div class="d-flex align-items-center gap-2 mb-4">
+                            <span v-if="boardingHouse.is_verified" class="badge badge-soft-success rounded-pill px-2 py-1"><i class="bi bi-check-circle-fill me-1"></i> Verified</span>
+                            <span v-else class="badge badge-soft-warning rounded-pill px-2 py-1"><i class="bi bi-exclamation-circle-fill me-1"></i> Not Verified</span>
+                        </div>
 
-                        <p class="small ebm-muted mb-3">
-                            Coordinates are managed by the super admin for map accuracy.
-                        </p>
-
-                        <div class="summary-list">
-                            <div class="summary-item">
-                                <span>Latitude</span>
-                                <strong>{{ boardingHouse.latitude || 'Missing' }}</strong>
+                        <div class="row g-3 bg-body-tertiary p-3 rounded-4 border border-secondary-subtle">
+                            <div class="col-6">
+                                <span class="small text-body-secondary d-block">Latitude</span>
+                                <strong class="font-monospace small">{{ boardingHouse.latitude || 'Missing' }}</strong>
                             </div>
-
-                            <div class="summary-item">
-                                <span>Longitude</span>
-                                <strong>{{ boardingHouse.longitude || 'Missing' }}</strong>
+                            <div class="col-6">
+                                <span class="small text-body-secondary d-block">Longitude</span>
+                                <strong class="font-monospace small">{{ boardingHouse.longitude || 'Missing' }}</strong>
                             </div>
                         </div>
 
-                        <div
-                            v-if="boardingHouse.rejection_reason"
-                            class="alert alert-danger mt-4 mb-0"
-                        >
-                            <strong>Rejection Reason:</strong>
-                            {{ boardingHouse.rejection_reason }}
+                        <div v-if="boardingHouse.rejection_reason" class="alert alert-danger mt-3 mb-0 rounded-4 border-0 small">
+                            <strong>Rejection Reason:</strong> {{ boardingHouse.rejection_reason }}
                         </div>
-
-                        <div
-                            v-if="boardingHouse.deactivated_reason"
-                            class="alert alert-secondary mt-4 mb-0"
-                        >
-                            <strong>Deactivation Reason:</strong>
-                            {{ boardingHouse.deactivated_reason }}
+                        <div v-if="boardingHouse.deactivated_reason" class="alert alert-secondary mt-3 mb-0 rounded-4 border-0 small">
+                            <strong>Deactivation Reason:</strong> {{ boardingHouse.deactivated_reason }}
                         </div>
                     </div>
 
-                    <div class="ebm-card p-4">
-                        <h2 class="h5 fw-bold mb-3">
-                            Upload Photo
+                    <!-- Photo Upload Card -->
+                    <div class="bg-body p-4 rounded-4 shadow-sm mb-4 border border-secondary-subtle">
+                        <h2 class="h6 fw-bold mb-3 d-flex align-items-center gap-2">
+                            <i class="bi bi-cloud-arrow-up text-success fs-5"></i> Upload Photo
                         </h2>
 
                         <form @submit.prevent="submitPhoto">
                             <div class="mb-3">
-                                <label
-                                    for="photo"
-                                    class="form-label"
-                                >
-                                    Photo
-                                </label>
-
-                                <input
-                                    id="photo"
-                                    ref="photoInput"
-                                    type="file"
-                                    class="form-control"
-                                    :class="{ 'is-invalid': photoForm.errors.photo }"
-                                    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-                                    @change="setPhotoFile"
-                                >
-
-                                <div class="form-text">
-                                    Allowed: JPG, PNG, WebP. Maximum file size: 4MB.
+                                <input id="photo" ref="photoInput" type="file" class="form-control bg-body-tertiary rounded-4" :class="{ 'is-invalid': photoForm.errors.photo }" accept=".jpg,.jpeg,.png,.webp" @change="setPhotoFile">
+                                <div class="form-text small opacity-75 ms-2 mt-1">JPG, PNG, WebP up to 4MB.</div>
+                                
+                                <!-- Instant Local Preview -->
+                                <div v-if="photoPreview" class="mt-3 text-center p-2 bg-body-tertiary rounded-4 border border-secondary-subtle overflow-hidden">
+                                    <img :src="photoPreview" alt="Selected Preview" class="img-fluid rounded-3" style="max-height: 160px; width: 100%; object-fit: cover;">
                                 </div>
-
-                                <!-- 🚀 FIX: Instant local preview container -->
-                                <div v-if="photoPreview" class="mt-3 text-center p-2 bg-body-tertiary rounded border">
-                                    <p class="small fw-bold mb-2 text-muted">Preview:</p>
-                                    <img :src="photoPreview" alt="Selected Preview" class="img-fluid rounded" style="max-height: 140px; object-fit: contain;">
-                                </div>
-
-                                <div
-                                    v-if="photoForm.errors.photo"
-                                    class="invalid-feedback"
-                                >
-                                    {{ photoForm.errors.photo }}
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label
-                                    for="alt_text"
-                                    class="form-label"
-                                >
-                                    Alt Text
-                                </label>
-
-                                <input
-                                    id="alt_text"
-                                    v-model="photoForm.alt_text"
-                                    type="text"
-                                    class="form-control"
-                                    :class="{ 'is-invalid': photoForm.errors.alt_text }"
-                                    placeholder="Example: Front view of boarding house"
-                                >
-
-                                <div
-                                    v-if="photoForm.errors.alt_text"
-                                    class="invalid-feedback"
-                                >
-                                    {{ photoForm.errors.alt_text }}
-                                </div>
-                            </div>
-
-                            <button
-                                type="submit"
-                                class="btn btn-ebm-primary w-100"
-                                :disabled="photoForm.processing"
-                            >
-                                <span v-if="photoForm.processing">
-                                    Uploading...
-                                </span>
-
-                                <span v-else>
-                                    Upload Photo
-                                </span>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <div class="col-lg-8">
-                    <div class="ebm-card p-4 mb-4">
-                        <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mb-3">
-                            <div>
-                                <h2 class="h5 fw-bold mb-1">
-                                    Uploaded Photos
-                                </h2>
-
-                                <p class="ebm-muted small mb-0">
-                                    The primary photo appears first on the public detail page.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div
-                            v-if="boardingHouse.photos && boardingHouse.photos.length"
-                            class="owner-photo-grid"
-                        >
-                            <div
-                                v-for="photo in boardingHouse.photos"
-                                :key="photo.id"
-                                class="owner-photo-card"
-                            >
-                                <img
-                                    :src="photo.url"
-                                    :alt="photo.alt_text || boardingHouse.name"
-                                    class="owner-photo-image"
-                                >
-
-                                <div class="owner-photo-body">
-                                    <div class="d-flex justify-content-between gap-2 mb-2">
-                                        <div>
-                                            <span
-                                                v-if="photo.is_primary"
-                                                class="badge text-bg-success"
-                                            >
-                                                Primary
-                                            </span>
-
-                                            <span
-                                                v-else
-                                                class="badge text-bg-light border text-dark"
-                                            >
-                                                Photo
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <p class="small ebm-muted mb-3">
-                                        {{ photo.alt_text || 'No alt text provided.' }}
-                                    </p>
-
-                                    <div class="d-flex flex-column gap-2">
-                                        <button
-                                            v-if="!photo.is_primary"
-                                            type="button"
-                                            class="btn btn-sm btn-ebm-outline"
-                                            :disabled="primaryForm.processing"
-                                            @click="setPrimaryPhoto(photo)"
-                                        >
-                                            Set as Primary
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            class="btn btn-sm btn-outline-danger"
-                                            :disabled="deleteForm.processing"
-                                            @click="deletePhoto(photo)"
-                                        >
-                                            Delete
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div
-                            v-else
-                            class="empty-state"
-                        >
-                            <div class="empty-state-icon">
-                                🖼️
-                            </div>
-
-                            <h3 class="h5 fw-bold mb-2">
-                                No photos uploaded yet
-                            </h3>
-
-                            <p class="ebm-muted mb-0">
-                                Upload at least one photo to make your public listing more useful to students.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="ebm-card p-4">
-                        <h2 class="h5 fw-bold mb-3">
-                            Edit Listing Details
-                        </h2>
-
-                        <form @submit.prevent="submitListing">
-                            <div class="mb-3">
-                                <label
-                                    for="description"
-                                    class="form-label"
-                                >
-                                    Description
-                                </label>
-
-                                <textarea
-                                    id="description"
-                                    v-model="form.description"
-                                    class="form-control"
-                                    :class="{ 'is-invalid': form.errors.description }"
-                                    rows="4"
-                                    placeholder="Describe your boarding house"
-                                />
-
-                                <div
-                                    v-if="form.errors.description"
-                                    class="invalid-feedback"
-                                >
-                                    {{ form.errors.description }}
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label
-                                    for="location_description"
-                                    class="form-label"
-                                >
-                                    Location Description
-                                </label>
-
-                                <textarea
-                                    id="location_description"
-                                    v-model="form.location_description"
-                                    class="form-control"
-                                    :class="{ 'is-invalid': form.errors.location_description }"
-                                    rows="3"
-                                    placeholder="Example: near TPC gate, beside main road, walking distance from school"
-                                />
-
-                                <div
-                                    v-if="form.errors.location_description"
-                                    class="invalid-feedback"
-                                >
-                                    {{ form.errors.location_description }}
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label
-                                    for="address"
-                                    class="form-label"
-                                >
-                                    Address
-                                </label>
-
-                                <input
-                                    id="address"
-                                    v-model="form.address"
-                                    type="text"
-                                    class="form-control"
-                                    :class="{ 'is-invalid': form.errors.address }"
-                                    placeholder="Talibon, Bohol"
-                                >
-
-                                <div
-                                    v-if="form.errors.address"
-                                    class="invalid-feedback"
-                                >
-                                    {{ form.errors.address }}
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label
-                                    for="rent_price"
-                                    class="form-label"
-                                >
-                                    Monthly Rent
-                                </label>
-
-                                <input
-                                    id="rent_price"
-                                    v-model="form.rent_price"
-                                    type="number"
-                                    step="0.01"
-                                    min="0"
-                                    class="form-control"
-                                    :class="{ 'is-invalid': form.errors.rent_price }"
-                                >
-
-                                <div
-                                    v-if="form.errors.rent_price"
-                                    class="invalid-feedback"
-                                >
-                                    {{ form.errors.rent_price }}
-                                </div>
-                            </div>
-
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label
-                                        for="total_rooms"
-                                        class="form-label"
-                                    >
-                                        Total Rooms
-                                    </label>
-
-                                    <input
-                                        id="total_rooms"
-                                        v-model="form.total_rooms"
-                                        type="number"
-                                        min="0"
-                                        class="form-control"
-                                        :class="{ 'is-invalid': form.errors.total_rooms }"
-                                    >
-
-                                    <div
-                                        v-if="form.errors.total_rooms"
-                                        class="invalid-feedback"
-                                    >
-                                        {{ form.errors.total_rooms }}
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label
-                                        for="available_rooms"
-                                        class="form-label"
-                                    >
-                                        Available Rooms
-                                    </label>
-
-                                    <input
-                                        id="available_rooms"
-                                        v-model="form.available_rooms"
-                                        type="number"
-                                        min="0"
-                                        class="form-control"
-                                        :class="{ 'is-invalid': form.errors.available_rooms }"
-                                    >
-
-                                    <div
-                                        v-if="form.errors.available_rooms"
-                                        class="invalid-feedback"
-                                    >
-                                        {{ form.errors.available_rooms }}
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label
-                                        for="total_bedspaces"
-                                        class="form-label"
-                                    >
-                                        Total Bedspaces
-                                    </label>
-
-                                    <input
-                                        id="total_bedspaces"
-                                        v-model="form.total_bedspaces"
-                                        type="number"
-                                        min="0"
-                                        class="form-control"
-                                        :class="{ 'is-invalid': form.errors.total_bedspaces }"
-                                    >
-
-                                    <div
-                                        v-if="form.errors.total_bedspaces"
-                                        class="invalid-feedback"
-                                    >
-                                        {{ form.errors.total_bedspaces }}
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label
-                                        for="available_bedspaces"
-                                        class="form-label"
-                                    >
-                                        Available Bedspaces
-                                    </label>
-
-                                    <input
-                                        id="available_bedspaces"
-                                        v-model="form.available_bedspaces"
-                                        type="number"
-                                        min="0"
-                                        class="form-control"
-                                        :class="{ 'is-invalid': form.errors.available_bedspaces }"
-                                    >
-
-                                    <div
-                                        v-if="form.errors.available_bedspaces"
-                                        class="invalid-feedback"
-                                    >
-                                        {{ form.errors.available_bedspaces }}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mb-3 mt-3">
-                                <label
-                                    for="amenities_text"
-                                    class="form-label"
-                                >
-                                    Amenities
-                                </label>
-
-                                <input
-                                    id="amenities_text"
-                                    v-model="form.amenities_text"
-                                    type="text"
-                                    class="form-control"
-                                    :class="{ 'is-invalid': form.errors.amenities_text }"
-                                    placeholder="WiFi, Water, Electricity, Study Area"
-                                >
-
-                                <div class="form-text">
-                                    Separate amenities using commas.
-                                </div>
-
-                                <div
-                                    v-if="form.errors.amenities_text"
-                                    class="invalid-feedback"
-                                >
-                                    {{ form.errors.amenities_text }}
-                                </div>
+                                <div v-if="photoForm.errors.photo" class="invalid-feedback fw-bold ps-2">{{ photoForm.errors.photo }}</div>
                             </div>
 
                             <div class="mb-4">
-                                <label
-                                    for="rules"
-                                    class="form-label"
-                                >
-                                    House Rules
-                                </label>
+                                <input id="alt_text" v-model="photoForm.alt_text" type="text" class="form-control bg-body-tertiary rounded-4" :class="{ 'is-invalid': photoForm.errors.alt_text }" placeholder="Alt Text (e.g. Front View)">
+                                <div v-if="photoForm.errors.alt_text" class="invalid-feedback fw-bold ps-2">{{ photoForm.errors.alt_text }}</div>
+                            </div>
 
-                                <textarea
-                                    id="rules"
-                                    v-model="form.rules"
-                                    class="form-control"
-                                    :class="{ 'is-invalid': form.errors.rules }"
-                                    rows="4"
-                                    placeholder="Curfew, visitor rules, cleanliness rules, etc."
-                                />
+                            <button type="submit" class="btn btn-native-primary rounded-pill w-100 fw-bold shadow-sm py-2" :disabled="photoForm.processing || !photoForm.photo">
+                                <span v-if="photoForm.processing"><span class="spinner-border spinner-border-sm me-2"></span>Uploading...</span>
+                                <span v-else>Upload Photo</span>
+                            </button>
+                        </form>
+                    </div>
 
-                                <div
-                                    v-if="form.errors.rules"
-                                    class="invalid-feedback"
-                                >
-                                    {{ form.errors.rules }}
+                    <!-- Uploaded Photos Horizontal Gallery -->
+                    <div class="bg-body p-4 rounded-4 shadow-sm mb-4 mb-lg-0 border border-secondary-subtle">
+                        <div class="d-flex justify-content-between align-items-end mb-3">
+                            <div>
+                                <h2 class="h6 fw-bold mb-0">Gallery</h2>
+                                <p class="text-body-secondary small mb-0 mt-1">Primary photo appears first.</p>
+                            </div>
+                            <span class="badge bg-body-tertiary text-body-secondary border border-secondary-subtle rounded-pill">{{ boardingHouse.photos?.length || 0 }} Photos</span>
+                        </div>
+
+                        <div v-if="boardingHouse.photos && boardingHouse.photos.length" class="native-gallery-scroll d-flex gap-3 overflow-x-auto pb-3 hide-scrollbar">
+                            
+                            <div v-for="photo in boardingHouse.photos" :key="photo.id" class="gallery-card flex-shrink-0 position-relative rounded-4 overflow-hidden border border-secondary-subtle bg-body-tertiary">
+                                
+                                <!-- Primary Badge -->
+                                <span v-if="photo.is_primary" class="badge badge-soft-success position-absolute top-0 start-0 m-2 rounded-pill shadow-sm" style="z-index: 10;">Primary</span>
+                                
+                                <img :src="photo.url" :alt="photo.alt_text || boardingHouse.name" class="gallery-image w-100 object-fit-cover" style="height: 140px;">
+                                
+                                <!-- 🚀 FIX: Adjusted Gap, added Delete text, widened cards -->
+                                <div class="p-2 d-flex gap-2">
+                                    <button v-if="!photo.is_primary" type="button" class="btn btn-sm btn-light border-secondary-subtle flex-grow-1 rounded-pill" style="font-size: 0.75rem; font-weight: 600;" :disabled="primaryForm.processing" @click="setPrimaryPhoto(photo)">
+                                        Set Primary
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger flex-grow-1 rounded-pill d-flex align-items-center justify-content-center gap-1" :disabled="deleteForm.processing" @click="deletePhoto(photo)" style="font-size: 0.75rem; font-weight: 600;">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </button>
                                 </div>
                             </div>
 
-                            <button
-                                type="submit"
-                                class="btn btn-ebm-primary"
-                                :disabled="form.processing"
-                            >
-                                <span v-if="form.processing">
-                                    Saving...
-                                </span>
+                        </div>
+                        
+                        <div v-else class="text-center p-4 bg-body-tertiary rounded-4 border border-secondary-subtle">
+                            <div class="fs-2 mb-2 opacity-50">🖼️</div>
+                            <h3 class="h6 fw-bold mb-1">No photos yet</h3>
+                            <p class="text-body-secondary small mb-0">Upload a photo above.</p>
+                        </div>
+                    </div>
+                </div>
 
-                                <span v-else>
-                                    Save Changes
-                                </span>
+                <!-- RIGHT COLUMN: EDIT LISTING FORM -->
+                <div class="col-lg-7 p-0 ps-lg-3">
+                    <div class="bg-body p-4 p-md-5 rounded-4 shadow-sm border border-secondary-subtle">
+                        <h2 class="h5 fw-bold mb-4 d-flex align-items-center gap-2">
+                            <i class="bi bi-pencil-square text-success fs-4"></i> Edit Listing Details
+                        </h2>
+
+                        <form @submit.prevent="submitListing">
+                            
+                            <!-- Address & Rent -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-12">
+                                    <label for="address" class="form-label fw-bold small text-body-secondary text-uppercase ms-1 mb-1">Full Address</label>
+                                    <input id="address" v-model="form.address" type="text" class="form-control bg-body-tertiary rounded-4 py-2" :class="{ 'is-invalid': form.errors.address }" placeholder="Talibon, Bohol">
+                                    <div v-if="form.errors.address" class="invalid-feedback fw-bold ps-2">{{ form.errors.address }}</div>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <label for="rent_price" class="form-label fw-bold small text-body-secondary text-uppercase ms-1 mb-1">Monthly Rent (₱)</label>
+                                    <input id="rent_price" v-model="form.rent_price" type="number" step="0.01" min="0" class="form-control bg-body-tertiary rounded-4 py-2 text-success fw-bold" :class="{ 'is-invalid': form.errors.rent_price }">
+                                    <div v-if="form.errors.rent_price" class="invalid-feedback fw-bold ps-2">{{ form.errors.rent_price }}</div>
+                                </div>
+                            </div>
+
+                            <!-- Descriptions -->
+                            <div class="mb-4">
+                                <label for="description" class="form-label fw-bold small text-body-secondary text-uppercase ms-1 mb-1">Description</label>
+                                <textarea id="description" v-model="form.description" class="form-control bg-body-tertiary rounded-4 py-2" :class="{ 'is-invalid': form.errors.description }" rows="4" placeholder="Describe your boarding house..."></textarea>
+                                <div v-if="form.errors.description" class="invalid-feedback fw-bold ps-2">{{ form.errors.description }}</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="location_description" class="form-label fw-bold small text-body-secondary text-uppercase ms-1 mb-1">Location Landmarks</label>
+                                <textarea id="location_description" v-model="form.location_description" class="form-control bg-body-tertiary rounded-4 py-2" :class="{ 'is-invalid': form.errors.location_description }" rows="2" placeholder="e.g., near TPC gate..."></textarea>
+                                <div v-if="form.errors.location_description" class="invalid-feedback fw-bold ps-2">{{ form.errors.location_description }}</div>
+                            </div>
+
+                            <!-- Rooms & Bedspaces Grid -->
+                            <div class="bg-body-tertiary p-3 rounded-4 border border-secondary-subtle mb-4">
+                                <div class="row g-3">
+                                    <div class="col-6">
+                                        <label for="total_rooms" class="form-label fw-bold small text-body-secondary mb-1">Total Rooms</label>
+                                        <input id="total_rooms" v-model="form.total_rooms" type="number" min="0" class="form-control rounded-pill text-center" :class="{ 'is-invalid': form.errors.total_rooms }">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="available_rooms" class="form-label fw-bold small text-body-secondary mb-1">Available Rooms</label>
+                                        <input id="available_rooms" v-model="form.available_rooms" type="number" min="0" class="form-control rounded-pill text-center" :class="{ 'is-invalid': form.errors.available_rooms }">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="total_bedspaces" class="form-label fw-bold small text-body-secondary mb-1">Total Beds</label>
+                                        <input id="total_bedspaces" v-model="form.total_bedspaces" type="number" min="0" class="form-control rounded-pill text-center" :class="{ 'is-invalid': form.errors.total_bedspaces }">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="available_bedspaces" class="form-label fw-bold small text-body-secondary mb-1">Available Beds</label>
+                                        <input id="available_bedspaces" v-model="form.available_bedspaces" type="number" min="0" class="form-control rounded-pill text-center" :class="{ 'is-invalid': form.errors.available_bedspaces }">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Amenities & Rules -->
+                            <div class="mb-4">
+                                <label for="amenities_text" class="form-label fw-bold small text-body-secondary text-uppercase ms-1 mb-1">Amenities (Comma separated)</label>
+                                <input id="amenities_text" v-model="form.amenities_text" type="text" class="form-control bg-body-tertiary rounded-pill py-2" :class="{ 'is-invalid': form.errors.amenities_text }" placeholder="WiFi, Water, Study Area">
+                                <div v-if="form.errors.amenities_text" class="invalid-feedback fw-bold ps-2">{{ form.errors.amenities_text }}</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="rules" class="form-label fw-bold small text-body-secondary text-uppercase ms-1 mb-1">House Rules</label>
+                                <textarea id="rules" v-model="form.rules" class="form-control bg-body-tertiary rounded-4 py-2" :class="{ 'is-invalid': form.errors.rules }" rows="3" placeholder="Curfew, visitor rules, cleanliness..."></textarea>
+                                <div v-if="form.errors.rules" class="invalid-feedback fw-bold ps-2">{{ form.errors.rules }}</div>
+                            </div>
+
+                            <button type="submit" class="btn btn-native-primary rounded-pill w-100 fw-bold shadow-sm py-3 mt-2" :disabled="form.processing">
+                                <span v-if="form.processing"><span class="spinner-border spinner-border-sm me-2"></span>Saving Changes...</span>
+                                <span v-else>Save Property Details</span>
                             </button>
                         </form>
                     </div>
                 </div>
+
             </div>
         </div>
     </OwnerLayout>
 </template>
+
+<style scoped>
+/* Restrict max width on desktop */
+.max-w-desktop {
+    max-width: 1200px;
+}
+
+/* =========================================
+   NATIVE APP UI COMPONENTS
+========================================== */
+
+/* Native-style Badges */
+.badge-soft-success { background: rgba(25, 135, 84, 0.15); color: #198754; border: 1px solid rgba(25, 135, 84, 0.2); }
+.badge-soft-warning { background: rgba(255, 193, 7, 0.15); color: #b08000; border: 1px solid rgba(255, 193, 7, 0.3); }
+.badge-soft-danger { background: rgba(220, 53, 69, 0.15); color: #dc3545; border: 1px solid rgba(220, 53, 69, 0.2); }
+.badge-soft-secondary { background: rgba(108, 117, 125, 0.15); color: #6c757d; border: 1px solid rgba(108, 117, 125, 0.2); }
+
+/* Native-style Action buttons */
+.btn-native-primary {
+    background-color: #10b981;
+    color: white;
+    border: none;
+}
+.btn-native-primary:hover { background-color: #059669; color: white; }
+
+/* 📱 Mobile Horizontal Photo Gallery */
+.native-gallery-scroll {
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* 🚀 FIX: Widened Photo Cards to perfectly fit buttons */
+.gallery-card {
+    width: 260px; /* Increased from 220px */
+    scroll-snap-align: start;
+}
+
+/* Clean Custom Form Control Shadows */
+.form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25);
+    border-color: #10b981;
+}
+</style>

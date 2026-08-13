@@ -25,6 +25,7 @@ class OwnerDashboardController extends Controller
                 'owner' => [
                     'name' => $owner->name,
                     'email' => $owner->email,
+                    'profile_photo_url' => $owner->profile_photo_url,
                 ],
                 'boardingHouse' => null,
                 'stats' => [
@@ -84,6 +85,7 @@ class OwnerDashboardController extends Controller
             'owner' => [
                 'name' => $owner->name,
                 'email' => $owner->email,
+                'profile_photo_url' => $owner->profile_photo_url,
             ],
             'boardingHouse' => [
                 'id' => $boardingHouse->id,

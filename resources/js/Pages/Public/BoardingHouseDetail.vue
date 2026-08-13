@@ -13,8 +13,15 @@ const props = defineProps({
 
 const page = usePage();
 
-// --- 📸 LIGHTBOX STATE & LOGIC ---
+// --- 📸 LIGHTBOX & SLIDER STATE LOGIC ---
 const activePhotoIndex = ref(0);
+const sliderRef = ref(null);
+
+const scrollSlider = (direction) => {
+    if (sliderRef.value) {
+        sliderRef.value.scrollBy({ left: direction * 320, behavior: 'smooth' });
+    }
+};
 
 const openLightbox = (index) => {
     activePhotoIndex.value = index;
@@ -173,132 +180,218 @@ const submitReservation = () => {
             <meta name="description" :content="`View rent price, available rooms, photos, amenities, and reservation details for ${boardingHouse.name}.`">
         </Head>
 
-        <section class="py-5">
+        <section class="py-4 py-md-5 bg-body transition-all min-vh-100">
             <div class="container">
+                
+                <!-- 📌 CONSISTENT BACK BUTTON -->
                 <div class="mb-4">
-                    <Link href="/boarding-houses" class="btn btn-ebm-outline">
-                        Back to List
+                    <Link href="/boarding-houses" class="btn btn-sm border-secondary-subtle bg-body text-body-emphasis shadow-sm rounded-pill fw-semibold px-3 py-2 transition-all hover-bg-tertiary d-inline-flex align-items-center gap-1">
+                        <i class="bi bi-arrow-left text-success fs-6"></i> Back to Boarding Houses
                     </Link>
                 </div>
 
                 <div class="row g-4">
-                    <!-- Left Column: Details -->
+                    <!-- LEFT COLUMN: MAIN CONTENT -->
                     <div class="col-lg-8">
-                        <div class="ebm-card p-4 p-md-5 mb-4">
-                            <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-3">
-                                <div>
-                                    <div class="d-flex flex-wrap gap-2 mb-3">
-                                        <span v-if="boardingHouse.is_verified" class="badge text-bg-success">Verified</span>
-                                        <span v-if="boardingHouse.is_full" class="badge text-bg-danger">Full</span>
-                                        <span v-else class="badge text-bg-primary">Available</span>
-                                    </div>
-                                    <h1 class="fw-bold mb-2">{{ boardingHouse.name }}</h1>
-                                    <p class="ebm-muted mb-0">{{ boardingHouse.address || 'Address not provided yet.' }}</p>
+                        
+                        <!-- 🏠 HERO HEADER CARD -->
+                        <div class="ebm-card p-4 p-md-5 mb-4 border border-secondary-subtle rounded-4 shadow-sm bg-body transition-all">
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                                <span v-if="boardingHouse.is_verified" class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fw-semibold">
+                                    <i class="bi bi-patch-check-fill me-1"></i> Verified Owner
+                                </span>
+                                <span :class="boardingHouse.is_full ? 'bg-danger-subtle text-danger border-danger-subtle' : 'bg-primary-subtle text-primary border-primary-subtle'" class="badge border rounded-pill px-3 py-2 fw-semibold">
+                                    {{ boardingHouse.is_full ? '🔴 Full' : '🟢 Available for Rent' }}
+                                </span>
+                            </div>
+
+                            <h1 class="display-6 fw-bold mb-2 text-body-emphasis tracking-tight transition-all">
+                                {{ boardingHouse.name }}
+                            </h1>
+
+                            <p class="text-body-secondary d-flex align-items-center flex-wrap gap-2 mb-4 transition-all">
+                                <span><i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ boardingHouse.address || 'Talibon, Bohol' }}</span>
+                                <span class="text-body-tertiary">•</span>
+                                <span class="badge bg-body-tertiary text-body-secondary border border-secondary-subtle rounded-pill px-2 py-1">
+                                    <i class="bi bi-person-walking text-success me-1"></i> {{ boardingHouse.estimated_distance_km }} km to TPC Campus
+                                </span>
+                            </p>
+
+                            <!-- QUICK SPECS GRID -->
+                            <div class="row g-3 p-3 bg-body-tertiary rounded-4 border border-secondary-subtle mb-4 transition-all">
+                                <div class="col-6 col-md-3 text-center">
+                                    <span class="d-block text-body-secondary small mb-1">Monthly Rent</span>
+                                    <strong class="text-success fs-5 fw-bold">₱{{ formatPrice(boardingHouse.rent_price) }}</strong>
+                                </div>
+                                <div class="col-6 col-md-3 text-center border-start border-secondary-subtle">
+                                    <span class="d-block text-body-secondary small mb-1">Rooms</span>
+                                    <strong class="text-body-emphasis fs-5 fw-bold">{{ boardingHouse.available_rooms }} / {{ boardingHouse.total_rooms }}</strong>
+                                </div>
+                                <div class="col-6 col-md-3 text-center border-start-md border-secondary-subtle">
+                                    <span class="d-block text-body-secondary small mb-1">Bedspaces</span>
+                                    <strong class="text-body-emphasis fs-5 fw-bold">{{ boardingHouse.available_bedspaces }} / {{ boardingHouse.total_bedspaces }}</strong>
+                                </div>
+                                <div class="col-6 col-md-3 text-center border-start border-secondary-subtle">
+                                    <span class="d-block text-body-secondary small mb-1">Distance</span>
+                                    <strong class="text-body-emphasis fs-5 fw-bold">{{ boardingHouse.estimated_distance_km }} km</strong>
                                 </div>
                             </div>
-                            <p class="lead ebm-muted mb-0">
+
+                            <h2 class="h5 fw-bold mb-2 text-body-emphasis">About this Boarding House</h2>
+                            <p class="text-body-secondary mb-0 transition-all lh-lg">
                                 {{ boardingHouse.description || 'No description has been added for this boarding house yet.' }}
                             </p>
                         </div>
 
-                        <!-- 📸 PHOTOS SECTION -->
-                        <div class="ebm-card p-4 p-md-5 mb-4">
-                            <h2 class="h4 fw-bold mb-3">Photos</h2>
-                            <div v-if="boardingHouse.photos.length" class="row g-3">
-                                <div v-for="(photo, index) in boardingHouse.photos" :key="photo.id" class="col-md-6">
-                                    <div class="photo-thumbnail-container" @click="openLightbox(index)">
-                                        <img :src="photo.url" :alt="photo.alt_text || boardingHouse.name" class="boarding-house-photo">
-                                        <div class="photo-overlay">
-                                            <span class="fs-3">⛶</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div v-else class="empty-state">
-                                <div class="empty-state-icon">🖼️</div>
-                                <h3 class="h5 fw-bold mb-2">No photos uploaded yet</h3>
-                                <p class="ebm-muted mb-0">Photos will appear here once the boarding house owner uploads images.</p>
-                            </div>
-                        </div>
-
-                        <!-- LOCATION DETAILS -->
-                        <div class="ebm-card p-4 p-md-5 mb-4">
-                            <h2 class="h4 fw-bold mb-3">Location Details</h2>
-                            <p class="ebm-muted mb-3">{{ boardingHouse.location_description || 'No location description has been provided yet.' }}</p>
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <div class="detail-mini-card">
-                                        <span class="detail-label">Estimated Distance</span>
-                                        <strong>{{ boardingHouse.estimated_distance_km }} km</strong>
-                                        <small class="ebm-muted">from TPC</small>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="detail-mini-card">
-                                        <span class="detail-label">Latitude</span>
-                                        <strong>{{ boardingHouse.latitude }}</strong>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="detail-mini-card">
-                                        <span class="detail-label">Longitude</span>
-                                        <strong>{{ boardingHouse.longitude }}</strong>
-                                    </div>
-                                </div>
-                            </div>
-                            <p class="small ebm-muted mt-3 mb-0">Distance is estimated using coordinates. Actual walking distance may vary.</p>
-                        </div>
-
-                        <!-- HOUSE RULES -->
-                        <div class="ebm-card p-4 p-md-5">
-                            <h2 class="h4 fw-bold mb-3">House Rules</h2>
-                            <p class="ebm-muted mb-0">{{ boardingHouse.rules || 'No house rules have been added yet.' }}</p>
-                        </div>
-                    </div>
-
-                    <!-- Right Column: Sticky Summary -->
-                    <div class="col-lg-4">
-                        <div class="ebm-card p-4 sticky-detail-card">
-                            <h2 class="h4 fw-bold mb-3">Boarding House Summary</h2>
-                            <div class="summary-list">
-                                <div class="summary-item">
-                                    <span>Monthly Rent</span>
-                                    <strong>₱{{ formatPrice(boardingHouse.rent_price) }}</strong>
-                                </div>
-                                <div class="summary-item">
-                                    <span>Available Rooms</span>
-                                    <strong>{{ boardingHouse.available_rooms }} / {{ boardingHouse.total_rooms }}</strong>
-                                </div>
-                                <div class="summary-item">
-                                    <span>Available Bedspaces</span>
-                                    <strong>{{ boardingHouse.available_bedspaces }} / {{ boardingHouse.total_bedspaces }}</strong>
-                                </div>
-                                <div class="summary-item">
-                                    <span>Status</span>
-                                    <strong :class="boardingHouse.is_full ? 'text-danger' : 'text-success'">
-                                        {{ boardingHouse.is_full ? 'Full' : 'Available' }}
-                                    </strong>
-                                </div>
-                            </div>
-                            <hr class="border-secondary">
-                            <h3 class="h6 fw-bold mb-3">Amenities</h3>
-                            <div v-if="boardingHouse.amenities.length" class="d-flex flex-wrap gap-2 mb-4">
-                                <span v-for="amenity in boardingHouse.amenities" :key="amenity" class="badge badge-soft-green">
-                                    {{ amenity }}
+                        <!-- 📸 PHOTOS SECTION (Horizontal Swipe Slider) -->
+                        <div class="ebm-card p-4 p-md-5 mb-4 border border-secondary-subtle rounded-4 shadow-sm bg-body transition-all">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <h2 class="h4 fw-bold mb-0 text-body-emphasis">Photos</h2>
+                                <span v-if="boardingHouse.photos && boardingHouse.photos.length" class="badge rounded-pill bg-body-tertiary text-body-secondary border border-secondary-subtle px-3 py-2 fw-medium">
+                                    <i class="bi bi-images me-1 text-primary"></i> {{ boardingHouse.photos.length }} Photos
                                 </span>
                             </div>
-                            <p v-else class="ebm-muted small mb-4">No amenities listed yet.</p>
 
-                            <button v-if="!boardingHouse.is_full" type="button" class="btn btn-ebm-primary w-100" data-bs-toggle="modal" data-bs-target="#reservationModal">
-                                Reserve Now
-                            </button>
-                            <button v-else type="button" class="btn btn-secondary w-100" disabled>
-                                Reservation Unavailable
-                            </button>
-                            <p class="small ebm-muted mt-3 mb-0 text-center mt-3">Students can submit a guest reservation without creating an account.</p>
+                            <div v-if="boardingHouse.photos && boardingHouse.photos.length" class="photo-slider-wrapper position-relative">
+                                <div ref="sliderRef" class="photo-slider-track d-flex gap-3 overflow-x-auto pb-3 pt-1 hide-scrollbar">
+                                    <div 
+                                        v-for="(photo, index) in boardingHouse.photos" 
+                                        :key="photo.id" 
+                                        class="photo-slider-item flex-shrink-0 position-relative rounded-4 overflow-hidden shadow-sm"
+                                        @click="openLightbox(index)"
+                                    >
+                                        <img :src="photo.url" :alt="photo.alt_text || boardingHouse.name" class="photo-slider-img">
+                                        
+                                        <div class="photo-slider-overlay d-flex align-items-center justify-content-center">
+                                            <span class="btn btn-sm btn-light rounded-circle shadow-sm">
+                                                <i class="bi bi-arrows-angle-expand"></i>
+                                            </span>
+                                        </div>
+
+                                        <span v-if="photo.is_primary" class="badge bg-primary position-absolute top-0 start-0 m-3 shadow-sm rounded-pill px-3 py-1">Primary</span>
+                                    </div>
+                                </div>
+
+                                <!-- Navigation controls for desktop -->
+                                <button v-if="boardingHouse.photos.length > 1" @click="scrollSlider(-1)" class="slider-arrow slider-arrow-prev btn btn-light rounded-circle shadow-sm border d-none d-md-flex align-items-center justify-content-center" title="Previous photo">
+                                    <i class="bi bi-chevron-left"></i>
+                                </button>
+                                <button v-if="boardingHouse.photos.length > 1" @click="scrollSlider(1)" class="slider-arrow slider-arrow-next btn btn-light rounded-circle shadow-sm border d-none d-md-flex align-items-center justify-content-center" title="Next photo">
+                                    <i class="bi bi-chevron-right"></i>
+                                </button>
+                            </div>
+
+                            <div v-else class="empty-state text-center p-4 bg-body-tertiary rounded-4 border border-secondary-subtle">
+                                <div class="empty-state-icon fs-2 mb-2">🖼️</div>
+                                <h3 class="h6 fw-bold mb-1 text-body-emphasis">No photos uploaded yet</h3>
+                                <p class="text-body-secondary small mb-0">Photos will appear here once the boarding house owner uploads images.</p>
+                            </div>
+                        </div>
+
+                        <!-- 📍 LOCATION & DISTANCE DETAILS -->
+                        <div class="ebm-card p-4 p-md-5 mb-4 border border-secondary-subtle rounded-4 shadow-sm bg-body transition-all">
+                            <h2 class="h4 fw-bold mb-3 text-body-emphasis">Location & Accessibility</h2>
+                            <p class="text-body-secondary mb-4 transition-all">{{ boardingHouse.location_description || 'Conveniently located near Talibon Polytechnic College.' }}</p>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="bg-body-tertiary p-3 rounded-3 border border-secondary-subtle text-center">
+                                        <span class="d-block text-body-secondary small mb-1">Estimated Distance</span>
+                                        <strong class="text-success fs-5">{{ boardingHouse.estimated_distance_km }} km</strong>
+                                        <small class="d-block text-body-secondary">from TPC Campus</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="bg-body-tertiary p-3 rounded-3 border border-secondary-subtle h-100 d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <span class="d-block text-body-secondary small mb-1">Interactive Map Navigation</span>
+                                            <p class="small text-body-emphasis mb-0">View walking routes and nearby landmarks on our 3D satellite map.</p>
+                                        </div>
+                                        <Link :href="`/map?house_id=${boardingHouse.id}`" class="btn btn-sm btn-outline-success rounded-pill px-3 text-nowrap fw-semibold">
+                                            Open Map <i class="bi bi-box-arrow-up-right ms-1"></i>
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 📜 HOUSE RULES -->
+                        <div class="ebm-card p-4 p-md-5 border border-secondary-subtle rounded-4 shadow-sm bg-body transition-all">
+                            <h2 class="h4 fw-bold mb-3 text-body-emphasis"><i class="bi bi-clipboard-check text-primary me-2"></i> House Rules</h2>
+                            <p class="text-body-secondary mb-0 transition-all lh-lg">{{ boardingHouse.rules || 'No specific house rules listed.' }}</p>
+                        </div>
+
+                    </div>
+
+                    <!-- RIGHT COLUMN: STICKY RESERVATION SIDEBAR -->
+                    <div class="col-lg-4">
+                        <div class="ebm-card p-4 border border-secondary-subtle rounded-4 shadow-sm bg-body sticky-detail-card transition-all">
+                            
+                            <!-- Price Card Header -->
+                            <div class="border-bottom border-secondary-subtle pb-3 mb-4">
+                                <span class="text-body-secondary small d-block mb-1">Monthly Rent Rate</span>
+                                <div class="d-flex align-items-baseline gap-1">
+                                    <h2 class="display-6 fw-bold text-success mb-0">₱{{ formatPrice(boardingHouse.rent_price) }}</h2>
+                                    <span class="text-body-secondary">/ month</span>
+                                </div>
+                            </div>
+
+                            <!-- Summary Info -->
+                            <div class="mb-4">
+                                <h3 class="h6 fw-bold mb-3 text-body-emphasis">Availability Summary</h3>
+                                <ul class="list-group list-group-flush rounded-3 border border-secondary-subtle overflow-hidden mb-3">
+                                    <li class="list-group-item bg-body-tertiary d-flex justify-content-between align-items-center py-2 px-3">
+                                        <span class="text-body-secondary small">Available Rooms</span>
+                                        <strong class="text-body-emphasis">{{ boardingHouse.available_rooms }} / {{ boardingHouse.total_rooms }}</strong>
+                                    </li>
+                                    <li class="list-group-item bg-body-tertiary d-flex justify-content-between align-items-center py-2 px-3">
+                                        <span class="text-body-secondary small">Available Bedspaces</span>
+                                        <strong class="text-body-emphasis">{{ boardingHouse.available_bedspaces }} / {{ boardingHouse.total_bedspaces }}</strong>
+                                    </li>
+                                    <li class="list-group-item bg-body-tertiary d-flex justify-content-between align-items-center py-2 px-3">
+                                        <span class="text-body-secondary small">Current Status</span>
+                                        <strong :class="boardingHouse.is_full ? 'text-danger' : 'text-success'">
+                                            {{ boardingHouse.is_full ? 'Fully Occupied' : 'Accepting Reservations' }}
+                                        </strong>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Amenities -->
+                            <div class="mb-4">
+                                <h3 class="h6 fw-bold mb-3 text-body-emphasis">Included Amenities</h3>
+                                <div v-if="boardingHouse.amenities && boardingHouse.amenities.length" class="d-flex flex-wrap gap-2">
+                                    <span v-for="amenity in boardingHouse.amenities" :key="amenity" class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fw-medium">
+                                        <i class="bi bi-check-circle-fill me-1"></i> {{ amenity }}
+                                    </span>
+                                </div>
+                                <p v-else class="text-body-secondary small mb-0">No amenities listed yet.</p>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="d-flex flex-column gap-3 pt-2">
+                                <button 
+                                    v-if="!boardingHouse.is_full" 
+                                    type="button" 
+                                    class="btn btn-ebm-primary w-100 rounded-pill py-3 fw-bold shadow transition-all fs-6" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#reservationModal"
+                                >
+                                    <i class="bi bi-calendar-check-fill me-2"></i> Reserve Now
+                                </button>
+                                <button v-else type="button" class="btn btn-secondary w-100 rounded-pill py-3 fw-bold" disabled>
+                                    Reservation Unavailable (Full)
+                                </button>
+                            </div>
+
+                            <p class="small text-body-secondary mt-3 mb-0 text-center" style="font-size: 0.8rem;">
+                                🔒 Fast & free guest reservation. No student account required.
+                            </p>
+
                         </div>
                     </div>
                 </div>
+
             </div>
         </section>
 
@@ -518,6 +611,84 @@ const submitReservation = () => {
 </template>
 
 <style scoped>
+/* 📸 Horizontal Photo Slider Gallery */
+.photo-slider-track {
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+.photo-slider-item {
+    scroll-snap-align: start;
+    cursor: pointer;
+    width: 82vw;
+    max-width: 320px;
+    height: 220px;
+    background-color: var(--ebm-bg);
+}
+
+@media (min-width: 768px) {
+    .photo-slider-item {
+        width: 350px;
+        height: 245px;
+    }
+}
+
+.photo-slider-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.photo-slider-item:hover .photo-slider-img {
+    transform: scale(1.05);
+}
+
+.photo-slider-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.photo-slider-item:hover .photo-slider-overlay {
+    opacity: 1;
+}
+
+.slider-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2.75rem;
+    height: 2.75rem;
+    z-index: 5;
+    opacity: 0.9;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.slider-arrow:hover {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.slider-arrow-prev {
+    left: -0.75rem;
+}
+
+.slider-arrow-next {
+    right: -0.75rem;
+}
+
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
 /* Hover Effects for the Grid Photos */
 .photo-thumbnail-container {
     position: relative;

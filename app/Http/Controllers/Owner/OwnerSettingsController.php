@@ -29,10 +29,19 @@ class OwnerSettingsController extends Controller
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            // Ensure the new email is unique, but ignore the current user's email
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
+        if ($request->hasFile('photo')) {
+            if ($user->avatar && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->avatar)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->avatar);
+            }
+            $path = $request->file('photo')->store('avatars', 'public');
+            $validated['avatar'] = $path;
+        }
+
+        unset($validated['photo']);
         $user->update($validated);
 
         return back()->with('success', 'Profile information updated successfully.');
