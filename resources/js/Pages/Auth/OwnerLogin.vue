@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
 import PwaSplashScreen from '@/Components/PwaSplashScreen.vue';
 
@@ -11,31 +11,6 @@ const form = useForm({
 });
 
 const showPassword = ref(false);
-const deferredPrompt = ref(null);
-const showGuideModal = ref(false);
-const isIOS = ref(false);
-
-onMounted(() => {
-    const userAgent = window.navigator.userAgent.toLowerCase();
-    isIOS.value = /iphone|ipad|ipod/.test(userAgent);
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt.value = e;
-    });
-});
-
-const triggerInstall = async () => {
-    if (deferredPrompt.value) {
-        deferredPrompt.value.prompt();
-        const { outcome } = await deferredPrompt.value.userChoice;
-        if (outcome === 'accepted') {
-            deferredPrompt.value = null;
-        }
-    } else {
-        showGuideModal.value = true;
-    }
-};
 
 const submit = () => {
     form.post('/owner/login', {
@@ -68,7 +43,7 @@ const submit = () => {
 
                 <div class="card-body p-4 p-sm-5 text-center">
                     
-                    <!-- Clean Single Official Logo Header (No Duplicate Logo Header Above) -->
+                    <!-- Clean Single Official Logo Header -->
                     <div class="mb-3">
                         <Link href="/" title="E-BoardMate Home">
                             <img 
@@ -181,61 +156,9 @@ const submit = () => {
 
                     </form>
 
-                    <!-- PWA Native Mobile App Download Footer Section -->
-                    <div class="mt-4 pt-3 text-center border-top border-secondary-subtle">
-                        <p class="small text-body-secondary mb-2">Manage listings on the go with your mobile phone?</p>
-                        <button type="button" @click="triggerInstall" class="btn btn-sm btn-outline-success rounded-pill fw-bold px-4 py-2 shadow-sm">
-                            <i class="bi bi-phone-vibrate-fill me-1"></i> Install Landlord App
-                        </button>
-                    </div>
-
                 </div>
             </div>
         </main>
-
-        <!-- INSTALLATION GUIDE MODAL -->
-        <Teleport to="body">
-            <Transition name="fade">
-                <div v-if="showGuideModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.65); backdrop-filter: blur(4px); z-index: 99999;">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content border-0 rounded-4 shadow-lg bg-body">
-                            <div class="modal-header border-bottom-0 pb-0">
-                                <h2 class="h5 fw-bold mb-0 text-body-emphasis d-flex align-items-center gap-2">
-                                    <i class="bi bi-phone-vibrate text-success fs-4"></i> How to Install Landlord App
-                                </h2>
-                                <button type="button" class="btn-close shadow-none" @click="showGuideModal = false"></button>
-                            </div>
-                            <div class="modal-body p-4">
-                                <div v-if="isIOS" class="mb-3">
-                                    <div class="fw-bold text-body-emphasis mb-2"><i class="bi bi-apple me-1"></i> On Safari (iPhone / iPad):</div>
-                                    <ol class="small text-body-secondary mb-0 ps-3 d-flex flex-column gap-2">
-                                        <li>Tap the <strong>Share</strong> button <i class="bi bi-square-and-arrow-up text-primary"></i> at the bottom of Safari.</li>
-                                        <li>Scroll down and select <strong>"Add to Home Screen"</strong> <i class="bi bi-plus-square text-success"></i>.</li>
-                                        <li>Tap <strong>Add</strong> in the top right corner.</li>
-                                    </ol>
-                                </div>
-                                <div v-else class="mb-3">
-                                    <div class="fw-bold text-body-emphasis mb-2"><i class="bi bi-android2 me-1"></i> On Android / Chrome / Edge:</div>
-                                    <ol class="small text-body-secondary mb-0 ps-3 d-flex flex-column gap-2">
-                                        <li>Tap the <strong>Browser Menu (3 Dots ⋮)</strong> in the top right corner.</li>
-                                        <li>Select <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.</li>
-                                        <li>Confirm by tapping <strong>Install</strong>.</li>
-                                    </ol>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary-subtle">
-                                    <Link href="/owner/install" class="small text-success fw-bold text-decoration-none" @click="showGuideModal = false">
-                                        Open Download Page <i class="bi bi-arrow-right ms-1"></i>
-                                    </Link>
-                                    <button type="button" class="btn btn-success rounded-pill px-4 fw-bold" @click="showGuideModal = false">
-                                        Got It!
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </Transition>
-        </Teleport>
 
         <!-- Footer -->
         <footer class="mt-auto py-3 text-center small text-body-secondary">

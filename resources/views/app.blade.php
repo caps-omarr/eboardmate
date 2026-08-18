@@ -11,10 +11,12 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <!-- PWA Manifest & Mobile App Settings -->
-    <link rel="manifest" href="/build/manifest.webmanifest">
-    <meta name="theme-color" content="#10b981">
-    <link rel="apple-touch-icon" href="/favicon.png">
+    @if(request()->is('owner*'))
+        <!-- PWA Manifest & Mobile App Settings (Strictly Restricted to Landlord Owner Portal) -->
+        <link rel="manifest" href="/build/manifest.webmanifest">
+        <meta name="theme-color" content="#10b981">
+        <link rel="apple-touch-icon" href="/favicon.png">
+    @endif
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @inertiaHead

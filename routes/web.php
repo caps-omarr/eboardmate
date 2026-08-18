@@ -16,6 +16,7 @@ use App\Http\Controllers\Public\PublicBoardingHouseController;
 use App\Http\Controllers\Public\PublicMapController;
 use App\Http\Controllers\Public\PublicReservationController;
 use App\Http\Controllers\Public\PublicReservationTrackingController;
+use App\Http\Controllers\Public\PublicFeedbackController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -50,6 +51,10 @@ Route::post('/track-reservation', [PublicReservationTrackingController::class, '
     ->middleware('throttle:10,10')
     ->name('track-reservation.search');
 
+Route::post('/feedback', [PublicFeedbackController::class, 'store'])
+    ->middleware('throttle:5,10')
+    ->name('feedback.store');
+
 /*
 |--------------------------------------------------------------------------
 | Owner Authentication Routes
@@ -62,10 +67,6 @@ Route::get('/owner/login', [OwnerAuthController::class, 'create'])
 Route::post('/owner/login', [OwnerAuthController::class, 'store'])
     ->middleware('guest')
     ->name('owner.login.store');
-
-Route::get('/owner/install', function () {
-    return Inertia::render('Owner/Install');
-})->name('owner.install');
 
 Route::post('/owner/logout', [OwnerAuthController::class, 'destroy'])
     ->middleware(['auth', 'role:owner'])
@@ -111,11 +112,16 @@ Route::middleware(['auth', 'role:owner'])
         Route::post('/reservations/{reservation}/archive', [OwnerReservationController::class, 'archive'])
             ->name('reservations.archive');
 
+        // --- OWNER PWA INSTALL ROUTE (Strictly Protected for Authenticated Owners Only) ---
+        Route::get('/install', function () {
+            return Inertia::render('Owner/Install');
+        })->name('install');
+
         // --- OWNER SETTINGS ROUTES ---
         Route::get('/settings', [OwnerSettingsController::class, 'edit'])
             ->name('settings.edit');
             
-        Route::put('/settings/profile', [OwnerSettingsController::class, 'updateProfile'])
+        Route::match(['put', 'post'], '/settings/profile', [OwnerSettingsController::class, 'updateProfile'])
             ->name('settings.update-profile');
 
         Route::put('/settings/password', [OwnerSettingsController::class, 'updatePassword'])

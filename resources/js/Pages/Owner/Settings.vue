@@ -22,12 +22,22 @@ const profileForm = useForm({
     photo: null,
 });
 
+const timestamp = ref(Date.now());
+
+const avatarUrl = computed(() => {
+    const rawUrl = user.value.profile_photo_url || user.value.avatar;
+    if (!rawUrl) return null;
+    return `${rawUrl}?t=${timestamp.value}`;
+});
+
 const updateProfile = () => {
     profileForm.post("/owner/settings/profile", {
         preserveScroll: true,
         forceFormData: true,
         onSuccess: () => {
             profilePhotoPreview.value = null;
+            profileForm.photo = null;
+            timestamp.value = Date.now();
             if (profilePhotoInput.value) profilePhotoInput.value.value = "";
         },
     });
@@ -51,8 +61,7 @@ const passwordForm = useForm({
 });
 
 const updatePassword = () => {
-    // Replace '/owner/password' with your actual password update route
-    passwordForm.put("/owner/password", {
+    passwordForm.put("/owner/settings/password", {
         preserveScroll: true,
         onSuccess: () => passwordForm.reset(),
     });
@@ -306,8 +315,8 @@ const getInitials = (name) => {
                                             class="w-100 h-100 rounded-circle object-fit-cover"
                                         />
                                         <img
-                                            v-else-if="user.profile_photo_url"
-                                            :src="user.profile_photo_url"
+                                            v-else-if="avatarUrl"
+                                            :src="avatarUrl"
                                             alt="Current Photo"
                                             class="w-100 h-100 rounded-circle object-fit-cover"
                                         />

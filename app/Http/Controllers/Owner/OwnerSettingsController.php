@@ -30,7 +30,7 @@ class OwnerSettingsController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
-            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'photo' => ['nullable', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
         if ($request->hasFile('photo')) {
@@ -38,11 +38,12 @@ class OwnerSettingsController extends Controller
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($user->avatar);
             }
             $path = $request->file('photo')->store('avatars', 'public');
-            $validated['avatar'] = $path;
+            $user->avatar = $path;
         }
 
-        unset($validated['photo']);
-        $user->update($validated);
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        $user->save();
 
         return back()->with('success', 'Profile information updated successfully.');
     }

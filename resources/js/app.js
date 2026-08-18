@@ -44,11 +44,13 @@ if (typeof window !== 'undefined') {
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 
-// 🚀 PWA SERVICE WORKER REGISTRATION
+// 🚀 PWA SERVICE WORKER REGISTRATION (Strictly Restricted to Landlord Owner Portal)
 import { registerSW } from 'virtual:pwa-register';
 
-if ('serviceWorker' in navigator) {
-    registerSW({ immediate: true });
+if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+    if (window.location.pathname.startsWith('/owner')) {
+        registerSW({ immediate: true });
+    }
 }
 // ---------------------------------
 
