@@ -115,8 +115,12 @@ const initializeHomePreviewMap = async () => {
         style: "mapbox://styles/mapbox/satellite-streets-v12",
         center: [centerLng, centerLat],
         zoom: 15.6,
-        minZoom: 15.6,
-        maxZoom: 15.6,
+        minZoom: 11,
+        maxZoom: 18,
+        maxBounds: [
+            [124.2800, 10.0800],
+            [124.3500, 10.1600]
+        ],
         bearing: 0,
         pitch: 0,
         interactive: false,

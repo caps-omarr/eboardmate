@@ -53,6 +53,12 @@ const setProfilePhoto = (event) => {
     }
 };
 
+const triggerPhotoSelect = () => {
+    if (profilePhotoInput.value) {
+        profilePhotoInput.value.click();
+    }
+};
+
 // 🚀 PASSWORD UPDATE FORM
 const passwordForm = useForm({
     current_password: "",
@@ -328,16 +334,18 @@ const getInitials = (name) => {
                                 <div class="flex-grow-1">
                                     <label
                                         for="photo"
-                                        class="btn btn-sm btn-outline-secondary rounded-pill fw-medium px-3 mb-1"
+                                        class="btn btn-sm btn-outline-secondary rounded-pill fw-medium px-4 py-2 mb-1 cursor-pointer position-relative z-2 d-inline-flex align-items-center gap-2"
+                                        style="min-height: 48px; touch-action: manipulation;"
+                                        @click="triggerPhotoSelect"
                                     >
-                                        Select New Photo
+                                        <i class="bi bi-camera-fill text-success fs-5"></i> Select New Photo
                                     </label>
                                     <input
                                         id="photo"
                                         ref="profilePhotoInput"
                                         type="file"
                                         class="d-none"
-                                        accept=".jpg,.jpeg,.png,.webp"
+                                        accept="image/*"
                                         @change="setProfilePhoto"
                                     />
                                     <div

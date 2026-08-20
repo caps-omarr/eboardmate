@@ -94,6 +94,8 @@ onMounted(() => {
 
     // Inertia Router Event Interceptions
     removeStartListener = router.on('start', (event) => {
+        // Skip splash screen for silent background polling / partial reloads
+        if (event?.detail?.visit?.only?.length > 0) return;
         if (event?.detail?.visit?.url?.href?.includes('/owner/install')) return;
         startLoading('Navigating Owner Portal...');
     });

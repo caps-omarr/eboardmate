@@ -2,11 +2,13 @@
 import ThemeToggle from '@/Components/ThemeToggle.vue';
 import StudentOnboardingModal from '@/Components/StudentOnboardingModal.vue';
 import StudentSurveyModal from '@/Components/StudentSurveyModal.vue';
+import GlobalToast from '@/Components/GlobalToast.vue';
 import { Link } from '@inertiajs/vue3';
 </script>
 
 <template>
     <div class="vh-100 d-flex flex-column bg-body snap-container transition-all">
+        <GlobalToast />
         <StudentOnboardingModal />
         <StudentSurveyModal />
         

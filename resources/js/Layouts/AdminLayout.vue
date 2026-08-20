@@ -1,5 +1,6 @@
 <script setup>
 import ThemeToggle from '@/Components/ThemeToggle.vue';
+import GlobalToast from '@/Components/GlobalToast.vue';
 import { Link, useForm, router } from '@inertiajs/vue3';
 
 const logoutForm = useForm({});
@@ -34,7 +35,7 @@ const mobileLogout = () => {
 </script>
 
 <template>
-    
+    <GlobalToast />
     <div class="d-flex min-vh-100 bg-body transition-all">
         
         <!-- ==========================================

@@ -68,6 +68,12 @@ const setPhotoFile = (event) => {
     }
 };
 
+const triggerPhotoSelect = () => {
+    if (photoInput.value) {
+        photoInput.value.click();
+    }
+};
+
 const setPrimaryPhoto = (photo) => {
     primaryForm.post(photo.set_primary_url, {
         preserveScroll: true,
@@ -171,14 +177,30 @@ const statusBadgeClass = computed(() => {
 
                         <form @submit.prevent="submitPhoto">
                             <div class="mb-3">
-                                <input id="photo" ref="photoInput" type="file" class="form-control bg-body-tertiary rounded-4" :class="{ 'is-invalid': photoForm.errors.photo }" accept=".jpg,.jpeg,.png,.webp" @change="setPhotoFile">
-                                <div class="form-text small opacity-75 ms-2 mt-1">JPG, PNG, WebP up to 4MB.</div>
+                                <label 
+                                    for="listing-photo" 
+                                    class="btn btn-outline-secondary w-100 py-3 rounded-4 fw-semibold d-flex flex-column align-items-center justify-content-center gap-1 border-dashed bg-body-tertiary position-relative z-2 cursor-pointer"
+                                    style="min-height: 90px; touch-action: manipulation;"
+                                    @click="triggerPhotoSelect"
+                                >
+                                    <i class="bi bi-cloud-arrow-up-fill fs-3 text-success"></i>
+                                    <span>Select Property Photo</span>
+                                    <span class="small text-body-secondary fw-normal">JPG, PNG, WebP up to 4MB</span>
+                                </label>
+                                <input 
+                                    id="listing-photo" 
+                                    ref="photoInput" 
+                                    type="file" 
+                                    class="d-none" 
+                                    accept="image/*" 
+                                    @change="setPhotoFile"
+                                >
                                 
                                 <!-- Instant Local Preview -->
                                 <div v-if="photoPreview" class="mt-3 text-center p-2 bg-body-tertiary rounded-4 border border-secondary-subtle overflow-hidden">
                                     <img :src="photoPreview" alt="Selected Preview" class="img-fluid rounded-3" style="max-height: 160px; width: 100%; object-fit: cover;">
                                 </div>
-                                <div v-if="photoForm.errors.photo" class="invalid-feedback fw-bold ps-2">{{ photoForm.errors.photo }}</div>
+                                <div v-if="photoForm.errors.photo" class="invalid-feedback d-block fw-bold ps-2 mt-1">{{ photoForm.errors.photo }}</div>
                             </div>
 
                             <div class="mb-4">

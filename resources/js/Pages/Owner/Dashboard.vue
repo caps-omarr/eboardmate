@@ -1,5 +1,5 @@
 <script setup>
-import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import OwnerLayout from '@/Layouts/OwnerLayout.vue';
 import { Modal } from 'bootstrap';
 import { computed, ref } from 'vue';
@@ -149,72 +149,80 @@ const submitResponse = () => {
             <!-- MAIN DASHBOARD CONTENT -->
             <template v-else>
                 
-                <!-- 2x2 NATIVE STATS GRID -->
-                <section class="native-grid px-3 px-md-0 mb-5" aria-label="Dashboard Statistics">
+                <!-- 🚀 RESPONSIVE BOOTSTRAP 5 STATS GRID (Stacks vertically on small screens) -->
+                <section class="row g-3 px-3 px-md-0 mb-4" aria-label="Dashboard Statistics">
                     
-                    <!-- Highlight Card (Deep Green) -->
-                    <div class="native-card card-highlight d-flex flex-column justify-content-between">
-                        <div>
-                            <strong class="fs-1 fw-bold lh-1 mb-1 d-block">{{ stats.total }}</strong>
-                            <span class="small opacity-75">Total Reservations</span>
-                        </div>
-                        <div class="mt-3">
-                            <div class="d-flex justify-content-between small opacity-75 mb-1 font-monospace" style="font-size: 0.7rem;">
-                                <span>0%</span>
-                                <span>{{ getPercentage(stats.approved, stats.total) }}% Apprv</span>
+                    <!-- Total Reservations Card -->
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="native-card card-highlight d-flex flex-column justify-content-between h-100 p-4 rounded-4">
+                            <div>
+                                <strong class="fs-1 fw-bold lh-1 mb-1 d-block">{{ stats.total }}</strong>
+                                <span class="small opacity-75">Total Reservations</span>
                             </div>
-                            <div class="native-progress bg-black bg-opacity-25">
-                                <div class="native-progress-bar bg-white" :style="`width: ${getPercentage(stats.approved, stats.total)}%`"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Pending Card -->
-                    <div class="native-card bg-body shadow-sm d-flex flex-column justify-content-between">
-                        <div>
-                            <strong class="fs-1 fw-bold lh-1 mb-1 text-body-emphasis d-block">{{ stats.pending }}</strong>
-                            <span class="small text-body-secondary">Pending Action</span>
-                        </div>
-                        <div class="mt-3">
-                            <div class="d-flex justify-content-between small text-body-secondary mb-1 font-monospace" style="font-size: 0.7rem;">
-                                <span>0%</span>
-                                <span>{{ getPercentage(stats.pending, stats.total) }}%</span>
-                            </div>
-                            <div class="native-progress bg-secondary bg-opacity-10">
-                                <div class="native-progress-bar bg-warning" :style="`width: ${getPercentage(stats.pending, stats.total)}%`"></div>
+                            <div class="mt-3">
+                                <div class="d-flex justify-content-between small opacity-75 mb-1 font-monospace" style="font-size: 0.7rem;">
+                                    <span>0%</span>
+                                    <span>{{ getPercentage(stats.approved, stats.total) }}% Apprv</span>
+                                </div>
+                                <div class="native-progress bg-black bg-opacity-25 rounded-pill">
+                                    <div class="native-progress-bar bg-white rounded-pill" :style="`width: ${getPercentage(stats.approved, stats.total)}%`"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Occupancy Card -->
-                    <div class="native-card bg-body shadow-sm d-flex flex-column justify-content-between">
-                        <div>
-                            <strong class="fs-1 fw-bold lh-1 mb-1 text-body-emphasis d-block">
-                                {{ boardingHouse.total_rooms - boardingHouse.available_rooms }}/{{ boardingHouse.total_rooms }}
-                            </strong>
-                            <span class="small text-body-secondary">Rooms Occupied</span>
-                        </div>
-                        <div class="mt-3">
-                            <div class="d-flex justify-content-between small text-body-secondary mb-1 font-monospace" style="font-size: 0.7rem;">
-                                <span>0%</span>
-                                <span>{{ occupancyRate }}%</span>
+                    <!-- Pending Action Card -->
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="native-card bg-body shadow-sm d-flex flex-column justify-content-between h-100 p-4 rounded-4 border border-secondary-subtle">
+                            <div>
+                                <strong class="fs-1 fw-bold lh-1 mb-1 text-body-emphasis d-block">{{ stats.pending }}</strong>
+                                <span class="small text-body-secondary">Pending Action</span>
                             </div>
-                            <div class="native-progress bg-secondary bg-opacity-10">
-                                <div class="native-progress-bar bg-success" :style="`width: ${occupancyRate}%`"></div>
+                            <div class="mt-3">
+                                <div class="d-flex justify-content-between small text-body-secondary mb-1 font-monospace" style="font-size: 0.7rem;">
+                                    <span>0%</span>
+                                    <span>{{ getPercentage(stats.pending, stats.total) }}%</span>
+                                </div>
+                                <div class="native-progress bg-secondary bg-opacity-10 rounded-pill">
+                                    <div class="native-progress-bar bg-warning rounded-pill" :style="`width: ${getPercentage(stats.pending, stats.total)}%`"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Revenue / Property Info Card -->
-                    <div class="native-card bg-body shadow-sm d-flex flex-column justify-content-between">
-                        <div>
-                            <strong class="fs-3 fw-bold lh-1 mb-1 text-success d-block">₱{{ formatPrice(boardingHouse.rent_price) }}</strong>
-                            <span class="small text-body-secondary">Monthly Rent</span>
+                    <!-- Rooms Occupied Card -->
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="native-card bg-body shadow-sm d-flex flex-column justify-content-between h-100 p-4 rounded-4 border border-secondary-subtle">
+                            <div>
+                                <strong class="fs-1 fw-bold lh-1 mb-1 text-body-emphasis d-block">
+                                    {{ boardingHouse.total_rooms - boardingHouse.available_rooms }}/{{ boardingHouse.total_rooms }}
+                                </strong>
+                                <span class="small text-body-secondary">Rooms Occupied</span>
+                            </div>
+                            <div class="mt-3">
+                                <div class="d-flex justify-content-between small text-body-secondary mb-1 font-monospace" style="font-size: 0.7rem;">
+                                    <span>0%</span>
+                                    <span>{{ occupancyRate }}%</span>
+                                </div>
+                                <div class="native-progress bg-secondary bg-opacity-10 rounded-pill">
+                                    <div class="native-progress-bar bg-success rounded-pill" :style="`width: ${occupancyRate}%`"></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="mt-3">
-                            <div class="d-flex align-items-center gap-1">
-                                <span v-if="boardingHouse.is_verified" class="badge bg-success bg-opacity-10 text-success rounded-pill px-2">Verified</span>
-                                <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-2">{{ boardingHouse.status }}</span>
+                    </div>
+
+                    <!-- Monthly Rent Card -->
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="native-card bg-body shadow-sm d-flex flex-column justify-content-between h-100 p-4 rounded-4 border border-secondary-subtle">
+                            <div>
+                                <strong class="fs-3 fw-bold lh-1 mb-1 text-success d-block">₱{{ formatPrice(boardingHouse.rent_price) }}</strong>
+                                <span class="small text-body-secondary">Monthly Rent</span>
+                            </div>
+                            <div class="mt-3">
+                                <div class="d-flex align-items-center gap-1">
+                                    <span v-if="boardingHouse.is_verified" class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1">Verified</span>
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-2 py-1">{{ boardingHouse.status }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -12,12 +12,18 @@ const props = defineProps({
     },
 });
 
+// Component State & Reactive Refs
 const mapContainer = ref(null);
 const mapInstance = ref(null);
 const selectedLocation = ref(null);
 const currentMapStyle = ref('mapbox://styles/mapbox/satellite-streets-v12');
 
-// --- ⚡ CACHE & ABORT CONTROLLER FOR 60FPS PERFORMANCE (NO LAG, NO CRASH) ---
+// 🚀 PROGRESSIVE & NETWORK-AWARE STATE
+const isMapLoaded = ref(false);
+const isOnline = ref(typeof navigator !== 'undefined' ? navigator.onLine : true);
+const networkType = ref('4g');
+
+// ⚡ Cache & Abort Controller for 60FPS Performance
 const routeCache = new Map();
 let currentAbortController = null;
 const walkingRouteDetails = ref({ distance: null, duration: null, loading: false });
@@ -27,12 +33,40 @@ const centerLat = Number(import.meta.env.VITE_MAP_CENTER_LAT || 10.1167);
 const centerLng = Number(import.meta.env.VITE_MAP_CENTER_LNG || 124.2833);
 
 const initialZoom = 16;
-const minZoom = 13;
-const maxZoom = 19;
+const minZoom = 11;
+const maxZoom = 18;
+
+// Strict Bounding Box restricting user camera within Talibon, Bohol vicinity
+const talibonMaxBounds = [
+    [124.2800, 10.0800], // Southwest bounds [lng, lat]
+    [124.3500, 10.1600]  // Northeast bounds [lng, lat]
+];
 
 const hasMapboxToken = computed(() => mapboxToken && mapboxToken !== 'your_public_mapbox_token_here');
 
 const formatPrice = (price) => Number(price || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+// --- 🌐 NETWORK INFORMATION API INSPECTION ---
+const checkNetworkStatus = () => {
+    if (typeof navigator === 'undefined') return;
+    isOnline.value = navigator.onLine;
+
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (connection) {
+        networkType.value = connection.effectiveType || '4g';
+    }
+};
+
+const handleOnline = () => {
+    isOnline.value = true;
+    if (!mapInstance.value) {
+        initializeMap();
+    }
+};
+
+const handleOffline = () => {
+    isOnline.value = false;
+};
 
 // --- 🏠 CUSTOM CANVAS ICON ---
 const houseIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32">
@@ -60,7 +94,6 @@ const getBoardingHouseGeoJSON = () => {
 
 // --- 🚀 ULTRA-FAST CACHED & ABORTABLE WALKING ROUTE API ---
 const fetchWalkingRoute = async (startLng, startLat, houseId) => {
-    // 1. Check in-memory cache first (0ms delay, 0 network request)
     if (houseId && routeCache.has(houseId)) {
         const cached = routeCache.get(houseId);
         walkingRouteDetails.value = { distance: cached.distance, duration: cached.duration, loading: false };
@@ -70,7 +103,6 @@ const fetchWalkingRoute = async (startLng, startLat, houseId) => {
         return;
     }
 
-    // 2. Abort pending request if user clicks another marker quickly
     if (currentAbortController) {
         currentAbortController.abort();
     }
@@ -143,9 +175,9 @@ const addMapLayers = () => {
                 source: 'walking-route',
                 layout: { 'line-join': 'round', 'line-cap': 'round' },
                 paint: {
-                    'line-color': '#10b981',
+                    'line-color': '#2563eb', // Vibrant Blue
                     'line-width': 5,
-                    'line-opacity': 0.85,
+                    'line-opacity': 0.9,
                     'line-dasharray': [1, 2],
                 },
             });
@@ -238,7 +270,14 @@ const initializeMap = async () => {
     await nextTick();
     if (!mapContainer.value) return;
 
+    checkNetworkStatus();
+    if (!isOnline.value) return;
+
+    isMapLoaded.value = false;
     mapboxgl.accessToken = mapboxToken;
+
+    const isSlowConnection = networkType.value === '2g' || networkType.value === 'slow-2g';
+
     mapInstance.value = new mapboxgl.Map({
         container: mapContainer.value,
         style: currentMapStyle.value,
@@ -246,14 +285,21 @@ const initializeMap = async () => {
         zoom: initialZoom,
         minZoom,
         maxZoom,
+        maxBounds: talibonMaxBounds,
         bearing: 0,
-        pitch: 30,
-        dragRotate: true,
+        pitch: isSlowConnection ? 0 : 30,
+        dragRotate: !isSlowConnection,
+        antialias: !isSlowConnection,
         attributionControl: true,
     });
 
     mapInstance.value.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), 'top-right');
     mapInstance.value.addControl(new mapboxgl.GeolocateControl({ positionOptions: { enableHighAccuracy: true }, trackUserLocation: true }), 'top-right');
+
+    // 🚀 Idle Event Listener: Triggers smooth 0.6s opacity fade-in once all tiles & layers finish painting
+    mapInstance.value.once('idle', () => {
+        isMapLoaded.value = true;
+    });
 
     mapInstance.value.on('load', () => {
         addMapLayers();
@@ -327,8 +373,7 @@ const initializeMap = async () => {
 
     mapInstance.value.on('click', (e) => {
         if (!mapInstance.value.queryRenderedFeatures(e.point, { layers: ['clusters', 'unclustered-point'] }).length) {
-            selectedLocation.value = null;
-            clearWalkingRoute();
+            closeBottomSheet();
         }
     });
 };
@@ -336,18 +381,45 @@ const initializeMap = async () => {
 const closeBottomSheet = () => {
     selectedLocation.value = null;
     clearWalkingRoute();
+    if (mapInstance.value) {
+        mapInstance.value.flyTo({
+            center: [centerLng, centerLat],
+            zoom: 15.5,
+            offset: [0, 0],
+            pitch: 30,
+            bearing: 0,
+            duration: 800,
+        });
+    }
 };
 
 const changeMapStyle = (event) => {
     currentMapStyle.value = event.target.value;
+    isMapLoaded.value = false;
     mapInstance.value.setStyle(currentMapStyle.value);
     mapInstance.value.once('style.load', () => addMapLayers());
+    mapInstance.value.once('idle', () => isMapLoaded.value = true);
 };
 
-onMounted(() => initializeMap());
+onMounted(() => {
+    checkNetworkStatus();
+    if (typeof window !== 'undefined') {
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+    }
+    initializeMap();
+});
+
 onBeforeUnmount(() => {
+    if (typeof window !== 'undefined') {
+        window.removeEventListener('online', handleOnline);
+        window.removeEventListener('offline', handleOffline);
+    }
     if (currentAbortController) currentAbortController.abort();
-    if (mapInstance.value) mapInstance.value.remove();
+    if (mapInstance.value) {
+        mapInstance.value.remove();
+        mapInstance.value = null;
+    }
 });
 </script>
 
@@ -357,7 +429,7 @@ onBeforeUnmount(() => {
             <meta name="description" content="Explore verified boarding houses near Talibon Polytechnic College on an interactive map." />
         </Head>
 
-        <!-- 🔍 SEO MICRODATA (Hidden visually, indexed by search engines) -->
+        <!-- 🔍 SEO MICRODATA -->
         <div class="visually-hidden">
             <h2>Verified Boarding Houses Near Talibon Polytechnic College</h2>
             <article v-for="house in boardingHouses" :key="`seo-${house.id}`" itemscope itemtype="https://schema.org/Accommodation">
@@ -386,8 +458,52 @@ onBeforeUnmount(() => {
                 </div>
             </div>
 
-            <!-- MAP CANVAS CONTAINER -->
-            <div ref="mapContainer" class="ebm-map-full w-100 transition-all" />
+            <!-- MAP CONTAINER WRAPPER WITH ABSOLUTE SKELETON & OFFLINE OVERLAYS -->
+            <div class="position-relative w-100 flex-grow-1 overflow-hidden">
+
+                <!-- 🚀 BOOTSTRAP 5 SKELETON OVERLAY (Pulsing placeholder prevents CLS) -->
+                <div 
+                    v-if="!isMapLoaded && isOnline" 
+                    class="map-skeleton-overlay placeholder-glow d-flex flex-column align-items-center justify-content-center p-4 text-center bg-body"
+                >
+                    <div class="spinner-border text-success mb-3" style="width: 2.75rem; height: 2.75rem;" role="status">
+                        <span class="visually-hidden">Loading map tiles...</span>
+                    </div>
+                    <div class="placeholder col-8 col-md-4 py-2 rounded-3 mb-2 bg-secondary bg-opacity-20"></div>
+                    <div class="placeholder col-6 col-md-3 py-1 rounded-3 bg-secondary bg-opacity-20 mb-3"></div>
+                    <span class="small text-body-secondary fw-semibold">
+                        <i class="bi bi-geo-alt-fill text-danger me-1"></i> Rendering Talibon Satellite Map...
+                    </span>
+                    <span v-if="networkType === '2g' || networkType === 'slow-2g'" class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill mt-2 px-3 py-1 small">
+                        Slow Network Detected (Low Bandwidth Mode)
+                    </span>
+                </div>
+
+                <!-- 🚀 OFFLINE NETWORK OVERLAY -->
+                <div 
+                    v-if="!isOnline" 
+                    class="map-offline-overlay d-flex flex-column align-items-center justify-content-center p-4 text-center bg-body"
+                >
+                    <div class="offline-icon-box bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                        <i class="bi bi-wifi-off fs-1"></i>
+                    </div>
+                    <h3 class="h5 fw-bold text-body-emphasis mb-2">Map Requires Internet Connection</h3>
+                    <p class="text-body-secondary small mb-4" style="max-width: 320px;">
+                        Unable to fetch satellite tiles. Please check your mobile data or WiFi connection.
+                    </p>
+                    <button type="button" @click="initializeMap" class="btn btn-sm btn-success rounded-pill px-4 fw-bold shadow-sm">
+                        <i class="bi bi-arrow-clockwise me-1"></i> Retry Connection
+                    </button>
+                </div>
+
+                <!-- MAPBOX CANVAS CONTAINER -->
+                <div 
+                    ref="mapContainer" 
+                    class="ebm-map-full w-100 h-100 transition-opacity" 
+                    :style="{ opacity: isMapLoaded ? 1 : 0, transition: 'opacity 0.6s ease-in-out' }"
+                />
+
+            </div>
 
             <!-- BOTTOM SHEET / SIDE DRAWER CARD -->
             <Transition name="slide-up">
@@ -476,6 +592,17 @@ onBeforeUnmount(() => {
 .ebm-map-full {
     flex-grow: 1;
     width: 100%;
+}
+
+.map-skeleton-overlay,
+.map-offline-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+    background-color: var(--bs-body-bg);
 }
 
 .map-bottom-sheet {

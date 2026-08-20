@@ -55,13 +55,23 @@ export default defineConfig({
             }
         })
     ],
-    // 🚀 THE FIX: Split the giant 2.5MB file into smaller, safer chunks
+    // 🚀 CODE SPLITTING FIX: Prevents 2MB+ monolithic vendor files that cause ERR_HTTP2_PROTOCOL_ERROR on Cloudflare Tunnels
     build: {
+        chunkSizeWarningLimit: 1500,
         rollupOptions: {
             output: {
                 manualChunks(id) {
                     if (id.includes('node_modules')) {
-                        return 'vendor'; // Groups all heavy libraries into one separate file
+                        if (id.includes('mapbox-gl')) {
+                            return 'mapbox';
+                        }
+                        if (id.includes('bootstrap') || id.includes('@popperjs')) {
+                            return 'bootstrap';
+                        }
+                        if (id.includes('vue') || id.includes('@inertiajs')) {
+                            return 'vue-core';
+                        }
+                        return 'vendor';
                     }
                 }
             }
