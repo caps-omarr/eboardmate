@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -11,6 +11,8 @@ const props = defineProps({
         default: () => [],
     },
 });
+
+const page = usePage();
 
 // Component State & Reactive Refs
 const mapContainer = ref(null);
@@ -28,7 +30,15 @@ const routeCache = new Map();
 let currentAbortController = null;
 const walkingRouteDetails = ref({ distance: null, duration: null, loading: false });
 
-const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN || '';
+// 🚀 RUNTIME DYNAMIC MAPBOX TOKEN RESOLUTION (Inertia Shared Prop -> env fallback)
+const mapboxToken = computed(() => {
+    const token = page.props.mapbox_token || import.meta.env.VITE_MAPBOX_TOKEN || '';
+    if (!token || token === 'your_public_mapbox_token_here') {
+        console.warn('⚠️ Mapbox Warning: No valid Mapbox token provided in Inertia shared props or environment variables.');
+    }
+    return token;
+});
+
 const centerLat = Number(import.meta.env.VITE_MAP_CENTER_LAT || 10.1167);
 const centerLng = Number(import.meta.env.VITE_MAP_CENTER_LNG || 124.2833);
 
@@ -42,7 +52,7 @@ const talibonMaxBounds = [
     [124.3500, 10.1600]  // Northeast bounds [lng, lat]
 ];
 
-const hasMapboxToken = computed(() => mapboxToken && mapboxToken !== 'your_public_mapbox_token_here');
+const hasMapboxToken = computed(() => Boolean(mapboxToken.value && mapboxToken.value !== 'your_public_mapbox_token_here'));
 
 const formatPrice = (price) => Number(price || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -109,7 +119,7 @@ const fetchWalkingRoute = async (startLng, startLat, houseId) => {
     currentAbortController = new AbortController();
 
     walkingRouteDetails.value = { distance: null, duration: null, loading: true };
-    const url = `https://api.mapbox.com/directions/v5/mapbox/walking/${startLng},${startLat};${centerLng},${centerLat}?geometries=geojson&access_token=${mapboxToken}`;
+    const url = `https://api.mapbox.com/directions/v5/mapbox/walking/${startLng},${startLat};${centerLng},${centerLat}?geometries=geojson&access_token=${mapboxToken.value}`;
 
     try {
         const response = await fetch(url, { signal: currentAbortController.signal });
@@ -274,7 +284,7 @@ const initializeMap = async () => {
     if (!isOnline.value) return;
 
     isMapLoaded.value = false;
-    mapboxgl.accessToken = mapboxToken;
+    mapboxgl.accessToken = mapboxToken.value;
 
     const isSlowConnection = networkType.value === '2g' || networkType.value === 'slow-2g';
 

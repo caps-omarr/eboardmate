@@ -1,20 +1,30 @@
 <script setup>
-import { Head, Link } from "@inertiajs/vue3";
+import { Head, Link, usePage } from "@inertiajs/vue3";
 import PublicLayout from "@/Layouts/PublicLayout.vue";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { nextTick, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
+
+const page = usePage();
 
 const homeMapContainer = ref(null);
 const homeMap = ref(null);
 const homeMarkers = ref([]);
 
-const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN || "";
+// 🚀 RUNTIME DYNAMIC MAPBOX TOKEN RESOLUTION (Inertia Shared Prop -> env fallback)
+const mapboxToken = computed(() => {
+    const token = page.props.mapbox_token || import.meta.env.VITE_MAPBOX_TOKEN || "";
+    if (!token || token === "your_public_mapbox_token_here") {
+        console.warn("⚠️ Mapbox Warning: No valid Mapbox token provided in Inertia shared props or environment variables.");
+    }
+    return token;
+});
+
 const centerLat = Number(import.meta.env.VITE_MAP_CENTER_LAT || 10.1167);
 const centerLng = Number(import.meta.env.VITE_MAP_CENTER_LNG || 124.2833);
 
 const hasMapboxToken = () => {
-    return mapboxToken && mapboxToken !== "your_public_mapbox_token_here";
+    return Boolean(mapboxToken.value && mapboxToken.value !== "your_public_mapbox_token_here");
 };
 
 const schoolIconSvg = `
@@ -109,7 +119,7 @@ const initializeHomePreviewMap = async () => {
     await nextTick();
     if (!homeMapContainer.value) return;
 
-    mapboxgl.accessToken = mapboxToken;
+    mapboxgl.accessToken = mapboxToken.value;
     homeMap.value = new mapboxgl.Map({
         container: homeMapContainer.value,
         style: "mapbox://styles/mapbox/satellite-streets-v12",

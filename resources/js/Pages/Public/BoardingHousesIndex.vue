@@ -1,8 +1,10 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import LazyViewport from '@/Components/LazyViewport.vue';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+
+const page = usePage();
 
 const props = defineProps({
     boardingHouses: {
@@ -19,21 +21,28 @@ const getImageUrl = (photo) => {
 };
 
 // --- REAL-TIME MAPBOX DISTANCE LOGIC ---
-const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN || '';
+const mapboxToken = computed(() => {
+    const token = page.props.mapbox_token || import.meta.env.VITE_MAPBOX_TOKEN || '';
+    if (!token || token === 'your_public_mapbox_token_here') {
+        console.warn('⚠️ Mapbox Warning: No valid Mapbox token provided in Inertia shared props or environment variables.');
+    }
+    return token;
+});
+
 const centerLat = Number(import.meta.env.VITE_MAP_CENTER_LAT || 10.1167);
 const centerLng = Number(import.meta.env.VITE_MAP_CENTER_LNG || 124.2833);
 
 const realRoutes = ref({});
 
 const fetchRealDistances = async () => {
-    if (!mapboxToken || mapboxToken === 'your_public_mapbox_token_here') return;
+    if (!mapboxToken.value || mapboxToken.value === 'your_public_mapbox_token_here') return;
 
     await Promise.all(props.boardingHouses.map(async (house) => {
         if (!house.longitude || !house.latitude) return;
 
         realRoutes.value[house.id] = { loading: true };
         
-        const url = `https://api.mapbox.com/directions/v5/mapbox/walking/${house.longitude},${house.latitude};${centerLng},${centerLat}?access_token=${mapboxToken}`;
+        const url = `https://api.mapbox.com/directions/v5/mapbox/walking/${house.longitude},${house.latitude};${centerLng},${centerLat}?access_token=${mapboxToken.value}`;
         
         try {
             const response = await fetch(url);
