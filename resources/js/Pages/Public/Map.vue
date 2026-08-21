@@ -39,8 +39,8 @@ const mapboxToken = computed(() => {
     return token;
 });
 
-const centerLat = Number(import.meta.env.VITE_MAP_CENTER_LAT || 10.1167);
-const centerLng = Number(import.meta.env.VITE_MAP_CENTER_LNG || 124.2833);
+const centerLat = Number(import.meta.env.VITE_MAP_CENTER_LAT || 10.13477);
+const centerLng = Number(import.meta.env.VITE_MAP_CENTER_LNG || 124.32278);
 
 const initialZoom = 16;
 const minZoom = 11;
