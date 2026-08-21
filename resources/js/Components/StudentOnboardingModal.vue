@@ -44,7 +44,7 @@ const finishTour = () => {
     localStorage.setItem(ONBOARDING_KEY, 'true');
     localStorage.setItem('ebm_student_onboarding_completed', 'completed');
 
-    // Build filter parameters for homepage visit
+    // Build filter parameters for boarding houses list
     const filterData = {};
     if (selectedGender.value && selectedGender.value !== 'all') {
         filterData.gender = selectedGender.value;
@@ -53,8 +53,8 @@ const finishTour = () => {
         filterData.budget = selectedBudget.value;
     }
 
-    // Trigger Inertia visit to update home page filters
-    router.visit('/', {
+    // Trigger Inertia visit to Boarding Houses search page
+    router.visit('/boarding-houses', {
         data: filterData,
         preserveState: false,
     });

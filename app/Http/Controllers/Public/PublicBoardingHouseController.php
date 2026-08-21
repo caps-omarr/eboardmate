@@ -4,42 +4,49 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\BoardingHouse;
+use App\Services\LocationService;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class PublicBoardingHouseController extends Controller
 {
-    public function index(): Response
-    {
-        // 🚀 OPTIMIZATION: Cache the entire public listing index for 5 minutes
-        $boardingHouses = Cache::remember('public_boarding_houses_index', now()->addMinutes(5), function () {
-            $tpcLatitude = 10.1167;
-            $tpcLongitude = 124.2833;
+    public function __construct(
+        protected LocationService $locationService
+    ) {}
 
+    public function index(\Illuminate\Http\Request $request): Response
+    {
+        $genderFilter = $request->query('gender');
+        $budgetFilter = $request->query('budget');
+
+        // 🚀 OPTIMIZATION: Cache public listing index for 5 minutes
+        $boardingHouses = Cache::remember('public_boarding_houses_index', now()->addMinutes(5), function () {
             return BoardingHouse::with(['photos' => function ($query) {
                 $query->where('is_primary', true);
             }])
                 ->where('status', 'approved')
                 ->get()
-                ->map(function ($house) use ($tpcLatitude, $tpcLongitude) {
-                    $distance = $this->calculateDistanceInKilometers(
-                        $tpcLatitude,
-                        $tpcLongitude,
-                        (float) $house->latitude,
-                        (float) $house->longitude
+                ->map(function ($house) {
+                    $lat = (float) $house->latitude;
+                    $lng = (float) $house->longitude;
+
+                    $distance = $this->locationService->calculateDistanceInKilometers(
+                        LocationService::TPC_LATITUDE,
+                        LocationService::TPC_LONGITUDE,
+                        $lat,
+                        $lng
                     );
-                    
-                    // Dynamic walking minutes calculation based on standard walking speed (~4.8 km/h)
-                    $walkingMinutes = max(1, (int) round(($distance / 4.8) * 60));
+
+                    $walkingMinutes = $this->locationService->calculateWalkingMinutesFromTpc($lat, $lng);
 
                     return [
                         'id' => $house->id,
                         'name' => $house->name,
                         'slug' => $house->slug,
                         'address' => $house->address,
-                        'latitude' => (float) $house->latitude,
-                        'longitude' => (float) $house->longitude,
+                        'latitude' => $lat,
+                        'longitude' => $lng,
                         'rent_price' => (float) $house->rent_price,
                         'status' => $house->status,
                         'available_rooms' => $house->available_rooms,
@@ -57,8 +64,16 @@ class PublicBoardingHouseController extends Controller
                 });
         });
 
+        // 🚀 Dynamic Quick Setup Filter Application
+        if ($budgetFilter && $budgetFilter !== 'all') {
+            $maxPrice = (float) $budgetFilter;
+            $boardingHouses = $boardingHouses->filter(function ($house) use ($maxPrice) {
+                return (float) $house['rent_price'] <= $maxPrice;
+            })->values();
+        }
+
         return Inertia::render('Public/BoardingHousesIndex', [
-            'boardingHouses' => $boardingHouses
+            'boardingHouses' => $boardingHouses,
         ]);
     }
 
@@ -78,8 +93,8 @@ class PublicBoardingHouseController extends Controller
                 },
             ]);
 
-            $tpcLatitude = 10.1167;
-            $tpcLongitude = 124.2833;
+            $lat = (float) $boardingHouse->latitude;
+            $lng = (float) $boardingHouse->longitude;
 
             return [
                 'id' => $boardingHouse->id,
@@ -88,8 +103,8 @@ class PublicBoardingHouseController extends Controller
                 'description' => $boardingHouse->description,
                 'location_description' => $boardingHouse->location_description,
                 'address' => $boardingHouse->address,
-                'latitude' => (float) $boardingHouse->latitude,
-                'longitude' => (float) $boardingHouse->longitude,
+                'latitude' => $lat,
+                'longitude' => $lng,
                 'rent_price' => (float) $boardingHouse->rent_price,
                 'total_rooms' => $boardingHouse->total_rooms,
                 'available_rooms' => $boardingHouse->available_rooms,
@@ -101,11 +116,11 @@ class PublicBoardingHouseController extends Controller
                 'is_verified' => $boardingHouse->is_verified,
                 'is_full' => $boardingHouse->isFull(),
                 'has_available_slot' => $boardingHouse->hasAvailableSlot(),
-                'estimated_distance_km' => $this->calculateDistanceInKilometers(
-                    $tpcLatitude,
-                    $tpcLongitude,
-                    (float) $boardingHouse->latitude,
-                    (float) $boardingHouse->longitude
+                'estimated_distance_km' => $this->locationService->calculateDistanceInKilometers(
+                    LocationService::TPC_LATITUDE,
+                    LocationService::TPC_LONGITUDE,
+                    $lat,
+                    $lng
                 ),
                 'photos' => $boardingHouse->photos->map(function ($photo) {
                     return [
@@ -121,27 +136,5 @@ class PublicBoardingHouseController extends Controller
         return Inertia::render('Public/BoardingHouseDetail', [
             'boardingHouse' => $formattedBoardingHouse,
         ]);
-    }
-
-    private function calculateDistanceInKilometers(
-        float $fromLatitude,
-        float $fromLongitude,
-        float $toLatitude,
-        float $toLongitude
-    ): float {
-        $earthRadiusKilometers = 6371;
-
-        $latitudeDifference = deg2rad($toLatitude - $fromLatitude);
-        $longitudeDifference = deg2rad($toLongitude - $fromLongitude);
-
-        $calculation = sin($latitudeDifference / 2) * sin($latitudeDifference / 2)
-            + cos(deg2rad($fromLatitude))
-            * cos(deg2rad($toLatitude))
-            * sin($longitudeDifference / 2)
-            * sin($longitudeDifference / 2);
-
-        $centralAngle = 2 * atan2(sqrt($calculation), sqrt(1 - $calculation));
-
-        return round($earthRadiusKilometers * $centralAngle, 2);
     }
 }

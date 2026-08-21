@@ -3,133 +3,28 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Public\StoreReservationRequest;
 use App\Models\BoardingHouse;
-use App\Models\Reservation;
-use App\Mail\ReservationSubmittedMail;
-use App\Mail\NewReservationNotification; // 🚀 NEW: Import the Owner Notification Mail
+use App\Services\ReservationService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Database\QueryException;
 
 class PublicReservationController extends Controller
 {
-    public function store(Request $request, BoardingHouse $boardingHouse): RedirectResponse
+    public function __construct(
+        protected ReservationService $reservationService
+    ) {}
+
+    public function store(StoreReservationRequest $request, BoardingHouse $boardingHouse): RedirectResponse
     {
         abort_unless($boardingHouse->isPubliclyVisible(), 404);
 
-        // 1. Strict Domain Validation
-        $validated = $request->validate([
-            'full_name' => ['required', 'string', 'max:255'],
-            'email' => [
-                'required', 
-                'string', 
-                'email', 
-                'max:255',
-                'regex:/^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com|outlook\.com)$/i'
-            ],
-            'phone' => ['required', 'string', 'max:30'],
-            'preferred_move_in_date' => ['required', 'date', 'after_or_equal:today'],
-            'message' => ['nullable', 'string', 'max:1000'],
-            'accepted_terms' => ['accepted'],
-        ], [
-            'email.regex' => 'Please use a valid email address from standard providers (Gmail, Yahoo, or Outlook).',
-        ]);
+        $reservation = $this->reservationService->createReservation(
+            $boardingHouse,
+            $request->validated(),
+            $request->ip(),
+            $request->userAgent()
+        );
 
-        $normalizedFullName = trim($validated['full_name']);
-        $normalizedEmail = strtolower(trim($validated['email']));
-        $normalizedPhone = trim($validated['phone']);
-
-        $attempts = 0;
-        $maxAttempts = 3;
-        $reservation = null;
-
-        // 2. 🛡️ The Concurrency-Safe Retry Loop & Transaction
-        while ($attempts < $maxAttempts) {
-            try {
-                $reservation = DB::transaction(function () use ($boardingHouse, $validated, $request, $normalizedFullName, $normalizedEmail, $normalizedPhone) {
-                    
-                    // LOCK THE ROW
-                    $lockedHouse = BoardingHouse::where('id', $boardingHouse->id)
-                        ->lockForUpdate()
-                        ->firstOrFail();
-
-                    // Expire old ones strictly for this house
-                    $this->expireOldPendingReservations($lockedHouse);
-
-                    // Re-check capacity while the row is locked
-                    if ($lockedHouse->isFull()) {
-                        throw ValidationException::withMessages([
-                            'reservation' => 'This boarding house is currently full. Reservation is unavailable.',
-                        ]);
-                    }
-
-                    // GLOBAL ANTI-HOARDING CHECK
-                    $activeDuplicateExists = Reservation::query()
-                        ->whereIn('status', [
-                            Reservation::STATUS_PENDING,
-                            Reservation::STATUS_APPROVED,
-                        ])
-                        ->where(function ($query) use ($normalizedEmail, $normalizedPhone) {
-                            $query->whereRaw('LOWER(guest_email) = ?', [$normalizedEmail])
-                                  ->orWhere('guest_phone', $normalizedPhone);
-                        })
-                        ->exists();
-
-                    if ($activeDuplicateExists) {
-                        throw ValidationException::withMessages([
-                            'reservation' => 'You already have an active reservation request in the system. You can only hold one reservation at a time to ensure fairness. Please wait for it to be processed or cancel it.',
-                        ]);
-                    }
-
-                    // Create and return the reservation safely
-                    return Reservation::create([
-                        'boarding_house_id' => $lockedHouse->id,
-                        'reference_code' => $this->generateReferenceCode(), 
-                        'guest_name' => $normalizedFullName,
-                        'guest_email' => $normalizedEmail,
-                        'guest_phone' => $normalizedPhone,
-                        'preferred_move_in_date' => $validated['preferred_move_in_date'],
-                        'message' => $validated['message'] ?? null,
-                        'status' => Reservation::STATUS_PENDING,
-                        'expires_at' => now()->addHours(24),
-                        'submission_ip' => $request->ip(),
-                        'user_agent' => $request->userAgent(),
-                    ]);
-                });
-
-                break; 
-
-            } catch (QueryException $e) {
-                if ($e->getCode() == 23000 && $attempts < $maxAttempts - 1) {
-                    $attempts++;
-                    usleep(100000); 
-                    continue;
-                }
-                throw $e; 
-            }
-        }
-
-        // 3. Send Email to the GUEST
-        try {
-            Mail::to($reservation->guest_email)->queue(new ReservationSubmittedMail($reservation, $boardingHouse));
-        } catch (\Exception $e) {
-            Log::error('Failed to queue submission email to guest ' . $reservation->guest_email . '. Error: ' . $e->getMessage());
-        }
-
-        // 4. 🚀 NEW: Send Real-Time Email Notification to the OWNER
-        if ($boardingHouse->owner && $boardingHouse->owner->email) {
-            try {
-                Mail::to($boardingHouse->owner->email)->queue(new NewReservationNotification($reservation, $boardingHouse));
-            } catch (\Exception $e) {
-                Log::error('Failed to queue new reservation notification to owner ' . $boardingHouse->owner->email . '. Error: ' . $e->getMessage());
-            }
-        }
-
-        // 5. Redirect the student with a success message
         return redirect()
             ->route('boarding-houses.show', $boardingHouse->slug)
             ->with('reservation_result', [
@@ -143,39 +38,5 @@ class PublicReservationController extends Controller
                 'expires_at' => $reservation->expires_at?->format('M d, Y h:i A'),
                 'track_url' => url('/track-reservation'),
             ]);
-    }
-
-    private function expireOldPendingReservations(BoardingHouse $boardingHouse): void
-    {
-        Reservation::query()
-            ->where('boarding_house_id', $boardingHouse->id)
-            ->where('status', Reservation::STATUS_PENDING)
-            ->whereNotNull('expires_at')
-            ->where('expires_at', '<=', now())
-            ->update([
-                'status' => Reservation::STATUS_EXPIRED,
-                'expired_at' => now(),
-            ]);
-    }
-
-    private function generateReferenceCode(): string
-    {
-        $year = now()->format('Y');
-
-        $latestReservation = Reservation::query()
-            ->withTrashed() 
-            ->where('reference_code', 'like', 'EBM-' . $year . '-%')
-            ->lockForUpdate() 
-            ->latest('id')
-            ->first();
-
-        $nextNumber = 1;
-
-        if ($latestReservation) {
-            $latestNumber = (int) substr($latestReservation->reference_code, -6);
-            $nextNumber = $latestNumber + 1;
-        }
-
-        return 'EBM-' . $year . '-' . str_pad((string) $nextNumber, 6, '0', STR_PAD_LEFT);
     }
 }
