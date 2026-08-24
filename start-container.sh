@@ -30,7 +30,11 @@ php artisan cache:clear || true
 echo "🔑 Verifying APP_KEY..."
 php artisan key:generate --force || true
 
-# 5. Enable APP_DEBUG temporarily for diagnostic visibility on Render
+# 5. Fallback Session & Cache Drivers (Prevents DB queries during session bootstrap)
+export SESSION_DRIVER=${SESSION_DRIVER:-file}
+export CACHE_STORE=${CACHE_STORE:-file}
+
+# 6. Enable APP_DEBUG temporarily for diagnostic visibility on Render
 export APP_DEBUG=true
 
 # 6. Run Concurrency-Safe Database Migrations
