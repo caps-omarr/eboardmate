@@ -217,7 +217,7 @@ onBeforeUnmount(() => {
                             student account.
                         </p>
 
-                        <!-- Personality-Driven CTAs -->
+                        <!-- Personality-Driven Hero CTAs -->
                         <div class="d-grid d-sm-flex gap-3 mb-5">
                             <Link
                                 href="/boarding-houses"
@@ -230,13 +230,6 @@ onBeforeUnmount(() => {
                                 class="btn btn-outline-success btn-lg px-4 fw-bold shadow-sm transition-all rounded-pill d-inline-flex align-items-center justify-content-center gap-2"
                             >
                                 <span>📍 View Interactive Map</span>
-                            </Link>
-                            <Link
-                                href="/track-reservation"
-                                class="btn bg-body border-secondary-subtle text-body-emphasis btn-lg px-4 fw-semibold shadow-sm transition-all hover-bg-tertiary rounded-pill d-inline-flex align-items-center justify-content-center gap-2"
-                            >
-                                <i class="bi bi-search text-success"></i>
-                                <span>Track Reservation</span>
                             </Link>
                         </div>
 
@@ -334,6 +327,14 @@ onBeforeUnmount(() => {
                                 >completely free and with zero account registration required.</strong
                             >
                         </p>
+
+                        <!-- Track Reservation CTA Wrapper -->
+                        <div class="d-flex justify-content-center mt-4 mb-2 w-100">
+                            <Link href="/track-reservation" class="btn btn-outline-secondary rounded-pill px-5 py-3 fw-semibold d-flex align-items-center justify-content-center gap-2 transition-all shadow-sm w-100" style="max-width: 350px;">
+                                <i class="bi bi-search fs-5 text-success"></i> 
+                                <span>Track Your Reservation</span>
+                            </Link>
+                        </div>
                     </div>
                 </div>
 
