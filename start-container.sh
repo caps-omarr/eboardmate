@@ -5,15 +5,22 @@
 # ==============================================================================
 set -e
 
-echo "🚀 Running Laravel Production Caches & Migrations..."
+echo "🚀 Starting E-BoardMate Production Startup..."
+
+# Clear stale cached configuration & routes
+php artisan config:clear || true
+php artisan route:clear || true
+php artisan view:clear || true
+
+# Run Concurrency-Safe Database Migrations
+echo "🗄️ Executing database migrations..."
+php artisan migrate --force || echo "⚠️ Database Migration Warning: Proceeding with container startup..."
 
 # Cache Configurations, Routes, and Views for Maximum Speed
+echo "⚡ Caching Laravel production configurations..."
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
-
-# Run Concurrency-Safe Database Migrations
-php artisan migrate --force
 
 echo "⚡ Starting Apache Web Server in Foreground..."
 exec apache2-foreground
