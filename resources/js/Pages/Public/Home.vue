@@ -217,21 +217,26 @@ onBeforeUnmount(() => {
                             student account.
                         </p>
 
-                        <!-- Buttons -->
+                        <!-- Personality-Driven CTAs -->
                         <div class="d-grid d-sm-flex gap-3 mb-5">
                             <Link
-                                href="boarding-houses"
-                                class="btn btn-ebm-primary btn-lg px-4 fw-bold shadow transition-all rounded-pill"
+                                href="/boarding-houses"
+                                class="btn btn-ebm-primary btn-lg px-4 fw-bold shadow transition-all rounded-pill d-inline-flex align-items-center justify-content-center gap-2"
                             >
-                                <i class="bi bi-houses me-1"></i> View Boarding
-                                Houses
+                                <span>🏠 Find Accommodations</span>
+                            </Link>
+                            <Link
+                                href="/map"
+                                class="btn btn-outline-success btn-lg px-4 fw-bold shadow-sm transition-all rounded-pill d-inline-flex align-items-center justify-content-center gap-2"
+                            >
+                                <span>📍 View Interactive Map</span>
                             </Link>
                             <Link
                                 href="/track-reservation"
-                                class="btn bg-body border-secondary-subtle text-body-emphasis btn-lg px-4 fw-semibold shadow-sm transition-all hover-bg-tertiary rounded-pill"
+                                class="btn bg-body border-secondary-subtle text-body-emphasis btn-lg px-4 fw-semibold shadow-sm transition-all hover-bg-tertiary rounded-pill d-inline-flex align-items-center justify-content-center gap-2"
                             >
-                                <i class="bi bi-search me-1 text-success"></i>
-                                Track Reservation
+                                <i class="bi bi-search text-success"></i>
+                                <span>Track Reservation</span>
                             </Link>
                         </div>
 
