@@ -33,9 +33,12 @@ export CACHE_STORE=${CACHE_STORE:-file}
 # 6. Enable APP_DEBUG temporarily for diagnostic visibility on Render
 export APP_DEBUG=true
 
-# 6. Run Concurrency-Safe Database Migrations
+# 6. Run Concurrency-Safe Database Migrations & Seeders
 echo "🗄️ Executing database migrations..."
 php artisan migrate --force || echo "⚠️ Database Migration Warning: Proceeding with container startup..."
+
+echo "🌱 Seeding initial production data..."
+php artisan db:seed --class=EBoardMateUserSeeder --force || echo "⚠️ Seeder Warning: Proceeding with container startup..."
 
 # 7. Cache Configurations, Routes, and Views for Production Performance
 echo "⚡ Caching Laravel production configurations..."
