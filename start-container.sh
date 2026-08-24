@@ -26,11 +26,7 @@ php artisan route:clear || true
 php artisan view:clear || true
 php artisan cache:clear || true
 
-# 4. Fail-Safe APP_KEY Verification & Direct .env Injection
-echo "🔑 Verifying APP_KEY..."
-php artisan key:generate --force || true
-
-# 5. Fallback Session & Cache Drivers (Prevents DB queries during session bootstrap)
+# 4. Fallback Session & Cache Drivers (Prevents DB queries during session bootstrap)
 export SESSION_DRIVER=${SESSION_DRIVER:-file}
 export CACHE_STORE=${CACHE_STORE:-file}
 
