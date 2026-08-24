@@ -13,24 +13,31 @@ mkdir -p /var/www/html/storage/framework/{sessions,views,cache} /var/www/html/st
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# 2. Clear Build-Time Stale Cached Configuration
+# 2. Ensure .env File Exists
+if [ ! -f .env ]; then
+    echo "📄 Creating .env file from .env.example..."
+    cp .env.example .env
+fi
+
+# 3. Clear Build-Time Stale Cached Configuration
 echo "🧹 Clearing stale config caches..."
 php artisan config:clear || true
 php artisan route:clear || true
 php artisan view:clear || true
 php artisan cache:clear || true
 
-# 3. Fail-Safe APP_KEY Verification & Auto-Generation
-if [ -z "$APP_KEY" ]; then
-    echo "⚠️ APP_KEY environment variable is empty! Auto-generating production application key..."
-    export APP_KEY=$(php artisan key:generate --show)
-fi
+# 4. Fail-Safe APP_KEY Verification & Direct .env Injection
+echo "🔑 Verifying APP_KEY..."
+php artisan key:generate --force || true
 
-# 4. Run Concurrency-Safe Database Migrations
+# 5. Enable APP_DEBUG temporarily for diagnostic visibility on Render
+export APP_DEBUG=true
+
+# 6. Run Concurrency-Safe Database Migrations
 echo "🗄️ Executing database migrations..."
 php artisan migrate --force || echo "⚠️ Database Migration Warning: Proceeding with container startup..."
 
-# 5. Cache Configurations, Routes, and Views for Production Performance
+# 7. Cache Configurations, Routes, and Views for Production Performance
 echo "⚡ Caching Laravel production configurations..."
 php artisan config:cache || true
 php artisan route:cache || true
