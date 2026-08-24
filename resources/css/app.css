@@ -4,17 +4,57 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 :root {
-    --ebm-primary: #2E7D5B;
-    --ebm-soft-green: #E8F5EE;
-    --ebm-teal: #2F8F9D;
+    --ebm-primary: #25855A;
+    --ebm-primary-hover: #1F6F4A;
+    --ebm-soft-green: #E6F4EA;
+    --ebm-teal: #2D3748;
     --ebm-bg: #F8FAF9;
     --ebm-text: #1F2933;
     --ebm-muted: #6B7280;
     --ebm-border: #E5E7EB;
-    --ebm-accent: #F4A261;
-    --ebm-success: #2E7D32;
-    --ebm-warning: #F59E0B;
-    --ebm-danger: #DC3545;
+    --ebm-accent: #ED8936;
+    --ebm-success: #25855A;
+    --ebm-warning: #D69E2E;
+    --ebm-danger: #E53E3E;
+    --bs-primary: #25855A;
+    --bs-primary-rgb: 37, 133, 90;
+}
+
+/* 🎨 PREMIUM DYNAMIC VISIBILITY OVERLAYS */
+.map-text-overlay {
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.45) 50%, transparent 100%);
+    backdrop-filter: blur(4px);
+}
+
+[data-bs-theme="light"] .map-text-overlay-light {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.75) 50%, transparent 100%);
+    backdrop-filter: blur(6px);
+}
+
+[data-bs-theme="dark"] .map-text-overlay-light {
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.75) 50%, transparent 100%);
+    backdrop-filter: blur(6px);
+}
+
+.card-gradient-overlay {
+    background: linear-gradient(0deg, rgba(15, 23, 42, 0.88) 0%, rgba(15, 23, 42, 0.25) 60%, transparent 100%);
+}
+
+/* 🧭 TOP-LEFT PREDICTABLE NAVIGATION UX */
+.btn-top-left {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1050;
+    border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(8px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-top-left:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
 body {
