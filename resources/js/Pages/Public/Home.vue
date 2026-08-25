@@ -329,7 +329,10 @@ onBeforeUnmount(() => {
                         </p>
 
                         <!-- Track Reservation CTA Wrapper -->
-                        <div class="d-flex justify-content-center mt-4 mb-2 w-100">
+                        <div class="d-flex flex-column align-items-center mt-4 mb-5 w-100">
+                            <p class="text-body-secondary small mb-3 fw-medium">
+                                Already submitted a guest request? Check your live status:
+                            </p>
                             <Link href="/track-reservation" class="btn btn-outline-secondary rounded-pill px-5 py-3 fw-semibold d-flex align-items-center justify-content-center gap-2 transition-all shadow-sm w-100" style="max-width: 350px;">
                                 <i class="bi bi-search fs-5 text-success"></i> 
                                 <span>Track Your Reservation</span>
