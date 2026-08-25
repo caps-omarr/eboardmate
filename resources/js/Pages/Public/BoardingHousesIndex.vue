@@ -139,13 +139,9 @@ onUnmounted(() => {
                     </div>
                 </div>
                 
-                <!-- 🚀 BOOTSTRAP 5 GRID LAYOUT: ERADICATES UI OVERLAP -->
-                <div class="row g-4">
-                    
-                    <!-- Left Column: Boarding Houses List -->
-                    <div class="col-12 col-lg-8">
-                        <div v-if="listHouses.length" class="row g-4">
-                            <div v-for="house in listHouses" :key="house.id" class="col-12 col-md-6">
+                <!-- 🚀 BOOTSTRAP 5 FULL-WIDTH PROPERTY CATALOG GRID -->
+                <div v-if="listHouses.length" class="row g-4">
+                    <div v-for="house in listHouses" :key="house.id" class="col-12 col-sm-6 col-lg-4 col-xl-3">
                                 
                                 <LazyViewport min-height="420px" root-margin="200px 0px">
                                     <!-- 🚀 SKELETON FALLBACK SLOT -->
@@ -242,35 +238,14 @@ onUnmounted(() => {
                                     </article>
                                 </LazyViewport>
 
-                            </div>
-                        </div>
-
-                        <!-- Empty State -->
-                        <div v-else class="text-center text-body-secondary p-5 bg-body border border-secondary-subtle rounded-4 shadow-sm">
-                            <i class="bi bi-house-x display-1 mb-3 d-block opacity-25"></i>
-                            <h3 class="h4 fw-bold text-body-emphasis mb-2">No listings available</h3>
-                            <p class="mb-0">Check back later for new boarding houses in your area.</p>
-                        </div>
                     </div>
+                </div>
 
-                    <!-- Right Column: Tracking CTA Card (Sticky Sidebar) -->
-                    <div class="col-12 col-lg-4">
-                        <div class="ebm-card p-4 rounded-4 shadow-sm border border-secondary-subtle bg-body position-sticky" style="top: 2rem;">
-                            <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fw-bold">
-                                    <i class="bi bi-clock-history me-1"></i> Live Tracker
-                                </span>
-                            </div>
-                            <h2 class="h5 fw-bold mb-2 text-body-emphasis">Already Reserved a Spot?</h2>
-                            <p class="text-body-secondary small mb-4">Check your real-time approval status and landlord message using your reservation tracking reference code.</p>
-                            
-                            <Link href="/track-reservation" class="btn btn-outline-success rounded-pill w-100 py-3 fw-bold d-inline-flex align-items-center justify-content-center gap-2 shadow-sm transition-all">
-                                <i class="bi bi-search fs-5 text-success"></i>
-                                <span>Track Reservation Status</span>
-                            </Link>
-                        </div>
-                    </div>
-
+                <!-- Empty State -->
+                <div v-else class="text-center text-body-secondary p-5 bg-body border border-secondary-subtle rounded-4 shadow-sm">
+                    <i class="bi bi-house-x display-1 mb-3 d-block opacity-25"></i>
+                    <h3 class="h4 fw-bold text-body-emphasis mb-2">No listings available</h3>
+                    <p class="mb-0">Check back later for new boarding houses in your area.</p>
                 </div>
 
             </div>
