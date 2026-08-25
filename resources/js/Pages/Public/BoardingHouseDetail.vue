@@ -64,12 +64,20 @@ const cleanupModalBackdrop = () => {
 };
 
 // --- LIFECYCLE HOOKS ---
+let pollInterval;
+
 onMounted(() => {
     window.addEventListener('keydown', handleKeydown);
+    pollInterval = setInterval(() => {
+        router.reload({ only: ['boardingHouse'], preserveScroll: true, preserveState: true });
+    }, 30000);
 });
 
 onUnmounted(() => {
     window.removeEventListener('keydown', handleKeydown);
+    if (pollInterval) {
+        clearInterval(pollInterval);
+    }
     cleanupModalBackdrop();
 });
 

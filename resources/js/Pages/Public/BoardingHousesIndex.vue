@@ -1,8 +1,8 @@
 <script setup>
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Head, Link, usePage, router } from '@inertiajs/vue3';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import LazyViewport from '@/Components/LazyViewport.vue';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 
 const page = usePage();
 
@@ -66,8 +66,19 @@ const fetchRealDistances = async () => {
     }));
 };
 
+let pollInterval;
+
 onMounted(() => {
     fetchRealDistances();
+    pollInterval = setInterval(() => {
+        router.reload({ only: ['boardingHouses'], preserveScroll: true, preserveState: true });
+    }, 30000);
+});
+
+onUnmounted(() => {
+    if (pollInterval) {
+        clearInterval(pollInterval);
+    }
 });
 </script>
 
