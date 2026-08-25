@@ -38,7 +38,13 @@ class User extends Authenticatable
 
     protected $appends = [
         'profile_photo_url',
+        'avatar_url',
     ];
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        return $this->profile_photo_url;
+    }
 
     public function getProfilePhotoUrlAttribute(): ?string
     {
@@ -46,6 +52,12 @@ class User extends Authenticatable
             if (str_starts_with($this->avatar, 'http://') || str_starts_with($this->avatar, 'https://')) {
                 return $this->avatar;
             }
+
+            $defaultDisk = config('filesystems.default', 'public');
+            if ($defaultDisk === 'cloudinary') {
+                return \Illuminate\Support\Facades\Storage::disk('cloudinary')->url($this->avatar);
+            }
+
             $cleanPath = ltrim(str_replace('storage/', '', $this->avatar), '/');
             return asset('storage/' . $cleanPath);
         }

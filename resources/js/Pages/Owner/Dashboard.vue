@@ -134,7 +134,7 @@ const submitResponse = () => {
                 <h1 class="fw-bold mb-0 text-body-emphasis" style="font-size: 1.75rem;">Dashboard</h1>
                 <!-- Owner Avatar (Circle image or initials) -->
                 <div class="owner-avatar shadow-sm border border-2 border-white bg-success text-white fw-bold d-flex align-items-center justify-content-center overflow-hidden flex-shrink-0">
-                    <img v-if="owner.profile_photo_url || owner.avatar" :src="owner.profile_photo_url || owner.avatar" :alt="owner.name" class="w-100 h-100 object-fit-cover">
+                    <img v-if="owner.avatar_url || owner.profile_photo_url" :src="owner.avatar_url || owner.profile_photo_url" :alt="owner.name" class="w-100 h-100 object-fit-cover">
                     <span v-else>{{ getInitials(owner.name) }}</span>
                 </div>
             </header>

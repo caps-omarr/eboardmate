@@ -34,12 +34,32 @@ class OwnerSettingsController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
+            $uploadedFile = $request->file('photo');
             $targetDisk = config('filesystems.default') === 'cloudinary' ? 'cloudinary' : 'public';
+
             if ($user->avatar && \Illuminate\Support\Facades\Storage::disk($targetDisk)->exists($user->avatar)) {
                 \Illuminate\Support\Facades\Storage::disk($targetDisk)->delete($user->avatar);
             }
-            $path = $request->file('photo')->store('avatars', $targetDisk);
-            $user->avatar = $path;
+
+            $tempPath = sys_get_temp_dir() . '/' . uniqid('ebm_avatar_', true) . '.jpg';
+            $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+            $image = $manager->read($uploadedFile->getRealPath());
+            $image->cover(width: 400, height: 400);
+            $image->toJpeg(85)->save($tempPath);
+
+            $fileName = 'avatars/' . \Illuminate\Support\Str::uuid() . '.jpg';
+
+            \Illuminate\Support\Facades\Storage::disk($targetDisk)->putFileAs(
+                dirname($fileName),
+                new \Illuminate\Http\File($tempPath),
+                basename($fileName)
+            );
+
+            if (file_exists($tempPath)) {
+                @unlink($tempPath);
+            }
+
+            $user->avatar = $fileName;
         }
 
         $user->name = $validated['name'];

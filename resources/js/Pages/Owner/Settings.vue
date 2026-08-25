@@ -25,7 +25,7 @@ const profileForm = useForm({
 const timestamp = ref(Date.now());
 
 const avatarUrl = computed(() => {
-    const rawUrl = user.value.profile_photo_url || user.value.avatar;
+    const rawUrl = user.value.avatar_url || user.value.profile_photo_url || (user.value.avatar && user.value.avatar.startsWith('http') ? user.value.avatar : null);
     if (!rawUrl) return null;
     return `${rawUrl}?t=${timestamp.value}`;
 });
