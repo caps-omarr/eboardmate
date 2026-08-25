@@ -86,7 +86,7 @@ Route::get('/owner/login', [OwnerAuthController::class, 'create'])
     ->name('owner.login');
 
 Route::post('/owner/login', [OwnerAuthController::class, 'store'])
-    ->middleware('guest')
+    ->middleware(['guest', 'throttle:10,1'])
     ->name('owner.login.store');
 
 Route::post('/owner/logout', [OwnerAuthController::class, 'destroy'])
@@ -113,24 +113,31 @@ Route::middleware(['auth', 'role:owner'])
             ->name('listing.edit');
 
         Route::put('/listing', [OwnerListingController::class, 'update'])
+            ->middleware('throttle:15,1')
             ->name('listing.update');
 
         Route::post('/listing/photos', [OwnerListingPhotoController::class, 'store'])
+            ->middleware('throttle:15,1')
             ->name('listing.photos.store');
 
         Route::post('/listing/photos/{photo}/primary', [OwnerListingPhotoController::class, 'setPrimary'])
+            ->middleware('throttle:15,1')
             ->name('listing.photos.primary');
 
         Route::delete('/listing/photos/{photo}', [OwnerListingPhotoController::class, 'destroy'])
+            ->middleware('throttle:15,1')
             ->name('listing.photos.destroy');
 
         Route::post('/reservations/{reservation}/approve', [OwnerReservationController::class, 'approve'])
+            ->middleware('throttle:15,1')
             ->name('reservations.approve');
 
         Route::post('/reservations/{reservation}/reject', [OwnerReservationController::class, 'reject'])
+            ->middleware('throttle:15,1')
             ->name('reservations.reject');
 
         Route::post('/reservations/{reservation}/archive', [OwnerReservationController::class, 'archive'])
+            ->middleware('throttle:15,1')
             ->name('reservations.archive');
 
         // --- OWNER PWA INSTALL ROUTE (Strictly Protected for Authenticated Owners Only) ---
@@ -143,9 +150,11 @@ Route::middleware(['auth', 'role:owner'])
             ->name('settings.edit');
             
         Route::match(['put', 'post'], '/settings/profile', [OwnerSettingsController::class, 'updateProfile'])
+            ->middleware('throttle:10,1')
             ->name('settings.update-profile');
 
         Route::put('/settings/password', [OwnerSettingsController::class, 'updatePassword'])
+            ->middleware('throttle:10,1')
             ->name('settings.update-password');
     });
 
