@@ -364,19 +364,9 @@ const submitReservation = () => {
                         </div>
 
                         <!-- 📜 HOUSE RULES -->
-                        <div class="ebm-card p-4 p-md-5 border border-secondary-subtle rounded-4 shadow-sm bg-body transition-all mb-4">
+                        <div class="ebm-card p-4 p-md-5 border border-secondary-subtle rounded-4 shadow-sm bg-body transition-all">
                             <h2 class="h4 fw-bold mb-3 text-body-emphasis"><i class="bi bi-clipboard-check text-primary me-2"></i> House Rules</h2>
                             <p class="text-body-secondary mb-0 transition-all lh-lg">{{ boardingHouse.rules || 'No specific house rules listed.' }}</p>
-                        </div>
-
-                        <!-- 🔍 DEDICATED TRACK RESERVATION CTA BLOCK (Enforces strict document flow to prevent layout overlap) -->
-                        <div class="ebm-card p-4 p-md-5 border border-secondary-subtle rounded-4 shadow-sm bg-body text-center transition-all">
-                            <h3 class="h5 fw-bold mb-2 text-body-emphasis">Already submitted a guest reservation?</h3>
-                            <p class="text-body-secondary small mb-4">Check your real-time approval status and landlord response using your tracking code.</p>
-                            <Link href="/track-reservation" class="btn btn-outline-success rounded-pill px-4 py-3 fw-semibold d-inline-flex align-items-center justify-content-center gap-2 shadow-sm transition-all">
-                                <i class="bi bi-search fs-5 text-success"></i>
-                                <span>Track Reservation Status</span>
-                            </Link>
                         </div>
 
                     </div>

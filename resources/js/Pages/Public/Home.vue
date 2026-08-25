@@ -328,15 +328,31 @@ onBeforeUnmount(() => {
                             >
                         </p>
 
-                        <!-- Track Reservation CTA Wrapper -->
-                        <div class="d-flex flex-column align-items-center mt-4 mb-5 w-100">
-                            <p class="text-body-secondary small mb-3 fw-medium">
-                                Already submitted a guest request? Check your live status:
-                            </p>
-                            <Link href="/track-reservation" class="btn btn-outline-secondary rounded-pill px-5 py-3 fw-semibold d-flex align-items-center justify-content-center gap-2 transition-all shadow-sm w-100" style="max-width: 350px;">
-                                <i class="bi bi-search fs-5 text-success"></i> 
-                                <span>Track Your Reservation</span>
-                            </Link>
+                        <!-- Premium Live Tracker Card -->
+                        <div class="row justify-content-center mt-5 w-100 mx-0">
+                            <div class="col-12 col-md-10 col-lg-7 col-xl-6 px-3">
+                                <div class="card border-0 shadow-lg rounded-4 text-start" style="background-color: #212529;">
+                                    <div class="card-body p-4 p-md-5">
+                                        
+                                        <!-- Glowing Badge -->
+                                        <div class="d-inline-flex align-items-center mb-3 px-3 py-1 rounded-pill border border-success text-success bg-success bg-opacity-10 small fw-semibold">
+                                            <i class="bi bi-clock-history me-2"></i> Live Tracker
+                                        </div>
+                                        
+                                        <!-- Typography -->
+                                        <h3 class="text-white fw-bold mb-3">Already Reserved a Spot?</h3>
+                                        <p class="text-secondary mb-4" style="font-size: 1.05rem; line-height: 1.6;">
+                                            Check your real-time approval status and landlord message using your reservation tracking reference code.
+                                        </p>
+                                        
+                                        <!-- Full-Width Action Button -->
+                                        <Link href="/track-reservation" class="btn btn-success w-100 py-3 fw-bold rounded-pill shadow-sm text-white fs-6 transition-all hover-lift">
+                                            Track Reservation Status
+                                        </Link>
+                                        
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
