@@ -62,11 +62,20 @@ const submitPhoto = () => {
 
 const setPhotoFile = (event) => {
     const file = event.target.files[0] || null;
-    photoForm.photo = file;
+    photoForm.clearErrors('photo');
 
     if (file) {
+        if (file.size > 4 * 1024 * 1024) {
+            photoForm.setError('photo', 'Mobile photo is too large. Please choose an image under 4MB.');
+            photoForm.photo = null;
+            photoPreview.value = null;
+            if (event.target) event.target.value = '';
+            return;
+        }
+        photoForm.photo = file;
         photoPreview.value = URL.createObjectURL(file);
     } else {
+        photoForm.photo = null;
         photoPreview.value = null;
     }
 };
@@ -195,7 +204,7 @@ const statusBadgeClass = computed(() => {
                                     ref="photoInput" 
                                     type="file" 
                                     class="d-none" 
-                                    accept="image/*" 
+                                    accept="image/jpeg,image/png,image/webp" 
                                     @change="setPhotoFile"
                                 >
                                 

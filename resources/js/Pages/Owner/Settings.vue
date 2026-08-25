@@ -45,10 +45,20 @@ const updateProfile = () => {
 
 const setProfilePhoto = (event) => {
     const file = event.target.files[0] || null;
-    profileForm.photo = file;
+    profileForm.clearErrors('photo');
+
     if (file) {
+        if (file.size > 2 * 1024 * 1024) {
+            profileForm.setError('photo', 'Avatar photo is too large. Please choose an image under 2MB.');
+            profileForm.photo = null;
+            profilePhotoPreview.value = null;
+            if (event.target) event.target.value = '';
+            return;
+        }
+        profileForm.photo = file;
         profilePhotoPreview.value = URL.createObjectURL(file);
     } else {
+        profileForm.photo = null;
         profilePhotoPreview.value = null;
     }
 };
@@ -345,7 +355,7 @@ const getInitials = (name) => {
                                         ref="profilePhotoInput"
                                         type="file"
                                         class="d-none"
-                                        accept="image/*"
+                                        accept="image/jpeg,image/png,image/webp"
                                         @change="setProfilePhoto"
                                     />
                                     <div

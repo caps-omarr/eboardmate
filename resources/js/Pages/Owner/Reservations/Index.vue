@@ -201,22 +201,22 @@ const submitResponse = () => {
                                     </div>
 
                                     <!-- Col 3: Status Badge -->
-                                    <div class="col-6 col-lg-2">
+                                    <div class="col-12 col-sm-6 col-lg-2">
                                         <span class="badge rounded-pill px-3 py-2 shadow-sm d-inline-block text-center" :class="statusBadgeClass(res.status)">
                                             {{ res.status_label }}
                                         </span>
                                     </div>
 
                                     <!-- Col 4: Responsive Action Buttons -->
-                                    <div class="col-6 col-lg-4 text-end">
-                                        <div class="d-flex align-items-center justify-content-end gap-2">
+                                    <div class="col-12 col-sm-6 col-lg-4 text-sm-end mt-2 mt-sm-0">
+                                        <div class="d-flex align-items-center justify-content-start justify-content-sm-end flex-wrap gap-2">
                                             <template v-if="res.can_respond">
                                                 <button class="btn btn-sm btn-native-primary rounded-pill px-3 py-1.5 fw-bold shadow-sm" @click="openResponseModal(res, 'approve')">Approve</button>
                                                 <button class="btn btn-sm btn-native-outline-danger rounded-pill px-3 py-1.5 fw-bold" @click="openResponseModal(res, 'reject')">Reject</button>
                                             </template>
                                             <button class="btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3 py-1.5 d-inline-flex align-items-center gap-1" @click="openArchiveModal(res)" title="Archive Reservation">
                                                 <i class="bi bi-archive"></i>
-                                                <span class="d-none d-sm-inline">Archive</span>
+                                                <span>Archive</span>
                                             </button>
                                         </div>
                                     </div>

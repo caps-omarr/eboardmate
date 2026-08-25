@@ -244,29 +244,30 @@ const submitResponse = () => {
                         <div class="native-list-group d-flex flex-column gap-3">
                             
                             <!-- Reservation Item Card -->
-                            <div v-for="reservation in reservations" :key="reservation.id" class="native-list-item bg-body shadow-sm p-3 rounded-4 d-flex align-items-center gap-3 border border-secondary-subtle">
+                            <div v-for="reservation in reservations" :key="reservation.id" class="native-list-item bg-body shadow-sm p-3 rounded-4 d-flex flex-column flex-sm-row align-items-sm-center gap-3 border border-secondary-subtle">
                                 
-                                <!-- Guest Avatar -->
-                                <div class="guest-avatar bg-success-subtle text-success fw-bold flex-shrink-0 border border-success-subtle">
-                                    {{ getInitials(reservation.guest_name) }}
-                                </div>
-
-                                <!-- Info -->
-                                <div class="flex-grow-1 min-w-0">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <h3 class="h6 fw-bold mb-0 text-truncate text-body-emphasis pe-2" style="line-height: 1.2;">{{ reservation.guest_name }}</h3>
-                                        <span class="small font-monospace text-body-secondary flex-shrink-0">{{ reservation.created_at.split(' ')[0] }}</span>
+                                <!-- Guest Avatar & Info -->
+                                <div class="d-flex align-items-center gap-3 flex-grow-1 min-w-0">
+                                    <div class="guest-avatar bg-success-subtle text-success fw-bold flex-shrink-0 border border-success-subtle">
+                                        {{ getInitials(reservation.guest_name) }}
                                     </div>
-                                    <div class="d-flex align-items-center gap-2 flex-wrap">
-                                        <span class="small text-body-secondary text-truncate">Move-in: <strong class="text-body-emphasis">{{ reservation.preferred_move_in_date }}</strong></span>
-                                        <span class="badge rounded-pill px-2 py-1" :class="statusBadgeClass(reservation.status)">
-                                            {{ reservation.status_label }}
-                                        </span>
+
+                                    <div class="flex-grow-1 min-w-0 text-break">
+                                        <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-1">
+                                            <h3 class="h6 fw-bold mb-0 text-truncate text-body-emphasis pe-2" style="line-height: 1.2;">{{ reservation.guest_name }}</h3>
+                                            <span class="small font-monospace text-body-secondary flex-shrink-0">{{ reservation.created_at.split(' ')[0] }}</span>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                                            <span class="small text-body-secondary text-truncate">Move-in: <strong class="text-body-emphasis">{{ reservation.preferred_move_in_date }}</strong></span>
+                                            <span class="badge rounded-pill px-2 py-1" :class="statusBadgeClass(reservation.status)">
+                                                {{ reservation.status_label }}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <!-- Action Buttons -->
-                                <div v-if="reservation.can_respond" class="d-flex flex-column gap-2 ms-2 flex-shrink-0">
+                                <div v-if="reservation.can_respond" class="d-flex flex-wrap gap-2 mt-2 mt-sm-0 flex-shrink-0">
                                     <button type="button" class="btn btn-sm btn-native-primary rounded-pill px-3 fw-bold shadow-sm" @click="openResponseModal(reservation, 'approve')">
                                         Approve
                                     </button>
