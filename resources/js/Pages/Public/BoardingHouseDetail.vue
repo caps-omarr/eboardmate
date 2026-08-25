@@ -63,21 +63,50 @@ const cleanupModalBackdrop = () => {
     document.body.style.paddingRight = '';
 };
 
-// --- LIFECYCLE HOOKS ---
-let pollInterval;
+// --- LIFECYCLE HOOKS & SMART POLLING ---
+let pollInterval = null;
+const POLLING_RATE = 15000; // 15 seconds
+
+const fetchFreshDetail = () => {
+    router.reload({
+        only: ['boardingHouse'],
+        preserveScroll: true,
+        preserveState: true,
+    });
+};
+
+const startPolling = () => {
+    if (!pollInterval) {
+        pollInterval = setInterval(fetchFreshDetail, POLLING_RATE);
+    }
+};
+
+const stopPolling = () => {
+    if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+    }
+};
+
+const handleVisibilityChange = () => {
+    if (document.hidden) {
+        stopPolling();
+    } else {
+        fetchFreshDetail();
+        startPolling();
+    }
+};
 
 onMounted(() => {
     window.addEventListener('keydown', handleKeydown);
-    pollInterval = setInterval(() => {
-        router.reload({ only: ['boardingHouse'], preserveScroll: true, preserveState: true });
-    }, 30000);
+    startPolling();
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 });
 
 onUnmounted(() => {
     window.removeEventListener('keydown', handleKeydown);
-    if (pollInterval) {
-        clearInterval(pollInterval);
-    }
+    stopPolling();
+    document.removeEventListener('visibilitychange', handleVisibilityChange);
     cleanupModalBackdrop();
 });
 

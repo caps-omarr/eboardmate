@@ -68,19 +68,48 @@ const fetchRealDistances = async () => {
     }));
 };
 
-let pollInterval;
+let pollInterval = null;
+const POLLING_RATE = 15000; // 15 seconds
+
+const fetchFreshData = () => {
+    router.reload({
+        only: ['boardingHouses'],
+        preserveScroll: true,
+        preserveState: true,
+    });
+};
+
+const startPolling = () => {
+    if (!pollInterval) {
+        pollInterval = setInterval(fetchFreshData, POLLING_RATE);
+    }
+};
+
+const stopPolling = () => {
+    if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+    }
+};
+
+const handleVisibilityChange = () => {
+    if (document.hidden) {
+        stopPolling();
+    } else {
+        fetchFreshData();
+        startPolling();
+    }
+};
 
 onMounted(() => {
     fetchRealDistances();
-    pollInterval = setInterval(() => {
-        router.reload({ only: ['boardingHouses'], preserveScroll: true, preserveState: true });
-    }, 30000);
+    startPolling();
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 });
 
 onUnmounted(() => {
-    if (pollInterval) {
-        clearInterval(pollInterval);
-    }
+    stopPolling();
+    document.removeEventListener('visibilitychange', handleVisibilityChange);
 });
 </script>
 
