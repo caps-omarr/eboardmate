@@ -28,7 +28,7 @@ class OwnerListingPhotoController extends Controller
         ]);
 
         $uploadedFile = $validated['photo'];
-        $fileName = Str::uuid() . '.webp';
+        $fileName = Str::uuid() . '.jpg';
         $filePath = 'boarding-houses/' . $boardingHouse->id . '/photos/' . $fileName;
 
         try {
@@ -36,10 +36,11 @@ class OwnerListingPhotoController extends Controller
             $manager = new ImageManager(new Driver());
             $image = $manager->read($uploadedFile->getRealPath());
             $image->scaleDown(width: 1200);
-            $encodedImage = $image->toWebp(80);
+            $encodedImage = $image->toJpeg(85);
             
-            Storage::disk('public')->put($filePath, $encodedImage->toString());
-            $newFileSize = Storage::disk('public')->size($filePath);
+            $targetDisk = config('filesystems.default') === 'cloudinary' ? 'cloudinary' : 'public';
+            Storage::disk($targetDisk)->put($filePath, $encodedImage->toString());
+            $newFileSize = Storage::disk($targetDisk)->size($filePath);
 
             DB::transaction(function () use ($request, $boardingHouse, $uploadedFile, $filePath, $validated, $newFileSize) {
                 $hasPrimaryPhoto = $boardingHouse->photos()
@@ -52,7 +53,7 @@ class OwnerListingPhotoController extends Controller
                     'boarding_house_id' => $boardingHouse->id,
                     'file_path' => $filePath,
                     'original_name' => $uploadedFile->getClientOriginalName(),
-                    'mime_type' => 'image/webp', 
+                    'mime_type' => 'image/jpeg', 
                     'file_size' => $newFileSize, 
                     'alt_text' => $validated['alt_text'] ?? $boardingHouse->name,
                     'is_primary' => ! $hasPrimaryPhoto,

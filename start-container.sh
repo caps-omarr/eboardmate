@@ -7,11 +7,12 @@ set -e
 
 echo "🚀 Starting E-BoardMate Production Startup..."
 
-# 1. Ensure Storage Directories & Ownership Permissions
-echo "📁 Setting up storage directory permissions..."
+# 1. Ensure Storage Directories, Symlinks & Ownership Permissions
+echo "📁 Setting up storage directory permissions and public symlink..."
 mkdir -p /var/www/html/storage/framework/{sessions,views,cache} /var/www/html/storage/logs
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+php artisan storage:link --force || true
 
 # 2. Ensure .env File Exists
 if [ ! -f .env ]; then

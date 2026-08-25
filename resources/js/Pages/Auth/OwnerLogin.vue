@@ -2,7 +2,6 @@
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
-import PwaSplashScreen from '@/Components/PwaSplashScreen.vue';
 
 const form = useForm({
     email: '',
@@ -24,8 +23,6 @@ const submit = () => {
         <title>Landlord Sign In | E-BoardMate Portal</title>
         <meta name="description" content="Sign in to the official E-BoardMate Landlord Portal to manage boarding house listings, room availability, and student reservations in Talibon, Bohol." />
     </Head>
-
-    <PwaSplashScreen />
 
     <div class="min-vh-100 bg-body-tertiary d-flex flex-column justify-content-center align-items-center p-3 position-relative transition-all">
         

@@ -1,6 +1,5 @@
 <script setup>
 import ThemeToggle from '@/Components/ThemeToggle.vue';
-import PwaSplashScreen from '@/Components/PwaSplashScreen.vue';
 import GlobalToast from '@/Components/GlobalToast.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
@@ -36,7 +35,6 @@ const navLinks = [
 
 <template>
     <GlobalToast />
-    <PwaSplashScreen />
 
     <div class="d-flex min-vh-100 bg-body-tertiary">
         
