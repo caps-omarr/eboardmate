@@ -220,3 +220,17 @@ Route::middleware(['auth', 'role:super_admin'])
         Route::patch('/boarding-houses/{boardingHouse}/reactivate', [AdminBoardingHouseController::class, 'reactivate'])
             ->name('boarding-houses.reactivate');
     });
+
+// ========================================================
+// INFRASTRUCTURE: Database Keep-Alive Heartbeat
+// ========================================================
+// Used by external monitors (e.g., UptimeRobot) to prevent 
+// the free-tier Aiven database from spinning down due to inactivity.
+Route::get('/keep-alive', function () {
+    try {
+        \Illuminate\Support\Facades\DB::select('select 1');
+        return response()->json(['status' => 'Database is awake and connected!'], 200);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'Database connection failed.', 'error' => $e->getMessage()], 500);
+    }
+});
