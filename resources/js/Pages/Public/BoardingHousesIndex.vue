@@ -14,10 +14,11 @@ const props = defineProps({
 });
 
 const getImageUrl = (photo) => {
-    if (!photo || !photo.url) return null; 
-    if (photo.url.startsWith('http')) return photo.url; 
-    const cleanPath = photo.url.replace(/^storage\//, '');
-    return `/storage/${cleanPath}`;
+    if (!photo) return null;
+    if (typeof photo === 'string') return photo.startsWith('http') ? photo : `/storage/${photo.replace(/^storage\//, '')}`;
+    if (photo.url) return photo.url;
+    if (photo.file_path) return photo.file_path.startsWith('http') ? photo.file_path : `/storage/${photo.file_path.replace(/^storage\//, '')}`;
+    return null;
 };
 
 // --- REAL-TIME MAPBOX DISTANCE LOGIC ---

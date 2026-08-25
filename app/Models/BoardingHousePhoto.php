@@ -21,6 +21,10 @@ class BoardingHousePhoto extends Model
         'sort_order',
     ];
 
+    protected $appends = [
+        'url',
+    ];
+
     protected function casts(): array
     {
         return [
@@ -37,6 +41,21 @@ class BoardingHousePhoto extends Model
 
     public function getUrlAttribute(): string
     {
-        return asset('storage/' . $this->file_path);
+        if (! $this->file_path) {
+            return '';
+        }
+
+        if (str_starts_with($this->file_path, 'http://') || str_starts_with($this->file_path, 'https://')) {
+            return $this->file_path;
+        }
+
+        $defaultDisk = config('filesystems.default', 'public');
+        
+        if ($defaultDisk === 'cloudinary') {
+            return \Illuminate\Support\Facades\Storage::disk('cloudinary')->url($this->file_path);
+        }
+
+        $cleanPath = ltrim(str_replace('storage/', '', $this->file_path), '/');
+        return asset('storage/' . $cleanPath);
     }
 }
