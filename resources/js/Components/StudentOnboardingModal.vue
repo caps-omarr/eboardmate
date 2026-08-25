@@ -206,9 +206,9 @@ const restartTour = () => {
                                             style="touch-action: manipulation;"
                                         >
                                             <option value="all">Any Gender (All)</option>
-                                            <option value="male">Male Only</option>
-                                            <option value="female">Female Only</option>
-                                            <option value="coed">Co-ed</option>
+                                            <option value="Male Only">Male Only</option>
+                                            <option value="Female Only">Female Only</option>
+                                            <option value="Co-ed">Co-ed</option>
                                         </select>
                                     </div>
                                     <div class="col-12 col-sm-6">
@@ -220,9 +220,10 @@ const restartTour = () => {
                                             style="touch-action: manipulation;"
                                         >
                                             <option value="all">Any Price</option>
-                                            <option value="1000">₱1,000 / month</option>
-                                            <option value="2000">₱2,000 / month</option>
-                                            <option value="3000">₱3,000+ / month</option>
+                                            <option value="600">₱600 / month</option>
+                                            <option value="700">₱700 / month</option>
+                                            <option value="800">₱800 / month</option>
+                                            <option value="1000">₱1,000+ / month</option>
                                         </select>
                                     </div>
                                 </div>

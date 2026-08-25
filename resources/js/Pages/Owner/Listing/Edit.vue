@@ -27,6 +27,9 @@ const form = useForm({
     available_bedspaces: props.boardingHouse?.available_bedspaces || 0,
     amenities_text: props.boardingHouse?.amenities?.join(', ') || '',
     rules: props.boardingHouse?.rules || '',
+    allowed_genders: props.boardingHouse?.allowed_genders || 'Any Gender (All)',
+    includes_water: props.boardingHouse?.includes_water ?? false,
+    includes_electricity: props.boardingHouse?.includes_electricity ?? false,
 });
 
 const photoForm = useForm({
@@ -310,6 +313,32 @@ const statusBadgeClass = computed(() => {
                                     <div class="col-6">
                                         <label for="available_bedspaces" class="form-label fw-bold small text-body-secondary mb-1">Available Beds</label>
                                         <input id="available_bedspaces" v-model="form.available_bedspaces" type="number" min="0" class="form-control rounded-pill text-center" :class="{ 'is-invalid': form.errors.available_bedspaces }">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Gender Restrictions & Utilities -->
+                            <div class="mb-4">
+                                <label for="allowed_genders" class="form-label fw-bold small text-body-secondary text-uppercase ms-1 mb-1">Gender Restriction</label>
+                                <select id="allowed_genders" v-model="form.allowed_genders" class="form-select bg-body-tertiary rounded-pill py-2" :class="{ 'is-invalid': form.errors.allowed_genders }">
+                                    <option value="Any Gender (All)">Any Gender (All)</option>
+                                    <option value="Male Only">Male Only</option>
+                                    <option value="Female Only">Female Only</option>
+                                    <option value="Co-ed">Co-ed</option>
+                                </select>
+                                <div v-if="form.errors.allowed_genders" class="invalid-feedback fw-bold ps-2">{{ form.errors.allowed_genders }}</div>
+                            </div>
+
+                            <div class="bg-body-tertiary p-3 rounded-4 border border-secondary-subtle mb-4">
+                                <span class="form-label fw-bold small text-body-secondary text-uppercase d-block mb-2">Utility Inclusions</span>
+                                <div class="d-flex flex-wrap gap-4">
+                                    <div class="form-check form-switch">
+                                        <input id="includes_water" v-model="form.includes_water" class="form-check-input" type="checkbox">
+                                        <label for="includes_water" class="form-check-label fw-medium">💧 Water Included</label>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        <input id="includes_electricity" v-model="form.includes_electricity" class="form-check-input" type="checkbox">
+                                        <label for="includes_electricity" class="form-check-label fw-medium">⚡ Electricity Included</label>
                                     </div>
                                 </div>
                             </div>

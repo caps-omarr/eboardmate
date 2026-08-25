@@ -50,6 +50,9 @@ class PublicBoardingHouseController extends Controller
                         'rent_price' => (float) $house->rent_price,
                         'status' => $house->status,
                         'available_rooms' => $house->available_rooms,
+                        'allowed_genders' => $house->allowed_genders ?? 'Any Gender (All)',
+                        'includes_water' => (bool) $house->includes_water,
+                        'includes_electricity' => (bool) $house->includes_electricity,
                         'is_full' => $house->isFull(),
                         'estimated_distance_km' => $distance,
                         'estimated_walking_mins' => $walkingMinutes,
@@ -65,10 +68,19 @@ class PublicBoardingHouseController extends Controller
         });
 
         // 🚀 Dynamic Quick Setup Filter Application
+        if ($genderFilter && $genderFilter !== 'all') {
+            $boardingHouses = $boardingHouses->filter(function ($house) use ($genderFilter) {
+                if (empty($house['allowed_genders']) || $house['allowed_genders'] === 'Any Gender (All)') {
+                    return true;
+                }
+                return strtolower($house['allowed_genders']) === strtolower($genderFilter);
+            })->values();
+        }
+
         if ($budgetFilter && $budgetFilter !== 'all') {
-            $maxPrice = (float) $budgetFilter;
-            $boardingHouses = $boardingHouses->filter(function ($house) use ($maxPrice) {
-                return (float) $house['rent_price'] <= $maxPrice;
+            $budgetVal = (float) $budgetFilter;
+            $boardingHouses = $boardingHouses->filter(function ($house) use ($budgetVal) {
+                return (float) $house['rent_price'] <= $budgetVal || ($budgetVal >= 1000 && (float) $house['rent_price'] >= 1000);
             })->values();
         }
 
@@ -88,13 +100,21 @@ class PublicBoardingHouseController extends Controller
                 'photos' => function ($query) {
                     $query->orderByDesc('is_primary')
                         ->orderBy('sort_order')
-                        ->orderBy('id')
-                        ->limit(5);
+                        ->orderBy('id');
                 },
             ]);
 
             $lat = (float) $boardingHouse->latitude;
             $lng = (float) $boardingHouse->longitude;
+
+            $distance = $this->locationService->calculateDistanceInKilometers(
+                LocationService::TPC_LATITUDE,
+                LocationService::TPC_LONGITUDE,
+                $lat,
+                $lng
+            );
+
+            $walkingMinutes = $this->locationService->calculateWalkingMinutesFromTpc($lat, $lng);
 
             return [
                 'id' => $boardingHouse->id,
@@ -112,6 +132,9 @@ class PublicBoardingHouseController extends Controller
                 'available_bedspaces' => $boardingHouse->available_bedspaces,
                 'amenities' => $boardingHouse->amenities ?? [],
                 'rules' => $boardingHouse->rules,
+                'allowed_genders' => $boardingHouse->allowed_genders ?? 'Any Gender (All)',
+                'includes_water' => (bool) $boardingHouse->includes_water,
+                'includes_electricity' => (bool) $boardingHouse->includes_electricity,
                 'status' => $boardingHouse->status,
                 'is_verified' => $boardingHouse->is_verified,
                 'is_full' => $boardingHouse->isFull(),

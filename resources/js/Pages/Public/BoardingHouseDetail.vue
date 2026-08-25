@@ -203,6 +203,9 @@ const submitReservation = () => {
                                 <span :class="boardingHouse.is_full ? 'bg-danger-subtle text-danger border-danger-subtle' : 'bg-primary-subtle text-primary border-primary-subtle'" class="badge border rounded-pill px-3 py-2 fw-semibold">
                                     {{ boardingHouse.is_full ? '🔴 Full' : '🟢 Available for Rent' }}
                                 </span>
+                                <span v-if="boardingHouse.allowed_genders" class="badge bg-info-subtle text-info-emphasis border border-info-subtle rounded-pill px-3 py-2 fw-semibold">
+                                    <i class="bi bi-person-heart me-1"></i> {{ boardingHouse.allowed_genders }}
+                                </span>
                             </div>
 
                             <h1 class="display-6 fw-bold mb-2 text-body-emphasis tracking-tight transition-all">
@@ -221,7 +224,15 @@ const submitReservation = () => {
                             <div class="row g-3 p-3 bg-body-tertiary rounded-4 border border-secondary-subtle mb-4 transition-all">
                                 <div class="col-6 col-md-3 text-center">
                                     <span class="d-block text-body-secondary small mb-1">Monthly Rent</span>
-                                    <strong class="text-success fs-5 fw-bold">₱{{ formatPrice(boardingHouse.rent_price) }}</strong>
+                                    <strong class="text-success fs-5 fw-bold d-block">₱{{ formatPrice(boardingHouse.rent_price) }}</strong>
+                                    <span class="small text-body-secondary" style="font-size: 0.75rem;">
+                                        {{ 
+                                            boardingHouse.includes_water && boardingHouse.includes_electricity ? 'Includes Water & Electricity' :
+                                            boardingHouse.includes_water ? 'Includes Water only' :
+                                            boardingHouse.includes_electricity ? 'Includes Electricity only' :
+                                            'Utilities excluded'
+                                        }}
+                                    </span>
                                 </div>
                                 <div class="col-6 col-md-3 text-center border-start border-secondary-subtle">
                                     <span class="d-block text-body-secondary small mb-1">Rooms</span>

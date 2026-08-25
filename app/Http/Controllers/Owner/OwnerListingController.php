@@ -44,6 +44,9 @@ class OwnerListingController extends Controller
                 'available_bedspaces' => $boardingHouse->available_bedspaces,
                 'amenities' => $boardingHouse->amenities ?? [],
                 'rules' => $boardingHouse->rules,
+                'allowed_genders' => $boardingHouse->allowed_genders ?? 'Any Gender (All)',
+                'includes_water' => (bool) $boardingHouse->includes_water,
+                'includes_electricity' => (bool) $boardingHouse->includes_electricity,
                 'status' => $boardingHouse->status,
                 'is_verified' => $boardingHouse->is_verified,
                 'rejection_reason' => $boardingHouse->rejection_reason,
@@ -81,6 +84,9 @@ class OwnerListingController extends Controller
             'available_bedspaces' => ['required', 'integer', 'min:0', 'max:9999'],
             'amenities_text' => ['nullable', 'string', 'max:1000'],
             'rules' => ['nullable', 'string', 'max:2000'],
+            'allowed_genders' => ['nullable', 'string', 'max:255'],
+            'includes_water' => ['nullable', 'boolean'],
+            'includes_electricity' => ['nullable', 'boolean'],
         ]);
 
         if ($validated['available_rooms'] > $validated['total_rooms']) {
@@ -113,6 +119,9 @@ class OwnerListingController extends Controller
             'available_bedspaces' => $validated['available_bedspaces'],
             'amenities' => $amenities,
             'rules' => $validated['rules'] ?? null,
+            'allowed_genders' => $validated['allowed_genders'] ?? 'Any Gender (All)',
+            'includes_water' => (bool) ($validated['includes_water'] ?? false),
+            'includes_electricity' => (bool) ($validated['includes_electricity'] ?? false),
         ]);
 
         ActivityLog::create([

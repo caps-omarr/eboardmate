@@ -223,13 +223,13 @@ onBeforeUnmount(() => {
                                 href="/boarding-houses"
                                 class="btn btn-ebm-primary btn-lg px-4 fw-bold shadow transition-all rounded-pill d-inline-flex align-items-center justify-content-center gap-2"
                             >
-                                <span>🏠 Find Accommodations</span>
+                                <span>Find Accommodations</span>
                             </Link>
                             <Link
                                 href="/map"
                                 class="btn btn-outline-success btn-lg px-4 fw-bold shadow-sm transition-all rounded-pill d-inline-flex align-items-center justify-content-center gap-2"
                             >
-                                <span>📍 View Interactive Map</span>
+                                <span>View Interactive Map</span>
                             </Link>
                         </div>
 
