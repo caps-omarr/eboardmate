@@ -34,10 +34,11 @@ class OwnerSettingsController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
-            if ($user->avatar && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->avatar)) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->avatar);
+            $targetDisk = config('filesystems.default') === 'cloudinary' ? 'cloudinary' : 'public';
+            if ($user->avatar && \Illuminate\Support\Facades\Storage::disk($targetDisk)->exists($user->avatar)) {
+                \Illuminate\Support\Facades\Storage::disk($targetDisk)->delete($user->avatar);
             }
-            $path = $request->file('photo')->store('avatars', 'public');
+            $path = $request->file('photo')->store('avatars', $targetDisk);
             $user->avatar = $path;
         }
 

@@ -36,11 +36,28 @@ class OwnerListingPhotoController extends Controller
             $manager = new ImageManager(new Driver());
             $image = $manager->read($uploadedFile->getRealPath());
             $image->scaleDown(width: 1200);
-            $encodedImage = $image->toJpeg(85);
             
+            // 1. Create a secure temporary file path on the local server
+            $tempPath = sys_get_temp_dir() . '/' . uniqid('ebm_img_', true) . '.jpg';
+
+            // 2. Save the encoded Intervention image to the temporary file
+            $image->toJpeg(85)->save($tempPath);
+
+            // 3. Upload the actual file safely to the target disk using putFileAs
             $targetDisk = config('filesystems.default') === 'cloudinary' ? 'cloudinary' : 'public';
-            Storage::disk($targetDisk)->put($filePath, $encodedImage->toString());
-            $newFileSize = Storage::disk($targetDisk)->size($filePath);
+            
+            Storage::disk($targetDisk)->putFileAs(
+                dirname($filePath), 
+                new \Illuminate\Http\File($tempPath), 
+                basename($filePath)
+            );
+            
+            $newFileSize = file_exists($tempPath) ? filesize($tempPath) : $uploadedFile->getSize();
+
+            // 4. Clean up temporary file
+            if (file_exists($tempPath)) {
+                @unlink($tempPath);
+            }
 
             DB::transaction(function () use ($request, $boardingHouse, $uploadedFile, $filePath, $validated, $newFileSize) {
                 $hasPrimaryPhoto = $boardingHouse->photos()
