@@ -45,17 +45,20 @@ class BoardingHousePhoto extends Model
             return '';
         }
 
+        $version = $this->updated_at ? $this->updated_at->timestamp : time();
+
         if (str_starts_with($this->file_path, 'http://') || str_starts_with($this->file_path, 'https://')) {
-            return $this->file_path;
+            return $this->file_path . (str_contains($this->file_path, '?') ? '&v=' : '?v=') . $version;
         }
 
         $defaultDisk = config('filesystems.default', 'public');
-        
+
         if ($defaultDisk === 'cloudinary') {
-            return \Illuminate\Support\Facades\Storage::disk('cloudinary')->url($this->file_path);
+            $url = \Illuminate\Support\Facades\Storage::disk('cloudinary')->url($this->file_path);
+            return $url . (str_contains($url, '?') ? '&v=' : '?v=') . $version;
         }
 
         $cleanPath = ltrim(str_replace('storage/', '', $this->file_path), '/');
-        return asset('storage/' . $cleanPath);
+        return asset('storage/' . $cleanPath) . '?v=' . $version;
     }
 }

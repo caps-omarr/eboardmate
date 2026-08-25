@@ -13,6 +13,8 @@ const props = defineProps({
     }
 });
 
+const listHouses = computed(() => props.boardingHouses || []);
+
 const getImageUrl = (photo) => {
     if (!photo) return null;
     if (typeof photo === 'string') return photo.startsWith('http') ? photo : `/storage/${photo.replace(/^storage\//, '')}`;
@@ -38,7 +40,7 @@ const realRoutes = ref({});
 const fetchRealDistances = async () => {
     if (!mapboxToken.value || mapboxToken.value === 'your_public_mapbox_token_here') return;
 
-    await Promise.all(props.boardingHouses.map(async (house) => {
+    await Promise.all(listHouses.value.map(async (house) => {
         if (!house.longitude || !house.latitude) return;
 
         realRoutes.value[house.id] = { loading: true };
@@ -108,114 +110,140 @@ onUnmounted(() => {
                     </div>
                 </div>
                 
-                <!-- 🚀 NATIVE PROPERTY GRID WITH LAZY VIEWPORT RENDERING -->
-                <div class="row g-4 justify-content-center justify-content-md-start">
-                    <div v-for="house in boardingHouses" :key="house.id" class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                        
-                        <LazyViewport min-height="420px" root-margin="200px 0px">
-                            <!-- 🚀 SKELETON FALLBACK SLOT (Prevents Cumulative Layout Shift CLS) -->
-                            <template #fallback>
-                                <div class="card border-0 rounded-4 shadow-sm h-100 overflow-hidden placeholder-glow bg-body" style="min-height: 420px;">
-                                    <div class="placeholder bg-secondary bg-opacity-20 w-100" style="height: 220px;"></div>
-                                    <div class="card-body p-4 d-flex flex-column gap-2">
-                                        <div class="placeholder bg-secondary bg-opacity-20 col-8 rounded py-2"></div>
-                                        <div class="placeholder bg-secondary bg-opacity-20 col-5 rounded py-1"></div>
-                                        <div class="d-flex gap-2 my-2">
-                                            <div class="placeholder bg-secondary bg-opacity-20 col-4 rounded-pill py-2"></div>
-                                            <div class="placeholder bg-secondary bg-opacity-20 col-4 rounded-pill py-2"></div>
-                                        </div>
-                                        <div class="placeholder bg-secondary bg-opacity-20 col-12 rounded-pill py-3 mt-auto"></div>
-                                    </div>
-                                </div>
-                            </template>
-
-                            <!-- 🚀 LAZY MOUNTED PROPERTY CARD -->
-                            <article class="native-property-card bg-body shadow-sm border-0 rounded-4 overflow-hidden position-relative h-100 d-flex flex-column">
+                <!-- 🚀 BOOTSTRAP 5 GRID LAYOUT: ERADICATES UI OVERLAP -->
+                <div class="row g-4">
+                    
+                    <!-- Left Column: Boarding Houses List -->
+                    <div class="col-12 col-lg-8">
+                        <div v-if="listHouses.length" class="row g-4">
+                            <div v-for="house in listHouses" :key="house.id" class="col-12 col-md-6">
                                 
-                                <!-- Image Header -->
-                                <div class="position-relative">
-                                    <Link :href="`/boarding-houses/${house.slug}`" class="d-block overflow-hidden">
-                                        <img v-if="house.photos?.length && getImageUrl(house.photos[0])" 
-                                             :src="getImageUrl(house.photos[0])" 
-                                             class="w-100 object-fit-cover img-hover-zoom transition-all" 
-                                             alt="Boarding House Image"
-                                             loading="lazy"
-                                             style="height: 220px;">
-
-                                        <div v-else class="w-100 bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center" style="height: 220px;">
-                                            <i class="bi bi-house-slash text-secondary opacity-50 display-4"></i>
+                                <LazyViewport min-height="420px" root-margin="200px 0px">
+                                    <!-- 🚀 SKELETON FALLBACK SLOT -->
+                                    <template #fallback>
+                                        <div class="card border-0 rounded-4 shadow-sm h-100 overflow-hidden placeholder-glow bg-body" style="min-height: 420px;">
+                                            <div class="placeholder bg-secondary bg-opacity-20 w-100" style="height: 220px;"></div>
+                                            <div class="card-body p-4 d-flex flex-column gap-2">
+                                                <div class="placeholder bg-secondary bg-opacity-20 col-8 rounded py-2"></div>
+                                                <div class="placeholder bg-secondary bg-opacity-20 col-5 rounded py-1"></div>
+                                                <div class="d-flex gap-2 my-2">
+                                                    <div class="placeholder bg-secondary bg-opacity-20 col-4 rounded-pill py-2"></div>
+                                                    <div class="placeholder bg-secondary bg-opacity-20 col-4 rounded-pill py-2"></div>
+                                                </div>
+                                                <div class="placeholder bg-secondary bg-opacity-20 col-12 rounded-pill py-3 mt-auto"></div>
+                                            </div>
                                         </div>
-                                    </Link>
+                                    </template>
 
-                                    <!-- Floating Badge -->
-                                    <div class="position-absolute top-0 start-0 m-3 z-1">
-                                        <span v-if="house.is_full" class="badge bg-danger shadow-sm rounded-pill px-3 py-2">Fully Booked</span>
-                                        <span v-else class="badge bg-body text-success fw-bold shadow-sm rounded-pill px-3 py-2 border border-secondary-subtle">
-                                            <i class="bi bi-circle-fill small me-1" style="font-size: 0.5rem;"></i> Available
-                                        </span>
-                                    </div>
-                                </div>
+                                    <!-- 🚀 LAZY MOUNTED PROPERTY CARD -->
+                                    <article class="native-property-card bg-body shadow-sm border-0 rounded-4 overflow-hidden position-relative h-100 d-flex flex-column">
+                                        
+                                        <!-- Image Header -->
+                                        <div class="position-relative">
+                                            <Link :href="`/boarding-houses/${house.slug}`" class="d-block overflow-hidden">
+                                                <img v-if="house.photos?.length && getImageUrl(house.photos[0])" 
+                                                     :src="getImageUrl(house.photos[0])" 
+                                                     class="w-100 object-fit-cover img-hover-zoom transition-all" 
+                                                     alt="Boarding House Image"
+                                                     loading="lazy"
+                                                     style="height: 220px;">
 
-                                <!-- Content Body -->
-                                <div class="p-3 p-md-4 d-flex flex-column flex-grow-1">
-                                    
-                                    <!-- Title & Price -->
-                                    <div class="d-flex justify-content-between align-items-start mb-1 gap-2">
-                                        <Link :href="`/boarding-houses/${house.slug}`" class="text-decoration-none text-body-emphasis" style="min-width: 0;">
-                                            <h2 class="h5 fw-bold mb-0 text-truncate pb-1">{{ house.name }}</h2>
-                                        </Link>
-                                        <div class="text-end flex-shrink-0 mt-1">
-                                            <span class="h6 fw-bold text-success lh-1 mb-0 d-block">₱{{ house.rent_price }}</span>
-                                            <span class="small text-body-secondary" style="font-size: 0.65rem; text-transform: uppercase;">/ month</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <p class="text-body-secondary small mb-3 text-truncate">
-                                        <i class="bi bi-geo-alt-fill text-danger me-1 opacity-75"></i> {{ house.address }}
-                                    </p>
-                                    
-                                    <!-- Native Stats Pills -->
-                                    <div class="d-flex align-items-center gap-2 mb-4 pb-1">
-                                        <div class="badge bg-body-tertiary text-body-emphasis border border-secondary-subtle rounded-pill px-2 py-1 fw-medium d-flex align-items-center gap-1 shadow-sm">
-                                            <i class="bi bi-door-open text-primary"></i>
-                                            <span :class="house.is_full ? 'text-danger' : ''">{{ house.available_rooms }} Rooms</span>
+                                                <div v-else class="w-100 bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center" style="height: 220px;">
+                                                    <i class="bi bi-house-slash text-secondary opacity-50 display-4"></i>
+                                                </div>
+                                            </Link>
+
+                                            <!-- Floating Badge -->
+                                            <div class="position-absolute top-0 start-0 m-3 z-1">
+                                                <span v-if="house.is_full" class="badge bg-danger shadow-sm rounded-pill px-3 py-2">Fully Booked</span>
+                                                <span v-else class="badge bg-body text-success fw-bold shadow-sm rounded-pill px-3 py-2 border border-secondary-subtle">
+                                                    <i class="bi bi-circle-fill small me-1" style="font-size: 0.5rem;"></i> Available
+                                                </span>
+                                            </div>
                                         </div>
 
-                                        <div class="badge bg-body-tertiary text-body-emphasis border border-secondary-subtle rounded-pill px-2 py-1 fw-medium d-flex align-items-center gap-1 shadow-sm">
-                                            <i class="bi bi-person-walking text-primary"></i>
-                                            <span v-if="realRoutes[house.id] && !realRoutes[house.id].loading && !realRoutes[house.id].error">
-                                                {{ realRoutes[house.id].duration }} min
-                                            </span>
-                                            <span v-else>
-                                                {{ house.estimated_walking_mins }} min
-                                                <span v-if="realRoutes[house.id]?.loading" class="spinner-border spinner-border-sm text-primary ms-1" style="width: 0.6rem; height: 0.6rem;" role="status"></span>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Actions -->
-                                    <div class="d-flex gap-2 mt-auto pt-3 border-top border-secondary-subtle">
-                                        <Link :href="`/boarding-houses/${house.slug}`" class="btn btn-native-primary rounded-pill fw-bold flex-grow-1 py-2 shadow-sm text-center">
-                                            Reserve Now
-                                        </Link>
-                                        <Link :href="`/map?house_id=${house.id}`" class="btn btn-outline-secondary rounded-pill d-flex align-items-center justify-content-center px-3 py-2 shadow-sm fw-semibold text-nowrap" title="View on Interactive Map">
-                                            <i class="bi bi-geo-alt-fill text-danger me-1"></i>
-                                            <span>View Map</span>
-                                        </Link>
-                                    </div>
-                                </div>
-                            </article>
-                        </LazyViewport>
+                                        <!-- Content Body -->
+                                        <div class="p-3 p-md-4 d-flex flex-column flex-grow-1">
+                                            
+                                            <!-- Title & Price -->
+                                            <div class="d-flex justify-content-between align-items-start mb-1 gap-2">
+                                                <Link :href="`/boarding-houses/${house.slug}`" class="text-decoration-none text-body-emphasis" style="min-width: 0;">
+                                                    <h2 class="h5 fw-bold mb-0 text-truncate pb-1">{{ house.name }}</h2>
+                                                </Link>
+                                                <div class="text-end flex-shrink-0 mt-1">
+                                                    <span class="h6 fw-bold text-success lh-1 mb-0 d-block">₱{{ house.rent_price }}</span>
+                                                    <span class="small text-body-secondary" style="font-size: 0.65rem; text-transform: uppercase;">/ month</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <p class="text-body-secondary small mb-3 text-truncate">
+                                                <i class="bi bi-geo-alt-fill text-danger me-1 opacity-75"></i> {{ house.address }}
+                                            </p>
+                                            
+                                            <!-- Native Stats Pills -->
+                                            <div class="d-flex align-items-center gap-2 mb-4 pb-1">
+                                                <div class="badge bg-body-tertiary text-body-emphasis border border-secondary-subtle rounded-pill px-2 py-1 fw-medium d-flex align-items-center gap-1 shadow-sm">
+                                                    <i class="bi bi-door-open text-primary"></i>
+                                                    <span :class="house.is_full ? 'text-danger' : ''">{{ house.available_rooms }} Rooms</span>
+                                                </div>
 
+                                                <div class="badge bg-body-tertiary text-body-emphasis border border-secondary-subtle rounded-pill px-2 py-1 fw-medium d-flex align-items-center gap-1 shadow-sm">
+                                                    <i class="bi bi-person-walking text-primary"></i>
+                                                    <span v-if="realRoutes[house.id] && !realRoutes[house.id].loading && !realRoutes[house.id].error">
+                                                        {{ realRoutes[house.id].duration }} min
+                                                    </span>
+                                                    <span v-else>
+                                                        {{ house.estimated_walking_mins }} min
+                                                        <span v-if="realRoutes[house.id]?.loading" class="spinner-border spinner-border-sm text-primary ms-1" style="width: 0.6rem; height: 0.6rem;" role="status"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Actions -->
+                                            <div class="d-flex gap-2 mt-auto pt-3 border-top border-secondary-subtle">
+                                                <Link :href="`/boarding-houses/${house.slug}`" class="btn btn-native-primary rounded-pill fw-bold flex-grow-1 py-2 shadow-sm text-center">
+                                                    Reserve Now
+                                                </Link>
+                                                <Link :href="`/map?house_id=${house.id}`" class="btn btn-outline-secondary rounded-pill d-flex align-items-center justify-content-center px-3 py-2 shadow-sm fw-semibold text-nowrap" title="View on Interactive Map">
+                                                    <i class="bi bi-geo-alt-fill text-danger me-1"></i>
+                                                    <span>View Map</span>
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </article>
+                                </LazyViewport>
+
+                            </div>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div v-else class="text-center text-body-secondary p-5 bg-body border border-secondary-subtle rounded-4 shadow-sm">
+                            <i class="bi bi-house-x display-1 mb-3 d-block opacity-25"></i>
+                            <h3 class="h4 fw-bold text-body-emphasis mb-2">No listings available</h3>
+                            <p class="mb-0">Check back later for new boarding houses in your area.</p>
+                        </div>
                     </div>
+
+                    <!-- Right Column: Tracking CTA Card (Sticky Sidebar) -->
+                    <div class="col-12 col-lg-4">
+                        <div class="ebm-card p-4 rounded-4 shadow-sm border border-secondary-subtle bg-body position-sticky" style="top: 2rem;">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fw-bold">
+                                    <i class="bi bi-clock-history me-1"></i> Live Tracker
+                                </span>
+                            </div>
+                            <h2 class="h5 fw-bold mb-2 text-body-emphasis">Already Reserved a Spot?</h2>
+                            <p class="text-body-secondary small mb-4">Check your real-time approval status and landlord message using your reservation tracking reference code.</p>
+                            
+                            <Link href="/track-reservation" class="btn btn-outline-success rounded-pill w-100 py-3 fw-bold d-inline-flex align-items-center justify-content-center gap-2 shadow-sm transition-all">
+                                <i class="bi bi-search fs-5 text-success"></i>
+                                <span>Track Reservation Status</span>
+                            </Link>
+                        </div>
+                    </div>
+
                 </div>
 
-                <!-- Empty State -->
-                <div v-if="!boardingHouses.length" class="text-center text-body-secondary mt-5 p-5 bg-body border border-secondary-subtle rounded-4 shadow-sm">
-                    <i class="bi bi-house-x display-1 mb-3 d-block opacity-25"></i>
-                    <h3 class="h4 fw-bold text-body-emphasis mb-2">No listings available</h3>
-                    <p class="mb-0">Check back later for new boarding houses in your area.</p>
-                </div>
             </div>
         </section>
     </PublicLayout>
