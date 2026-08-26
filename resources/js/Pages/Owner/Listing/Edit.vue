@@ -1,7 +1,21 @@
 <script setup>
-import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { Head, useForm, usePage, router } from '@inertiajs/vue3';
 import OwnerLayout from '@/Layouts/OwnerLayout.vue';
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
+
+const isLoading = ref(false);
+let unhookStart = null;
+let unhookFinish = null;
+
+onMounted(() => {
+    unhookStart = router.on('start', () => isLoading.value = true);
+    unhookFinish = router.on('finish', () => isLoading.value = false);
+});
+
+onUnmounted(() => {
+    if (unhookStart) unhookStart();
+    if (unhookFinish) unhookFinish();
+});
 
 const props = defineProps({
     boardingHouse: {
@@ -143,7 +157,29 @@ const statusBadgeClass = computed(() => {
                 <p class="text-body-secondary mb-0">Your owner account does not have an assigned boarding house listing yet. Please contact the super admin.</p>
             </section>
 
-            <div v-else class="row g-4 px-3 px-md-0 m-0 w-100">
+            <!-- 🚀 SKELETON LOADING STATE -->
+            <div v-if="isLoading" class="px-3 px-md-0 placeholder-glow mb-4">
+                <div class="row g-4">
+                    <div class="col-lg-5">
+                        <div class="ebm-card p-4 rounded-4 shadow-sm border border-secondary-subtle bg-body mb-4">
+                            <span class="placeholder col-8 py-3 rounded mb-3 d-block bg-secondary bg-opacity-25"></span>
+                            <span class="placeholder w-100 py-5 rounded-4 d-block bg-secondary bg-opacity-25 mb-3" style="height: 180px;"></span>
+                            <span class="placeholder col-6 py-2 rounded-pill d-block bg-secondary bg-opacity-25"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-7">
+                        <div class="ebm-card p-4 rounded-4 shadow-sm border border-secondary-subtle bg-body">
+                            <span class="placeholder col-6 py-3 rounded mb-4 d-block bg-secondary bg-opacity-25"></span>
+                            <div v-for="i in 4" :key="i" class="mb-3">
+                                <span class="placeholder col-4 py-1 rounded mb-2 d-block bg-secondary bg-opacity-25"></span>
+                                <span class="placeholder w-100 py-3 rounded bg-secondary bg-opacity-25 d-block"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div v-else-if="boardingHouse" class="row g-4 px-3 px-md-0 m-0 w-100">
                 
                 <!-- LEFT COLUMN: STATUS & PHOTOS -->
                 <div class="col-lg-5 p-0 pe-lg-3">

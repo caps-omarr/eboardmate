@@ -1,8 +1,22 @@
 <script setup>
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage, router } from '@inertiajs/vue3';
 import OwnerLayout from '@/Layouts/OwnerLayout.vue';
 import { Modal } from 'bootstrap';
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
+
+const isLoading = ref(false);
+let unhookStart = null;
+let unhookFinish = null;
+
+onMounted(() => {
+    unhookStart = router.on('start', () => isLoading.value = true);
+    unhookFinish = router.on('finish', () => isLoading.value = false);
+});
+
+onUnmounted(() => {
+    if (unhookStart) unhookStart();
+    if (unhookFinish) unhookFinish();
+});
 
 const props = defineProps({
     owner: {
@@ -146,8 +160,31 @@ const submitResponse = () => {
                 <p class="text-body-secondary mb-0">Contact the super admin to link your property.</p>
             </section>
 
+            <!-- 🚀 SKELETON LOADING STATE -->
+            <div v-if="isLoading" class="px-3 px-md-0 placeholder-glow mb-4">
+                <div class="row g-3 mb-4">
+                    <div v-for="i in 4" :key="i" class="col-12 col-sm-6 col-xl-3">
+                        <div class="ebm-card p-4 rounded-4 shadow-sm border border-secondary-subtle bg-body">
+                            <span class="placeholder col-5 py-3 rounded mb-2 d-block bg-secondary bg-opacity-25"></span>
+                            <span class="placeholder col-8 py-2 rounded mb-3 d-block bg-secondary bg-opacity-25"></span>
+                            <span class="placeholder col-12 py-1 rounded-pill d-block bg-secondary bg-opacity-25"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="ebm-card p-4 rounded-4 shadow-sm border border-secondary-subtle bg-body">
+                    <span class="placeholder col-4 py-3 rounded mb-4 d-block bg-secondary bg-opacity-25"></span>
+                    <div v-for="i in 3" :key="i" class="d-flex align-items-center gap-3 mb-3">
+                        <span class="placeholder rounded-circle flex-shrink-0 bg-secondary bg-opacity-25" style="width: 44px; height: 44px;"></span>
+                        <div class="flex-grow-1">
+                            <span class="placeholder col-6 py-2 rounded mb-2 d-block bg-secondary bg-opacity-25"></span>
+                            <span class="placeholder col-4 py-1 rounded d-block bg-secondary bg-opacity-25"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- MAIN DASHBOARD CONTENT -->
-            <template v-else>
+            <template v-else-if="boardingHouse">
                 
                 <!-- 🚀 RESPONSIVE BOOTSTRAP 5 STATS GRID (Stacks vertically on small screens) -->
                 <section class="row g-3 px-3 px-md-0 mb-4" aria-label="Dashboard Statistics">

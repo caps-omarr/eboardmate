@@ -13,10 +13,16 @@ const props = defineProps({
 const page = usePage();
 const flashSuccess = computed(() => page.props.flash?.success || null);
 
-// --- SILENT BACKGROUND POLLING ---
+// --- SILENT BACKGROUND POLLING & LOADING STATE ---
 let pollingInterval = null;
+const isLoading = ref(false);
+let unhookStart = null;
+let unhookFinish = null;
 
 onMounted(() => {
+    unhookStart = router.on('start', () => isLoading.value = true);
+    unhookFinish = router.on('finish', () => isLoading.value = false);
+
     // Refresh the 'reservations' data every 10 seconds
     pollingInterval = setInterval(() => {
         router.reload({
@@ -28,6 +34,8 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+    if (unhookStart) unhookStart();
+    if (unhookFinish) unhookFinish();
     // Stop polling when the user leaves this page to save resources
     if (pollingInterval) {
         clearInterval(pollingInterval);
@@ -165,9 +173,23 @@ const submitResponse = () => {
 
                         <div class="d-flex flex-column reservations-scroll-container">
                             
-                            <div v-for="(res, index) in reservations" :key="res.id" 
-                                 class="native-list-item p-3 p-md-4 transition-all"
-                                 :class="{ 'border-bottom border-secondary-subtle': index !== reservations.length - 1 }">
+                            <!-- 🚀 SKELETON LIST ITEMS -->
+                            <template v-if="isLoading">
+                                <div v-for="i in 4" :key="i" class="p-3 p-md-4 border-bottom border-secondary-subtle placeholder-glow">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="placeholder rounded-circle flex-shrink-0 bg-secondary bg-opacity-25" style="width: 44px; height: 44px;"></span>
+                                        <div class="flex-grow-1">
+                                            <span class="placeholder col-4 py-2 rounded mb-2 d-block bg-secondary bg-opacity-25"></span>
+                                            <span class="placeholder col-3 py-1 rounded d-block bg-secondary bg-opacity-25"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <template v-else>
+                                <div v-for="(res, index) in reservations" :key="res.id" 
+                                     class="native-list-item p-3 p-md-4 transition-all"
+                                     :class="{ 'border-bottom border-secondary-subtle': index !== reservations.length - 1 }">
                                 
                                 <div class="row align-items-center g-3">
                                     
@@ -230,7 +252,8 @@ const submitResponse = () => {
                                     </div>
 
                                 </div>
-                            </div>
+                                </div>
+                            </template>
 
                         </div>
                     </div>

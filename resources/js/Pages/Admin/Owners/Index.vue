@@ -1,7 +1,21 @@
 <script setup>
-import { Head, useForm, usePage, Link } from '@inertiajs/vue3';
+import { Head, useForm, usePage, Link, router } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import { computed } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
+
+const isLoading = ref(false);
+let unhookStart = null;
+let unhookFinish = null;
+
+onMounted(() => {
+    unhookStart = router.on('start', () => isLoading.value = true);
+    unhookFinish = router.on('finish', () => isLoading.value = false);
+});
+
+onUnmounted(() => {
+    if (unhookStart) unhookStart();
+    if (unhookFinish) unhookFinish();
+});
 
 defineProps({
     owners: {
@@ -213,7 +227,17 @@ const cleanLabel = (label) => {
                                         </tr>
                                     </thead>
 
-                                    <tbody class="border-top-0">
+                                    <tbody v-if="isLoading" class="border-top-0 placeholder-glow">
+                                        <tr v-for="i in 5" :key="i">
+                                            <td class="ps-4"><span class="placeholder col-8 py-2 rounded bg-secondary bg-opacity-25"></span></td>
+                                            <td><span class="placeholder col-10 py-2 rounded bg-secondary bg-opacity-25"></span></td>
+                                            <td><span class="placeholder col-8 py-2 rounded bg-secondary bg-opacity-25"></span></td>
+                                            <td><span class="placeholder col-6 py-2 rounded-pill bg-secondary bg-opacity-25"></span></td>
+                                            <td><span class="placeholder col-6 py-2 rounded bg-secondary bg-opacity-25"></span></td>
+                                            <td class="text-end pe-4"><span class="placeholder col-6 py-2 rounded-pill bg-secondary bg-opacity-25"></span></td>
+                                        </tr>
+                                    </tbody>
+                                    <tbody v-else class="border-top-0">
                                         <tr v-for="owner in owners.data" :key="owner.id">
                                             
                                             <!-- Owner Name & ID -->
