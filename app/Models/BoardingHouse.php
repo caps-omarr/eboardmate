@@ -102,7 +102,11 @@ class BoardingHouse extends Model
 
     public function isPubliclyVisible(): bool
     {
-        return $this->status === self::STATUS_APPROVED && $this->is_verified === true;
+        return $this->status === self::STATUS_APPROVED 
+            && $this->is_verified === true
+            && $this->owner 
+            && $this->owner->status === User::STATUS_ACTIVE 
+            && ! $this->owner->trashed();
     }
 
     public function isFull(): bool

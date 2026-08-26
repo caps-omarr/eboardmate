@@ -24,8 +24,12 @@ class PublicBoardingHouseController extends Controller
         $boardingHouses = Cache::remember('public_boarding_houses_index', now()->addMinutes(5), function () {
             return BoardingHouse::with(['photos' => function ($query) {
                 $query->where('is_primary', true);
-            }])
+            }, 'owner'])
                 ->where('status', 'approved')
+                ->where('is_verified', true)
+                ->whereHas('owner', function ($query) {
+                    $query->where('status', 'active')->whereNull('deleted_at');
+                })
                 ->get()
                 ->map(function ($house) {
                     $lat = (float) $house->latitude;

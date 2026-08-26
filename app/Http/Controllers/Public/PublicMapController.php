@@ -21,6 +21,9 @@ class PublicMapController extends Controller
                 ->with('primaryPhoto')
                 ->where('status', BoardingHouse::STATUS_APPROVED)
                 ->where('is_verified', true)
+                ->whereHas('owner', function ($query) {
+                    $query->where('status', 'active')->whereNull('deleted_at');
+                })
                 ->whereNotNull('latitude')
                 ->whereNotNull('longitude')
                 ->orderBy('name')
