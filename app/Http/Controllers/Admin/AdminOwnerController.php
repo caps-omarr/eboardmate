@@ -98,7 +98,10 @@ class AdminOwnerController extends Controller
             'user_agent' => $request->userAgent(),
         ]);
 
-        Cache::forget('public_map_markers');
+        BoardingHouse::clearPublicCaches();
+        if ($owner->boardingHouse) {
+            Cache::forget("boarding_house_public_details_{$owner->boardingHouse->id}");
+        }
 
         return back()->with('success', 'Owner account status updated successfully.');
     }

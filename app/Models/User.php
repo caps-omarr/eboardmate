@@ -122,4 +122,21 @@ class User extends Authenticatable
     {
         return $this->status === self::STATUS_ACTIVE;
     }
+
+    protected static function booted(): void
+    {
+        static::saved(function ($user) {
+            BoardingHouse::clearPublicCaches();
+            if ($user->boardingHouse) {
+                \Illuminate\Support\Facades\Cache::forget("boarding_house_public_details_{$user->boardingHouse->id}");
+            }
+        });
+
+        static::deleted(function ($user) {
+            BoardingHouse::clearPublicCaches();
+            if ($user->boardingHouse) {
+                \Illuminate\Support\Facades\Cache::forget("boarding_house_public_details_{$user->boardingHouse->id}");
+            }
+        });
+    }
 }

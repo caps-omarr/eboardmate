@@ -126,9 +126,7 @@ class AdminBoardingHouseController extends Controller
             'verified_by' => $request->user()->id,
         ]);
 
-       
-        Cache::forget('public_map_markers');
-        Cache::forget("boarding_house_public_details_{$boardingHouse->id}");
+        BoardingHouse::clearPublicCaches($boardingHouse->id);
 
         return back()->with('success', 'Approved and verified successfully.');
     }
@@ -139,9 +137,7 @@ class AdminBoardingHouseController extends Controller
 
         $boardingHouse->update(['status' => BoardingHouse::STATUS_REJECTED, 'is_verified' => false, 'rejection_reason' => $reason]);
 
-      
-        Cache::forget('public_map_markers');
-        Cache::forget("boarding_house_public_details_{$boardingHouse->id}");
+        BoardingHouse::clearPublicCaches($boardingHouse->id);
 
         return back()->with('success', 'Listing rejected successfully.');
     }
@@ -152,9 +148,7 @@ class AdminBoardingHouseController extends Controller
 
         $boardingHouse->update(['status' => BoardingHouse::STATUS_DEACTIVATED, 'is_verified' => false, 'deactivated_reason' => $reason]);
 
-       
-        Cache::forget('public_map_markers');
-        Cache::forget("boarding_house_public_details_{$boardingHouse->id}");
+        BoardingHouse::clearPublicCaches($boardingHouse->id);
 
         return back()->with('success', 'Listing deactivated successfully.');
     }
@@ -167,9 +161,7 @@ class AdminBoardingHouseController extends Controller
 
         $boardingHouse->update(['status' => BoardingHouse::STATUS_APPROVED, 'is_verified' => true]);
 
-        
-        Cache::forget('public_map_markers');
-        Cache::forget("boarding_house_public_details_{$boardingHouse->id}");
+        BoardingHouse::clearPublicCaches($boardingHouse->id);
 
         return back()->with('success', 'Listing reactivated successfully.');
     }

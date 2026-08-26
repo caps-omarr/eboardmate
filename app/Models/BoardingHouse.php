@@ -109,6 +109,27 @@ class BoardingHouse extends Model
             && ! $this->owner->trashed();
     }
 
+    public static function clearPublicCaches(?int $boardingHouseId = null): void
+    {
+        \Illuminate\Support\Facades\Cache::forget('public_boarding_houses_index');
+        \Illuminate\Support\Facades\Cache::forget('public_map_markers');
+
+        if ($boardingHouseId) {
+            \Illuminate\Support\Facades\Cache::forget("boarding_house_public_details_{$boardingHouseId}");
+        }
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(function ($boardingHouse) {
+            static::clearPublicCaches($boardingHouse->id);
+        });
+
+        static::deleted(function ($boardingHouse) {
+            static::clearPublicCaches($boardingHouse->id);
+        });
+    }
+
     public function isFull(): bool
     {
         return $this->available_rooms <= 0 && $this->available_bedspaces <= 0;
