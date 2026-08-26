@@ -74,20 +74,84 @@ const submitPhoto = () => {
     });
 };
 
-const setPhotoFile = (event) => {
+const isCompressing = ref(false);
+
+const compressImage = (file, maxWidth = 1600, maxHeight = 1600, quality = 0.85) => {
+    return new Promise((resolve) => {
+        if (!file || file.size <= 1.5 * 1024 * 1024) {
+            resolve(file);
+            return;
+        }
+
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.src = url;
+
+        img.onload = () => {
+            URL.revokeObjectURL(url);
+            let width = img.width;
+            let height = img.height;
+
+            if (width > maxWidth || height > maxHeight) {
+                if (width > height) {
+                    height = Math.round((height * maxWidth) / width);
+                    width = maxWidth;
+                } else {
+                    width = Math.round((width * maxHeight) / height);
+                    height = maxHeight;
+                }
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                        type: "image/jpeg",
+                        lastModified: Date.now(),
+                    });
+                    resolve(compressedFile);
+                } else {
+                    resolve(file);
+                }
+            }, "image/jpeg", quality);
+        };
+
+        img.onerror = () => {
+            URL.revokeObjectURL(url);
+            resolve(file);
+        };
+    });
+};
+
+const setPhotoFile = async (event) => {
     const file = event.target.files[0] || null;
     photoForm.clearErrors('photo');
 
     if (file) {
-        if (file.size > 15 * 1024 * 1024) {
-            photoForm.setError('photo', 'Mobile photo is too large. Please choose an image under 15MB.');
-            photoForm.photo = null;
-            photoPreview.value = null;
-            if (event.target) event.target.value = '';
-            return;
+        isCompressing.value = true;
+        try {
+            const processedFile = await compressImage(file);
+            if (processedFile.size > 15 * 1024 * 1024) {
+                photoForm.setError('photo', 'Photo is too large. Please choose an image under 15MB.');
+                photoForm.photo = null;
+                photoPreview.value = null;
+                if (event.target) event.target.value = '';
+                return;
+            }
+            photoForm.photo = processedFile;
+            photoPreview.value = URL.createObjectURL(processedFile);
+        } catch (e) {
+            photoForm.photo = file;
+            photoPreview.value = URL.createObjectURL(file);
+        } finally {
+            isCompressing.value = false;
         }
-        photoForm.photo = file;
-        photoPreview.value = URL.createObjectURL(file);
     } else {
         photoForm.photo = null;
         photoPreview.value = null;
