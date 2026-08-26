@@ -1,17 +1,21 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { router } from '@inertiajs/vue3';
 import { Modal, Carousel } from 'bootstrap';
 
 const ONBOARDING_V2_KEY = 'eboardmate_onboarding_v2_completed';
 
 const currentSlideIndex = ref(0);
-const totalSlides = 6;
+const totalSlides = 7;
+const selectedGender = ref('all');
+const selectedBudget = ref('all');
+
 const onboardingCompleted = ref(
-    localStorage.getItem(ONBOARDING_V2_KEY) === 'true'
+    localStorage.getItem(ONBOARDING_V2_KEY) === 'true' ||
+    localStorage.getItem('hasSeenStudentTour') === 'true'
 );
 
 let carouselInstance = null;
-let modalInstance = null;
 
 onMounted(() => {
     const carouselEl = document.getElementById('onboardingCarousel');
@@ -27,10 +31,11 @@ onMounted(() => {
         });
     }
 
+    // Only show if the user is visiting for the first time
     if (!onboardingCompleted.value) {
         const modalEl = document.getElementById('studentOnboardingModal');
         if (modalEl) {
-            modalInstance = Modal.getOrCreateInstance(modalEl, {
+            const modalInstance = Modal.getOrCreateInstance(modalEl, {
                 backdrop: 'static',
                 keyboard: false,
             });
@@ -62,6 +67,7 @@ const goToSlide = (index) => {
 const completeOnboarding = () => {
     localStorage.setItem(ONBOARDING_V2_KEY, 'true');
     localStorage.setItem('hasSeenStudentTour', 'true');
+    localStorage.setItem('ebm_student_onboarding_completed', 'completed');
     onboardingCompleted.value = true;
 
     const modalEl = document.getElementById('studentOnboardingModal');
@@ -69,18 +75,20 @@ const completeOnboarding = () => {
         const bsModal = Modal.getOrCreateInstance(modalEl);
         bsModal.hide();
     }
-};
 
-const restartOnboarding = () => {
-    currentSlideIndex.value = 0;
-    goToSlide(0);
-    const modalEl = document.getElementById('studentOnboardingModal');
-    if (modalEl) {
-        const bsModal = Modal.getOrCreateInstance(modalEl, {
-            backdrop: 'static',
-            keyboard: false,
+    const filterData = {};
+    if (selectedGender.value && selectedGender.value !== 'all') {
+        filterData.gender = selectedGender.value;
+    }
+    if (selectedBudget.value && selectedBudget.value !== 'all') {
+        filterData.budget = selectedBudget.value;
+    }
+
+    if (Object.keys(filterData).length > 0) {
+        router.visit('/boarding-houses', {
+            data: filterData,
+            preserveState: false,
         });
-        bsModal.show();
     }
 };
 </script>
@@ -103,7 +111,7 @@ const restartOnboarding = () => {
                 <div class="modal-header border-bottom border-secondary-subtle px-4 py-3 bg-body-tertiary">
                     <div class="d-flex align-items-center gap-2">
                         <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fw-bold">
-                            🎓 Step {{ currentSlideIndex + 1 }} of {{ totalSlides }}
+                            Step {{ currentSlideIndex + 1 }} of {{ totalSlides }}
                         </span>
                         <span class="small text-body-secondary fw-semibold">
                             Freshmen Student Security Guide
@@ -209,14 +217,63 @@ const restartOnboarding = () => {
                                     </div>
                                     <h2 class="h3 fw-bold text-body-emphasis mb-2">Track Status Live</h2>
                                     <p class="text-body-secondary lead mb-4 mx-auto" style="max-width: 540px; font-size: 1.05rem;">
-                                        After reserving, use your unique <strong>Reference Code</strong> on the Live Tracker to check landlord responses anytime.
+                                        After reserving, use your unique <strong>Reference Code</strong> on the Live Tracker to check landlord responses anytime. Zero account registration required!
                                     </p>
+                                </div>
+                            </div>
+
+                            <!-- SLIDE 7: CUSTOMIZE YOUR INITIAL SEARCH -->
+                            <div class="carousel-item">
+                                <div class="text-center py-2">
+                                    <div class="mb-2 d-inline-block p-3 rounded-circle bg-success-subtle text-success border border-success-subtle">
+                                        <i class="bi bi-sliders" style="font-size: 3rem; line-height: 1;"></i>
+                                    </div>
+                                    <h2 class="h3 fw-bold text-body-emphasis mb-2">Customize Your Initial Search</h2>
+                                    <p class="text-body-secondary small mb-3 mx-auto" style="max-width: 500px;">
+                                        Set your preferences now to automatically filter verified boarding houses when you enter.
+                                    </p>
+
+                                    <!-- INTERACTIVE QUICK SETUP DROPDOWNS -->
+                                    <div class="bg-body-tertiary p-4 rounded-4 border border-secondary-subtle mx-auto text-start mb-3" style="max-width: 520px;">
+                                        <div class="row g-3">
+                                            <div class="col-12 col-sm-6">
+                                                <label for="onboarding-gender-select" class="form-label small text-body-secondary fw-semibold mb-1">Gender Restriction:</label>
+                                                <select 
+                                                    id="onboarding-gender-select" 
+                                                    v-model="selectedGender" 
+                                                    class="form-select rounded-3 shadow-none p-2"
+                                                >
+                                                    <option value="all">Any Gender (All)</option>
+                                                    <option value="Male Only">Male Only</option>
+                                                    <option value="Female Only">Female Only</option>
+                                                    <option value="Co-ed">Co-ed</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-12 col-sm-6">
+                                                <label for="onboarding-budget-select" class="form-label small text-body-secondary fw-semibold mb-1">Maximum Budget:</label>
+                                                <select 
+                                                    id="onboarding-budget-select" 
+                                                    v-model="selectedBudget" 
+                                                    class="form-select rounded-3 shadow-none p-2"
+                                                >
+                                                    <option value="all">Any Price</option>
+                                                    <option value="500">₱500 / month</option>
+                                                    <option value="600">₱600 / month</option>
+                                                    <option value="700">₱700 / month</option>
+                                                    <option value="800">₱800 / month</option>
+                                                    <option value="900">₱900 / month</option>
+                                                    <option value="1000">₱1,000+ / month</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <button 
                                         type="button" 
                                         @click="completeOnboarding" 
                                         class="btn btn-success btn-lg rounded-pill px-5 py-3 fw-bold shadow-sm hover-lift"
                                     >
-                                        Get Started Now 🎉
+                                        Get Started
                                     </button>
                                 </div>
                             </div>
@@ -269,26 +326,13 @@ const restartOnboarding = () => {
                             @click="completeOnboarding" 
                             class="btn btn-sm btn-success rounded-pill px-4 py-2 fw-bold shadow-sm"
                         >
-                            Get Started 🎉
+                            Get Started
                         </button>
                     </div>
                 </div>
 
             </div>
         </div>
-    </div>
-
-    <!-- FLOATING RE-OPEN GUIDE WIDGET -->
-    <div class="position-fixed bottom-0 end-0 m-3 z-3">
-        <button 
-            type="button" 
-            @click="restartOnboarding" 
-            class="btn btn-sm bg-body text-body-emphasis border border-secondary-subtle rounded-pill shadow-sm d-flex align-items-center gap-2 px-3 py-2 transition-all hover-bg-tertiary"
-            title="Re-open Student Security Guide"
-        >
-            <span class="badge bg-success-subtle text-success rounded-circle p-1">🎓</span>
-            <span class="fw-semibold small">Student Guide</span>
-        </button>
     </div>
 </template>
 
