@@ -328,20 +328,20 @@ onBeforeUnmount(() => {
                             >
                         </p>
 
-                        <!-- Premium Live Tracker Card -->
+                        <!-- Live Tracker Card (Adaptive Light & Dark Mode UI) -->
                         <div class="row justify-content-center mt-5 w-100 mx-0">
                             <div class="col-12 col-md-10 col-lg-7 col-xl-6 px-3">
-                                <div class="card border-0 shadow-lg rounded-4 text-start" style="background-color: #212529;">
+                                <div class="ebm-card card border border-secondary-subtle shadow-sm rounded-4 text-start bg-body transition-all">
                                     <div class="card-body p-4 p-md-5">
                                         
                                         <!-- Glowing Badge -->
-                                        <div class="d-inline-flex align-items-center mb-3 px-3 py-1 rounded-pill border border-success text-success bg-success bg-opacity-10 small fw-semibold">
+                                        <div class="d-inline-flex align-items-center mb-3 px-3 py-1 rounded-pill border border-success-subtle text-success bg-success-subtle small fw-bold">
                                             <i class="bi bi-clock-history me-2"></i> Live Tracker
                                         </div>
                                         
                                         <!-- Typography -->
-                                        <h3 class="text-white fw-bold mb-3">Already Reserved a Spot?</h3>
-                                        <p class="text-secondary mb-4" style="font-size: 1.05rem; line-height: 1.6;">
+                                        <h3 class="text-body-emphasis fw-bold mb-3">Already Reserved a Spot?</h3>
+                                        <p class="text-body-secondary mb-4" style="font-size: 1.05rem; line-height: 1.6;">
                                             Check your real-time approval status and landlord message using your reservation tracking reference code.
                                         </p>
                                         

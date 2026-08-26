@@ -79,8 +79,8 @@ const setPhotoFile = (event) => {
     photoForm.clearErrors('photo');
 
     if (file) {
-        if (file.size > 4 * 1024 * 1024) {
-            photoForm.setError('photo', 'Mobile photo is too large. Please choose an image under 4MB.');
+        if (file.size > 15 * 1024 * 1024) {
+            photoForm.setError('photo', 'Mobile photo is too large. Please choose an image under 15MB.');
             photoForm.photo = null;
             photoPreview.value = null;
             if (event.target) event.target.value = '';
@@ -233,7 +233,7 @@ const statusBadgeClass = computed(() => {
                                 >
                                     <i class="bi bi-cloud-arrow-up-fill fs-3 text-success"></i>
                                     <span>Select Property Photo</span>
-                                    <span class="small text-body-secondary fw-normal">JPG, PNG, WebP up to 4MB</span>
+                                    <span class="small text-body-secondary fw-normal">JPG, PNG, WebP up to 15MB</span>
                                 </label>
                                 <input 
                                     id="listing-photo" 

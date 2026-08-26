@@ -48,8 +48,8 @@ const setProfilePhoto = (event) => {
     profileForm.clearErrors('photo');
 
     if (file) {
-        if (file.size > 2 * 1024 * 1024) {
-            profileForm.setError('photo', 'Avatar photo is too large. Please choose an image under 2MB.');
+        if (file.size > 15 * 1024 * 1024) {
+            profileForm.setError('photo', 'Avatar photo is too large. Please choose an image under 15MB.');
             profileForm.photo = null;
             profilePhotoPreview.value = null;
             if (event.target) event.target.value = '';
@@ -361,7 +361,7 @@ const getInitials = (name) => {
                                     <div
                                         class="small text-body-secondary opacity-75"
                                     >
-                                        JPG, PNG, WebP up to 2MB
+                                        JPG, PNG, WebP up to 15MB
                                     </div>
                                     <div
                                         v-if="profileForm.errors.photo"

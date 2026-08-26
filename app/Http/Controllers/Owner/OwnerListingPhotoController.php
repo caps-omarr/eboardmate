@@ -23,7 +23,7 @@ class OwnerListingPhotoController extends Controller
         $boardingHouse = $this->getOwnerBoardingHouse($request);
 
         $validated = $request->validate([
-            'photo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
+            'photo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:15360'],
             'alt_text' => ['nullable', 'string', 'max:255'],
         ]);
 
