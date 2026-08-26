@@ -38,6 +38,8 @@ class BoardingHouse extends Model
         'allowed_genders',
         'includes_water',
         'includes_electricity',
+        'water_billing_details',
+        'electricity_billing_details',
         'status',
         'is_verified',
         'verified_at',

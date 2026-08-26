@@ -47,6 +47,8 @@ class OwnerListingController extends Controller
                 'allowed_genders' => $boardingHouse->allowed_genders ?? 'Any Gender (All)',
                 'includes_water' => (bool) $boardingHouse->includes_water,
                 'includes_electricity' => (bool) $boardingHouse->includes_electricity,
+                'water_billing_details' => $boardingHouse->water_billing_details,
+                'electricity_billing_details' => $boardingHouse->electricity_billing_details,
                 'status' => $boardingHouse->status,
                 'is_verified' => $boardingHouse->is_verified,
                 'rejection_reason' => $boardingHouse->rejection_reason,
@@ -87,6 +89,8 @@ class OwnerListingController extends Controller
             'allowed_genders' => ['nullable', 'string', 'max:255'],
             'includes_water' => ['nullable', 'boolean'],
             'includes_electricity' => ['nullable', 'boolean'],
+            'water_billing_details' => ['nullable', 'string', 'max:255'],
+            'electricity_billing_details' => ['nullable', 'string', 'max:255'],
         ]);
 
         if ($validated['available_rooms'] > $validated['total_rooms']) {
@@ -100,6 +104,12 @@ class OwnerListingController extends Controller
                 'available_bedspaces' => 'Available bedspaces cannot be greater than total bedspaces.',
             ]);
         }
+
+        $includesWater = (bool) ($validated['includes_water'] ?? false);
+        $includesElectricity = (bool) ($validated['includes_electricity'] ?? false);
+
+        $waterBillingDetails = $includesWater ? null : ($validated['water_billing_details'] ?? null);
+        $electricityBillingDetails = $includesElectricity ? null : ($validated['electricity_billing_details'] ?? null);
 
         $amenities = collect(explode(',', $validated['amenities_text'] ?? ''))
             ->map(fn ($amenity) => trim($amenity))
@@ -120,8 +130,10 @@ class OwnerListingController extends Controller
             'amenities' => $amenities,
             'rules' => $validated['rules'] ?? null,
             'allowed_genders' => $validated['allowed_genders'] ?? 'Any Gender (All)',
-            'includes_water' => (bool) ($validated['includes_water'] ?? false),
-            'includes_electricity' => (bool) ($validated['includes_electricity'] ?? false),
+            'includes_water' => $includesWater,
+            'includes_electricity' => $includesElectricity,
+            'water_billing_details' => $waterBillingDetails,
+            'electricity_billing_details' => $electricityBillingDetails,
         ]);
 
         ActivityLog::create([

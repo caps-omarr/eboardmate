@@ -44,6 +44,8 @@ const form = useForm({
     allowed_genders: props.boardingHouse?.allowed_genders || 'Any Gender (All)',
     includes_water: props.boardingHouse?.includes_water ?? false,
     includes_electricity: props.boardingHouse?.includes_electricity ?? false,
+    water_billing_details: props.boardingHouse?.water_billing_details || null,
+    electricity_billing_details: props.boardingHouse?.electricity_billing_details || null,
 });
 
 const photoForm = useForm({
@@ -439,15 +441,35 @@ const statusBadgeClass = computed(() => {
                             </div>
 
                             <div class="bg-body-tertiary p-3 rounded-4 border border-secondary-subtle mb-4">
-                                <span class="form-label fw-bold small text-body-secondary text-uppercase d-block mb-2">Utility Inclusions</span>
-                                <div class="d-flex flex-wrap gap-4">
-                                    <div class="form-check form-switch">
-                                        <input id="includes_water" v-model="form.includes_water" class="form-check-input" type="checkbox">
-                                        <label for="includes_water" class="form-check-label fw-medium">💧 Water Included</label>
+                                <span class="form-label fw-bold small text-body-secondary text-uppercase d-block mb-2">Utility Inclusions & Billing</span>
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-check form-switch mb-1">
+                                            <input id="includes_water" v-model="form.includes_water" class="form-check-input" type="checkbox">
+                                            <label for="includes_water" class="form-check-label fw-medium">💧 Water Included</label>
+                                        </div>
+                                        <div v-if="!form.includes_water" class="mt-2">
+                                            <select v-model="form.water_billing_details" class="form-select form-select-sm bg-body text-body-emphasis border-secondary-subtle rounded-3">
+                                                <option :value="null" disabled>Select Water Billing Method...</option>
+                                                <option value="Sub-metered (Per cubic meter)">Sub-metered (Per cubic meter)</option>
+                                                <option value="Fixed Price (Per head)">Fixed Price (Per head)</option>
+                                                <option value="Shared Monthly Bill">Shared Monthly Bill</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                    <div class="form-check form-switch">
-                                        <input id="includes_electricity" v-model="form.includes_electricity" class="form-check-input" type="checkbox">
-                                        <label for="includes_electricity" class="form-check-label fw-medium">⚡ Electricity Included</label>
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-check form-switch mb-1">
+                                            <input id="includes_electricity" v-model="form.includes_electricity" class="form-check-input" type="checkbox">
+                                            <label for="includes_electricity" class="form-check-label fw-medium">⚡ Electricity Included</label>
+                                        </div>
+                                        <div v-if="!form.includes_electricity" class="mt-2">
+                                            <select v-model="form.electricity_billing_details" class="form-select form-select-sm bg-body text-body-emphasis border-secondary-subtle rounded-3">
+                                                <option :value="null" disabled>Select Electricity Billing Method...</option>
+                                                <option value="Sub-metered (Per kWh)">Sub-metered (Per kWh)</option>
+                                                <option value="Fixed Price (Per head)">Fixed Price (Per head)</option>
+                                                <option value="Shared Monthly Bill">Shared Monthly Bill</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

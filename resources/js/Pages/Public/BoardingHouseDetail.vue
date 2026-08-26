@@ -378,9 +378,23 @@ const submitReservation = () => {
                             <!-- Price Card Header -->
                             <div class="border-bottom border-secondary-subtle pb-3 mb-4">
                                 <span class="text-body-secondary small d-block mb-1">Monthly Rent Rate</span>
-                                <div class="d-flex align-items-baseline gap-1">
+                                <div class="d-flex align-items-baseline gap-1 mb-3">
                                     <h2 class="display-6 fw-bold text-success mb-0">₱{{ formatPrice(boardingHouse.rent_price) }}</h2>
                                     <span class="text-body-secondary">/ month</span>
+                                </div>
+
+                                <!-- Utility Transparency Breakdown -->
+                                <div class="bg-body-tertiary p-3 rounded-3 border border-secondary-subtle small d-flex flex-column gap-2">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <span class="text-body-secondary"><i class="bi bi-droplet-fill text-primary me-1"></i> Water Utility:</span>
+                                        <strong v-if="boardingHouse.includes_water" class="text-success">Included</strong>
+                                        <span v-else class="text-body-emphasis fw-medium">{{ boardingHouse.water_billing_details || 'Not included' }}</span>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <span class="text-body-secondary"><i class="bi bi-lightning-fill text-warning me-1"></i> Electricity:</span>
+                                        <strong v-if="boardingHouse.includes_electricity" class="text-success">Included</strong>
+                                        <span v-else class="text-body-emphasis fw-medium">{{ boardingHouse.electricity_billing_details || 'Not included' }}</span>
+                                    </div>
                                 </div>
                             </div>
 

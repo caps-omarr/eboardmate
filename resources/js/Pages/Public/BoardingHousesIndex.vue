@@ -178,11 +178,22 @@ onUnmounted(() => {
                                                 </div>
                                             </Link>
 
-                                            <!-- Floating Badge -->
-                                            <div class="position-absolute top-0 start-0 m-3 z-1">
+                                            <!-- Floating Badges Overlay -->
+                                            <div class="position-absolute top-0 start-0 m-3 z-1 d-flex flex-wrap gap-2">
                                                 <span v-if="house.is_full" class="badge bg-danger shadow-sm rounded-pill px-3 py-2">Fully Booked</span>
                                                 <span v-else class="badge bg-body text-success fw-bold shadow-sm rounded-pill px-3 py-2 border border-secondary-subtle">
                                                     <i class="bi bi-circle-fill small me-1" style="font-size: 0.5rem;"></i> Available
+                                                </span>
+
+                                                <!-- Gender Restriction Badge -->
+                                                <span v-if="house.allowed_genders === 'Female Only'" class="badge rounded-pill px-3 py-2 d-flex align-items-center shadow-sm" style="background-color: rgba(0, 30, 40, 0.85); color: #0dcaf0; border: 1px solid #0dcaf0;">
+                                                    <i class="bi bi-person-heart me-1"></i> Female Only
+                                                </span>
+                                                <span v-else-if="house.allowed_genders === 'Male Only'" class="badge rounded-pill px-3 py-2 d-flex align-items-center shadow-sm" style="background-color: rgba(0, 20, 50, 0.85); color: #6ea8fe; border: 1px solid #6ea8fe;">
+                                                    <i class="bi bi-person-standing me-1"></i> Male Only
+                                                </span>
+                                                <span v-else class="badge rounded-pill px-3 py-2 d-flex align-items-center shadow-sm" style="background-color: rgba(40, 40, 40, 0.85); color: #f8f9fa; border: 1px solid #6c757d;">
+                                                    <i class="bi bi-people-fill me-1"></i> Any Gender
                                                 </span>
                                             </div>
                                         </div>
@@ -206,7 +217,7 @@ onUnmounted(() => {
                                             </p>
                                             
                                             <!-- Native Stats Pills -->
-                                            <div class="d-flex align-items-center gap-2 mb-4 pb-1">
+                                            <div class="d-flex align-items-center gap-2 mb-3 pb-1">
                                                 <div class="badge bg-body-tertiary text-body-emphasis border border-secondary-subtle rounded-pill px-2 py-1 fw-medium d-flex align-items-center gap-1 shadow-sm">
                                                     <i class="bi bi-door-open text-primary"></i>
                                                     <span :class="house.is_full ? 'text-danger' : ''">{{ house.available_rooms }} Rooms</span>
@@ -223,6 +234,20 @@ onUnmounted(() => {
                                                     </span>
                                                 </div>
                                             </div>
+
+                                            <!-- Utility Transparency Summary -->
+                                            <div class="mb-3 d-flex flex-column gap-1 border-top border-secondary-subtle pt-2" style="font-size: 0.78rem;">
+                                                <span v-if="house.includes_water && house.includes_electricity" class="text-success fw-semibold">
+                                                    <i class="bi bi-droplet-fill text-primary me-1"></i><i class="bi bi-lightning-fill text-warning me-1"></i> Water & Elec Included
+                                                </span>
+                                                <template v-else>
+                                                    <span v-if="house.includes_water" class="text-success"><i class="bi bi-droplet-fill me-1"></i> Water Included</span>
+                                                    <span v-else class="text-body-secondary"><i class="bi bi-droplet me-1"></i> Water: {{ house.water_billing_details || 'Not included' }}</span>
+
+                                                    <span v-if="house.includes_electricity" class="text-success"><i class="bi bi-lightning-fill me-1"></i> Elec Included</span>
+                                                    <span v-else class="text-body-secondary"><i class="bi bi-lightning me-1"></i> Elec: {{ house.electricity_billing_details || 'Not included' }}</span>
+                                                </template>
+                                            </div> 
                                             
                                             <!-- Actions -->
                                             <div class="d-flex gap-2 mt-auto pt-3 border-top border-secondary-subtle">
