@@ -104,8 +104,8 @@ const completeOnboarding = () => {
         aria-labelledby="studentOnboardingModalLabel" 
         aria-hidden="true"
     >
-        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down modal-lg">
-            <div class="modal-content shadow-lg border-0 rounded-4 overflow-hidden bg-body">
+        <div class="modal-dialog modal-dialog-centered mx-auto px-3" style="max-width: 520px; width: 100%;">
+            <div class="modal-content shadow-lg border-0 rounded-4 overflow-hidden bg-body" style="max-height: 85vh; max-height: 85dvh;">
                 
                 <!-- MODAL HEADER -->
                 <div class="modal-header border-bottom border-secondary-subtle px-4 py-3 bg-body-tertiary">
@@ -120,18 +120,18 @@ const completeOnboarding = () => {
                 </div>
 
                 <!-- MODAL BODY WITH BOOTSTRAP CAROUSEL -->
-                <div class="modal-body p-4 p-md-5">
+                <div class="modal-body p-3 p-md-4 overflow-y-auto" style="max-height: 65vh;">
                     <div id="onboardingCarousel" class="carousel slide" data-bs-interval="false">
                         <div class="carousel-inner">
                             
                             <!-- SLIDE 1: WELCOME -->
                             <div class="carousel-item active">
-                                <div class="text-center py-3">
-                                    <div class="mb-3 d-inline-block p-4 rounded-circle bg-success-subtle text-success border border-success-subtle">
-                                        <i class="bi bi-house-heart" style="font-size: 4rem; line-height: 1;"></i>
+                                <div class="text-center py-2">
+                                    <div class="mb-3 d-inline-block p-3 rounded-circle bg-success-subtle text-success border border-success-subtle">
+                                        <i class="bi bi-house-heart" style="font-size: 3rem; line-height: 1;"></i>
                                     </div>
-                                    <h2 class="h3 fw-bold text-body-emphasis mb-2">Welcome to E-BoardMate</h2>
-                                    <p class="text-body-secondary lead mb-4 mx-auto" style="max-width: 540px; font-size: 1.05rem;">
+                                    <h2 class="h4 fw-bold text-body-emphasis mb-2">Welcome to E-BoardMate</h2>
+                                    <p class="text-body-secondary mb-3 mx-auto" style="max-width: 480px; font-size: 0.95rem; line-height: 1.5;">
                                         Your official, verified student accommodations locator for <strong>Talibon Polytechnic College</strong>. Search accredited boarding houses with complete transparency.
                                     </p>
                                     <div class="badge bg-body-tertiary text-body-secondary border border-secondary-subtle rounded-pill px-3 py-2">
@@ -142,15 +142,15 @@ const completeOnboarding = () => {
 
                             <!-- SLIDE 2: MAPPING & DISTANCES -->
                             <div class="carousel-item">
-                                <div class="text-center py-3">
-                                    <div class="mb-3 d-inline-block p-4 rounded-circle bg-primary-subtle text-primary border border-primary-subtle">
-                                        <i class="bi bi-map-fill" style="font-size: 4rem; line-height: 1;"></i>
+                                <div class="text-center py-2">
+                                    <div class="mb-3 d-inline-block p-3 rounded-circle bg-primary-subtle text-primary border border-primary-subtle">
+                                        <i class="bi bi-map-fill" style="font-size: 3rem; line-height: 1;"></i>
                                     </div>
-                                    <h2 class="h3 fw-bold text-body-emphasis mb-2">Interactive Mapping & Distances</h2>
-                                    <p class="text-body-secondary lead mb-3 mx-auto" style="max-width: 540px; font-size: 1.05rem;">
+                                    <h2 class="h4 fw-bold text-body-emphasis mb-2">Interactive Mapping & Distances</h2>
+                                    <p class="text-body-secondary mb-3 mx-auto" style="max-width: 480px; font-size: 0.95rem; line-height: 1.5;">
                                         Calculate real walking distances from TPC campus and view 3D satellite maps before visiting.
                                     </p>
-                                    <div class="bg-body-tertiary p-3 rounded-4 border border-secondary-subtle mx-auto text-start small text-body-secondary" style="max-width: 500px;">
+                                    <div class="bg-body-tertiary p-3 rounded-4 border border-secondary-subtle mx-auto text-start small text-body-secondary" style="max-width: 480px;">
                                         <i class="bi bi-info-circle-fill text-primary me-2"></i>
                                         Walking route estimations are calculated based on road networks. Always verify physical access routes during your visit.
                                     </div>
@@ -159,15 +159,15 @@ const completeOnboarding = () => {
 
                             <!-- SLIDE 3: ONE RESERVATION RULE -->
                             <div class="carousel-item">
-                                <div class="text-center py-3">
-                                    <div class="mb-3 d-inline-block p-4 rounded-circle bg-warning-subtle text-warning-emphasis border border-warning-subtle">
-                                        <i class="bi bi-pin-angle-fill" style="font-size: 4rem; line-height: 1;"></i>
+                                <div class="text-center py-2">
+                                    <div class="mb-3 d-inline-block p-3 rounded-circle bg-warning-subtle text-warning-emphasis border border-warning-subtle">
+                                        <i class="bi bi-pin-angle-fill" style="font-size: 3rem; line-height: 1;"></i>
                                     </div>
-                                    <h2 class="h3 fw-bold text-body-emphasis mb-2">One Active Reservation Rule</h2>
-                                    <p class="text-body-secondary lead mb-3 mx-auto" style="max-width: 540px; font-size: 1.05rem;">
+                                    <h2 class="h4 fw-bold text-body-emphasis mb-2">One Active Reservation Rule</h2>
+                                    <p class="text-body-secondary mb-3 mx-auto" style="max-width: 480px; font-size: 0.95rem; line-height: 1.5;">
                                         To ensure equal availability for all students, you may only hold <strong>ONE active reservation request</strong> at a time.
                                     </p>
-                                    <div class="bg-body-tertiary p-3 rounded-4 border border-secondary-subtle mx-auto text-start small text-body-secondary" style="max-width: 500px;">
+                                    <div class="bg-body-tertiary p-3 rounded-4 border border-secondary-subtle mx-auto text-start small text-body-secondary" style="max-width: 480px;">
                                         <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
                                         Submitting a new request will replace or freeze pending submissions until resolved.
                                     </div>
@@ -176,15 +176,15 @@ const completeOnboarding = () => {
 
                             <!-- SLIDE 4: CLEAR EXPECTATIONS & AUTOMATIC EXPIRATION -->
                             <div class="carousel-item">
-                                <div class="text-center py-3">
-                                    <div class="mb-3 d-inline-block p-4 rounded-circle bg-info-subtle text-info-emphasis border border-info-subtle">
-                                        <i class="bi bi-hourglass-split" style="font-size: 4rem; line-height: 1;"></i>
+                                <div class="text-center py-2">
+                                    <div class="mb-3 d-inline-block p-3 rounded-circle bg-info-subtle text-info-emphasis border border-info-subtle">
+                                        <i class="bi bi-hourglass-split" style="font-size: 3rem; line-height: 1;"></i>
                                     </div>
-                                    <h2 class="h3 fw-bold text-body-emphasis mb-2">Automatic Request Expiration</h2>
-                                    <p class="text-body-secondary lead mb-3 mx-auto" style="max-width: 540px; font-size: 1.05rem;">
+                                    <h2 class="h4 fw-bold text-body-emphasis mb-2">Automatic Request Expiration</h2>
+                                    <p class="text-body-secondary mb-3 mx-auto" style="max-width: 480px; font-size: 0.95rem; line-height: 1.5;">
                                         Never worry about getting stuck waiting. Landlords receive instant notifications for every request.
                                     </p>
-                                    <div class="bg-body-tertiary p-3 rounded-4 border border-secondary-subtle mx-auto text-start small text-body-secondary" style="max-width: 500px;">
+                                    <div class="bg-body-tertiary p-3 rounded-4 border border-secondary-subtle mx-auto text-start small text-body-secondary" style="max-width: 480px;">
                                         <i class="bi bi-clock-history text-info me-2"></i>
                                         If an owner does not respond within the designated window, your request automatically expires—immediately freeing you to reserve another spot.
                                     </div>
@@ -193,13 +193,13 @@ const completeOnboarding = () => {
 
                             <!-- SLIDE 5: MAXIMUM SECURITY & ANTI-SCAM -->
                             <div class="carousel-item">
-                                <div class="text-center py-3">
-                                    <div class="p-4 rounded-4 bg-danger bg-opacity-10 border border-danger border-opacity-25 mx-auto" style="max-width: 540px;">
+                                <div class="text-center py-2">
+                                    <div class="p-3 rounded-4 bg-danger bg-opacity-10 border border-danger border-opacity-25 mx-auto" style="max-width: 480px;">
                                         <div class="mb-2 text-danger">
-                                            <i class="bi bi-shield-lock-fill" style="font-size: 4rem; line-height: 1;"></i>
+                                            <i class="bi bi-shield-lock-fill" style="font-size: 3rem; line-height: 1;"></i>
                                         </div>
-                                        <h2 class="h3 fw-bold text-danger mb-2">NO Online Payments Required</h2>
-                                        <p class="text-body-emphasis fw-semibold mb-2" style="font-size: 1.05rem;">
+                                        <h2 class="h4 fw-bold text-danger mb-2">NO Online Payments Required</h2>
+                                        <p class="text-body-emphasis fw-semibold mb-2" style="font-size: 0.95rem;">
                                             E-BoardMate will NEVER ask for online payments (GCash, Bank Transfer) on this website.
                                         </p>
                                         <p class="small text-body-secondary mb-0">
@@ -211,12 +211,12 @@ const completeOnboarding = () => {
 
                             <!-- SLIDE 6: REFERENCE CODE TRACKING -->
                             <div class="carousel-item">
-                                <div class="text-center py-3">
-                                    <div class="mb-3 d-inline-block p-4 rounded-circle bg-success-subtle text-success border border-success-subtle">
-                                        <i class="bi bi-patch-check-fill" style="font-size: 4rem; line-height: 1;"></i>
+                                <div class="text-center py-2">
+                                    <div class="mb-3 d-inline-block p-3 rounded-circle bg-success-subtle text-success border border-success-subtle">
+                                        <i class="bi bi-patch-check-fill" style="font-size: 3rem; line-height: 1;"></i>
                                     </div>
-                                    <h2 class="h3 fw-bold text-body-emphasis mb-2">Track Status Live</h2>
-                                    <p class="text-body-secondary lead mb-4 mx-auto" style="max-width: 540px; font-size: 1.05rem;">
+                                    <h2 class="h4 fw-bold text-body-emphasis mb-2">Track Status Live</h2>
+                                    <p class="text-body-secondary mb-3 mx-auto" style="max-width: 480px; font-size: 0.95rem; line-height: 1.5;">
                                         After reserving, use your unique <strong>Reference Code</strong> on the Live Tracker to check landlord responses anytime. Zero account registration required!
                                     </p>
                                 </div>
@@ -267,14 +267,7 @@ const completeOnboarding = () => {
                                             </div>
                                         </div>
                                     </div>
-
-                                    <button 
-                                        type="button" 
-                                        @click="completeOnboarding" 
-                                        class="btn btn-success btn-lg rounded-pill px-5 py-3 fw-bold shadow-sm hover-lift"
-                                    >
-                                        Get Started
-                                    </button>
+                                    
                                 </div>
                             </div>
 
