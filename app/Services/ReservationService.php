@@ -64,7 +64,7 @@ class ReservationService
                         ]);
                     }
 
-                    // Anti-hoarding check: Only 1 active pending/approved reservation per email/phone
+                    // Anti-hoarding check: Only 1 active unexpired pending/approved reservation per email/phone
                     $activeDuplicateExists = Reservation::query()
                         ->whereIn('status', [
                             Reservation::STATUS_PENDING,
@@ -73,6 +73,10 @@ class ReservationService
                         ->where(function ($query) use ($normalizedEmail, $normalizedPhone) {
                             $query->whereRaw('LOWER(guest_email) = ?', [$normalizedEmail])
                                 ->orWhere('guest_phone', $normalizedPhone);
+                        })
+                        ->where(function ($query) {
+                            $query->whereNull('expires_at')
+                                ->orWhere('expires_at', '>', now());
                         })
                         ->exists();
 
@@ -116,12 +120,11 @@ class ReservationService
     }
 
     /**
-     * Expire stale pending reservations for a specific boarding house
+     * Expire stale pending reservations globally across all boarding houses
      */
-    public function expireOldPendingReservations(BoardingHouse $boardingHouse): void
+    public function expireOldPendingReservations(?BoardingHouse $boardingHouse = null): void
     {
         Reservation::query()
-            ->where('boarding_house_id', $boardingHouse->id)
             ->where('status', Reservation::STATUS_PENDING)
             ->whereNotNull('expires_at')
             ->where('expires_at', '<=', now())
