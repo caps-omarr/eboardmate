@@ -85,49 +85,60 @@ const compressImage = (file, maxWidth = 1600, maxHeight = 1600, quality = 0.85) 
             return;
         }
 
-        const img = new Image();
-        const url = URL.createObjectURL(file);
-        img.src = url;
-
-        img.onload = () => {
-            URL.revokeObjectURL(url);
-            let width = img.width;
-            let height = img.height;
-
-            if (width > maxWidth || height > maxHeight) {
-                if (width > height) {
-                    height = Math.round((height * maxWidth) / width);
-                    width = maxWidth;
-                } else {
-                    width = Math.round((width * maxHeight) / height);
-                    height = maxHeight;
-                }
-            }
-
-            const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
-
-            canvas.toBlob((blob) => {
-                if (blob) {
-                    const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
-                        type: "image/jpeg",
-                        lastModified: Date.now(),
-                    });
-                    resolve(compressedFile);
-                } else {
-                    resolve(file);
-                }
-            }, "image/jpeg", quality);
-        };
-
-        img.onerror = () => {
-            URL.revokeObjectURL(url);
+        const fileName = (file.name || '').toLowerCase();
+        const fileType = (file.type || '').toLowerCase();
+        if (fileType.includes('heic') || fileType.includes('heif') || fileName.endsWith('.heic') || fileName.endsWith('.heif')) {
             resolve(file);
-        };
+            return;
+        }
+
+        try {
+            const img = new Image();
+            const url = URL.createObjectURL(file);
+            img.src = url;
+
+            img.onload = () => {
+                let width = img.width;
+                let height = img.height;
+
+                if (!width || !height || width > maxWidth || height > maxHeight) {
+                    if (width && height && width > height) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    } else if (width && height) {
+                        width = Math.round((width * maxHeight) / height);
+                        height = maxHeight;
+                    }
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width = width || 1200;
+                canvas.height = height || 1200;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                canvas.toBlob((blob) => {
+                    try { URL.revokeObjectURL(url); } catch (e) {}
+                    if (blob) {
+                        const compressedFile = new File([blob], (file.name || 'photo').replace(/\.[^/.]+$/, "") + ".jpg", {
+                            type: "image/jpeg",
+                            lastModified: Date.now(),
+                        });
+                        resolve(compressedFile);
+                    } else {
+                        resolve(file);
+                    }
+                }, "image/jpeg", quality);
+            };
+
+            img.onerror = () => {
+                try { URL.revokeObjectURL(url); } catch (e) {}
+                resolve(file);
+            };
+        } catch (e) {
+            resolve(file);
+        }
     });
 };
 
@@ -295,7 +306,6 @@ const statusBadgeClass = computed(() => {
                                     for="listing-photo" 
                                     class="btn btn-outline-secondary w-100 py-3 rounded-4 fw-semibold d-flex flex-column align-items-center justify-content-center gap-1 border-dashed bg-body-tertiary position-relative z-2 cursor-pointer"
                                     style="min-height: 90px; touch-action: manipulation;"
-                                    @click="triggerPhotoSelect"
                                 >
                                     <i class="bi bi-cloud-arrow-up-fill fs-3 text-success"></i>
                                     <span>Select Property Photo</span>
@@ -306,7 +316,7 @@ const statusBadgeClass = computed(() => {
                                     ref="photoInput" 
                                     type="file" 
                                     class="d-none" 
-                                    accept="image/jpeg,image/png,image/webp" 
+                                    accept="image/*,image/heic,image/heif" 
                                     @change="setPhotoFile"
                                 >
                                 

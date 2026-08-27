@@ -52,49 +52,60 @@ const compressAvatarImage = (file, maxWidth = 800, maxHeight = 800, quality = 0.
             return;
         }
 
-        const img = new Image();
-        const url = URL.createObjectURL(file);
-        img.src = url;
-
-        img.onload = () => {
-            URL.revokeObjectURL(url);
-            let width = img.width;
-            let height = img.height;
-
-            if (width > maxWidth || height > maxHeight) {
-                if (width > height) {
-                    height = Math.round((height * maxWidth) / width);
-                    width = maxWidth;
-                } else {
-                    width = Math.round((width * maxHeight) / height);
-                    height = maxHeight;
-                }
-            }
-
-            const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
-
-            canvas.toBlob((blob) => {
-                if (blob) {
-                    const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
-                        type: "image/jpeg",
-                        lastModified: Date.now(),
-                    });
-                    resolve(compressedFile);
-                } else {
-                    resolve(file);
-                }
-            }, "image/jpeg", quality);
-        };
-
-        img.onerror = () => {
-            URL.revokeObjectURL(url);
+        const fileName = (file.name || '').toLowerCase();
+        const fileType = (file.type || '').toLowerCase();
+        if (fileType.includes('heic') || fileType.includes('heif') || fileName.endsWith('.heic') || fileName.endsWith('.heif')) {
             resolve(file);
-        };
+            return;
+        }
+
+        try {
+            const img = new Image();
+            const url = URL.createObjectURL(file);
+            img.src = url;
+
+            img.onload = () => {
+                let width = img.width;
+                let height = img.height;
+
+                if (!width || !height || width > maxWidth || height > maxHeight) {
+                    if (width && height && width > height) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    } else if (width && height) {
+                        width = Math.round((width * maxHeight) / height);
+                        height = maxHeight;
+                    }
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width = width || 800;
+                canvas.height = height || 800;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                canvas.toBlob((blob) => {
+                    try { URL.revokeObjectURL(url); } catch (e) {}
+                    if (blob) {
+                        const compressedFile = new File([blob], (file.name || 'avatar').replace(/\.[^/.]+$/, "") + ".jpg", {
+                            type: "image/jpeg",
+                            lastModified: Date.now(),
+                        });
+                        resolve(compressedFile);
+                    } else {
+                        resolve(file);
+                    }
+                }, "image/jpeg", quality);
+            };
+
+            img.onerror = () => {
+                try { URL.revokeObjectURL(url); } catch (e) {}
+                resolve(file);
+            };
+        } catch (e) {
+            resolve(file);
+        }
     });
 };
 
@@ -410,7 +421,6 @@ const getInitials = (name) => {
                                         for="photo"
                                         class="btn btn-sm btn-outline-secondary rounded-pill fw-medium px-4 py-2 mb-1 cursor-pointer position-relative z-2 d-inline-flex align-items-center gap-2"
                                         style="min-height: 48px; touch-action: manipulation;"
-                                        @click="triggerPhotoSelect"
                                     >
                                         <i class="bi bi-camera-fill text-success fs-5"></i> Select New Photo
                                     </label>
@@ -419,7 +429,7 @@ const getInitials = (name) => {
                                         ref="profilePhotoInput"
                                         type="file"
                                         class="d-none"
-                                        accept="image/jpeg,image/png,image/webp"
+                                        accept="image/*,image/heic,image/heif"
                                         @change="setProfilePhoto"
                                     />
                                     <div
