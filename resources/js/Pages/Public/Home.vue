@@ -309,7 +309,7 @@ onBeforeUnmount(() => {
         >
             <div class="container py-5">
                 <!-- CENTERED ABOUT SECTION (NO HEAVY CARDS, NO FAB OVERLAP) -->
-                <div class="text-center mx-auto mb-5 pb-3" style="max-width: 840px;">
+                <div class="text-center mx-auto mb-5 pb-3" style="max-width: 760px;">
                     <span
                         class="badge rounded-pill border border-success-subtle bg-body text-success mb-3 px-3 py-2 transition-all shadow-sm"
                     >
@@ -322,14 +322,14 @@ onBeforeUnmount(() => {
                         Built exclusively for TPC students.
                     </h2>
 
-                    <p class="fs-5 text-secondary transition-all mb-4" style="line-height: 1.7; text-align: justify; text-align-last: center;">
+                    <p class="fs-5 text-secondary transition-all mb-4 text-center mx-auto" style="line-height: 1.6; max-width: 680px;">
                         Finding a safe and affordable place to stay near campus shouldn't be stressful. E-BoardMate bridges the gap between Talibon Polytechnic College students and verified local landlords. We provide a seamless, map-based platform where you can secure your bedspace online—<strong class="text-body-emphasis"
                             >completely free and with zero account registration required.</strong
                         >
                     </p>
 
-                    <!-- SLEEK INLINE LIVE TRACKER BANNER (NO FAB OVERLAP) -->
-                    <div class="d-inline-flex flex-column flex-sm-row align-items-center justify-content-center gap-3 p-3 px-sm-4 rounded-pill border border-secondary-subtle bg-body shadow-sm transition-all hover-lift">
+                    <!-- SLEEK INLINE LIVE TRACKER BANNER (FRIENDLY UI/UX & NO FAB OVERLAP) -->
+                    <div class="d-inline-flex flex-column flex-sm-row align-items-center justify-content-center gap-2 gap-sm-3 p-3 px-sm-4 rounded-4 rounded-sm-pill border border-secondary-subtle bg-body shadow-sm transition-all hover-lift mx-auto" style="max-width: 100%;">
                         <div class="d-flex align-items-center gap-2">
                             <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fw-bold">
                                 <i class="bi bi-clock-history me-1"></i> Live Tracker
@@ -343,7 +343,7 @@ onBeforeUnmount(() => {
                 </div>
 
                 <!-- 4-STEP SYSTEM FLOW CARDS (RESPONSIVE 4-COLUMN DESKTOP & SWIPE MOBILE) -->
-                <div class="guide-scroll-container justify-content-center gap-3 px-2 px-lg-0 py-2">
+                <div class="guide-scroll-container gap-3 py-2">
                     <!-- Step 1 -->
                     <div class="guide-card-wrapper">
                         <div
@@ -463,8 +463,12 @@ onBeforeUnmount(() => {
     .guide-scroll-container {
         display: flex !important;
         flex-wrap: nowrap !important;
+        justify-content: flex-start !important;
         overflow-x: auto !important;
         scroll-snap-type: x mandatory;
+        scroll-padding-left: 1rem;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
     }
@@ -472,9 +476,9 @@ onBeforeUnmount(() => {
         display: none;
     }
     .guide-card-wrapper {
-        flex: 0 0 270px !important;
-        width: 270px !important;
-        scroll-snap-align: center;
+        flex: 0 0 280px !important;
+        width: 280px !important;
+        scroll-snap-align: start;
     }
 }
 
@@ -483,6 +487,7 @@ onBeforeUnmount(() => {
     .guide-scroll-container {
         display: flex !important;
         flex-wrap: nowrap !important;
+        justify-content: center !important;
         overflow: visible !important;
     }
     .guide-card-wrapper {
