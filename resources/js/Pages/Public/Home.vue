@@ -308,149 +308,146 @@ onBeforeUnmount(() => {
             class="snap-section-tertiary bg-body-tertiary d-flex align-items-center py-5 min-vh-100 transition-all"
         >
             <div class="container py-5">
-                <!-- 2-COLUMN ABOUT SECTION -->
-                <div class="row align-items-center gy-5 mb-5">
-                    <!-- Left Column (Text) -->
-                    <div class="col-12 col-lg-7">
-                        <span
-                            class="badge rounded-pill border border-success-subtle bg-body text-success mb-3 px-3 py-2 transition-all shadow-sm"
+                <!-- CENTERED ABOUT SECTION (NO HEAVY CARDS, NO FAB OVERLAP) -->
+                <div class="text-center mx-auto mb-5 pb-3" style="max-width: 840px;">
+                    <span
+                        class="badge rounded-pill border border-success-subtle bg-body text-success mb-3 px-3 py-2 transition-all shadow-sm"
+                    >
+                        About E-BoardMate • System Guide
+                    </span>
+
+                    <h2
+                        class="display-6 fw-bold mb-4 text-body-emphasis tracking-tight transition-all"
+                    >
+                        Built exclusively for TPC students.
+                    </h2>
+
+                    <p class="fs-5 text-secondary transition-all mb-4" style="line-height: 1.7; text-align: justify; text-align-last: center;">
+                        Finding a safe and affordable place to stay near campus shouldn't be stressful. E-BoardMate bridges the gap between Talibon Polytechnic College students and verified local landlords. We provide a seamless, map-based platform where you can secure your bedspace online—<strong class="text-body-emphasis"
+                            >completely free and with zero account registration required.</strong
                         >
-                            About E-BoardMate • System Guide
-                        </span>
+                    </p>
 
-                        <h2
-                            class="display-6 fw-bold mb-4 text-body-emphasis tracking-tight transition-all"
-                        >
-                            Built exclusively for TPC students.
-                        </h2>
-
-                        <p class="fs-5 text-secondary pe-lg-4 mb-0 transition-all">
-                            Finding a safe and affordable place to stay near campus shouldn't be stressful. E-BoardMate bridges the gap between Talibon Polytechnic College students and verified local landlords. We provide a seamless, map-based platform where you can secure your bedspace online—<strong class="text-body-emphasis"
-                                >completely free and with zero account registration required.</strong
-                            >
-                        </p>
-                    </div>
-
-                    <!-- Right Column (Live Tracker Card) -->
-                    <div class="col-12 col-lg-5 col-xl-4 offset-xl-1 mb-5 pb-4 mb-lg-0 pb-lg-0">
-                        <div class="ebm-card card border border-secondary-subtle shadow-sm rounded-4 text-start bg-body transition-all">
-                            <div class="card-body p-4 p-md-5">
-                                
-                                <!-- Glowing Badge -->
-                                <div class="d-inline-flex align-items-center mb-3 px-3 py-1 rounded-pill border border-success-subtle text-success bg-success-subtle small fw-bold">
-                                    <i class="bi bi-clock-history me-2"></i> Live Tracker
-                                </div>
-                                
-                                <!-- Typography -->
-                                <h3 class="text-body-emphasis fw-bold mb-3">Already Reserved a Spot?</h3>
-                                <p class="text-body-secondary mb-4" style="font-size: 1.05rem; line-height: 1.6;">
-                                    Check your real-time approval status and landlord message using your reservation tracking reference code.
-                                </p>
-                                
-                                <!-- Full-Width Action Button -->
-                                <Link href="/track-reservation" class="btn btn-success w-100 py-3 fw-bold rounded-pill shadow-sm text-white fs-6 transition-all hover-lift">
-                                    Track Reservation Status
-                                </Link>
-                                
-                            </div>
+                    <!-- SLEEK INLINE LIVE TRACKER BANNER (NO FAB OVERLAP) -->
+                    <div class="d-inline-flex flex-column flex-sm-row align-items-center justify-content-center gap-3 p-3 px-sm-4 rounded-pill border border-secondary-subtle bg-body shadow-sm transition-all hover-lift">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fw-bold">
+                                <i class="bi bi-clock-history me-1"></i> Live Tracker
+                            </span>
+                            <span class="fw-semibold text-body-emphasis small">Already Reserved a Spot?</span>
                         </div>
+                        <Link href="/track-reservation" class="btn btn-success btn-sm rounded-pill px-4 py-2 fw-bold text-white shadow-sm transition-all hover-lift">
+                            Track Status Now <i class="bi bi-arrow-right ms-1"></i>
+                        </Link>
                     </div>
                 </div>
 
-                <!-- 4-STEP SYSTEM FLOW CARDS (HORIZONTAL SCROLL & SNAPPING) -->
-                <div class="d-flex flex-nowrap flex-lg-wrap overflow-x-auto overflow-y-hidden gap-3 px-3 py-4 guide-scroll-container">
-                    <div class="col-10 col-sm-6 col-lg-3 flex-shrink-0">
+                <!-- 4-STEP SYSTEM FLOW CARDS (RESPONSIVE 4-COLUMN DESKTOP & SWIPE MOBILE) -->
+                <div class="guide-scroll-container justify-content-center gap-3 px-2 px-lg-0 py-2">
+                    <!-- Step 1 -->
+                    <div class="guide-card-wrapper">
                         <div
                             class="card h-100 border border-secondary-subtle bg-body shadow-sm rounded-4 guide-card-interactive transition-all"
                         >
-                            <div class="card-body p-4 text-center">
-                                <div
-                                    class="step-icon mb-4 mx-auto transition-all"
-                                >
-                                    🗺️
+                            <div class="card-body p-4 text-center d-flex flex-column align-items-center justify-content-between">
+                                <div>
+                                    <div
+                                        class="step-icon mb-4 mx-auto transition-all"
+                                    >
+                                        🗺️
+                                    </div>
+                                    <h3
+                                        class="h5 fw-bold mb-3 text-body-emphasis transition-all"
+                                    >
+                                        1. Explore Map & List
+                                    </h3>
+                                    <p
+                                        class="small text-body-secondary mb-0 transition-all"
+                                    >
+                                        Browse verified boarding house listings around TPC. View photo galleries, room rates, available bedspaces, and real-time walking distances to campus.
+                                    </p>
                                 </div>
-                                <h3
-                                    class="h5 fw-bold mb-3 text-body-emphasis transition-all"
-                                >
-                                    1. Explore Map & List
-                                </h3>
-                                <p
-                                    class="small text-body-secondary mb-0 transition-all"
-                                >
-                                    Browse verified boarding house listings around TPC. View photo galleries, room rates, available bedspaces, and real-time walking distances to campus.
-                                </p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-10 col-sm-6 col-lg-3 flex-shrink-0">
+                    <!-- Step 2 -->
+                    <div class="guide-card-wrapper">
                         <div
                             class="card h-100 border border-secondary-subtle bg-body shadow-sm rounded-4 guide-card-interactive transition-all"
                         >
-                            <div class="card-body p-4 text-center">
-                                <div
-                                    class="step-icon mb-4 mx-auto transition-all"
-                                >
-                                    📝
+                            <div class="card-body p-4 text-center d-flex flex-column align-items-center justify-content-between">
+                                <div>
+                                    <div
+                                        class="step-icon mb-4 mx-auto transition-all"
+                                    >
+                                        📝
+                                    </div>
+                                    <h3
+                                        class="h5 fw-bold mb-3 text-body-emphasis transition-all"
+                                    >
+                                        2. Reserve (No Account)
+                                    </h3>
+                                    <p
+                                        class="small text-body-secondary mb-0 transition-all"
+                                    >
+                                        Found your spot? Fill out a 60-second guest request form with your name, phone, and email. No student passwords or account registration required!
+                                    </p>
                                 </div>
-                                <h3
-                                    class="h5 fw-bold mb-3 text-body-emphasis transition-all"
-                                >
-                                    2. Reserve (No Account)
-                                </h3>
-                                <p
-                                    class="small text-body-secondary mb-0 transition-all"
-                                >
-                                    Found your spot? Fill out a 60-second guest request form with your name, phone, and email. No student passwords or account registration required!
-                                </p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-10 col-sm-6 col-lg-3 flex-shrink-0">
+                    <!-- Step 3 -->
+                    <div class="guide-card-wrapper">
                         <div
                             class="card h-100 border border-secondary-subtle bg-body shadow-sm rounded-4 guide-card-interactive transition-all"
                         >
-                            <div class="card-body p-4 text-center">
-                                <div
-                                    class="step-icon mb-4 mx-auto transition-all"
-                                >
-                                    ⏳
+                            <div class="card-body p-4 text-center d-flex flex-column align-items-center justify-content-between">
+                                <div>
+                                    <div
+                                        class="step-icon mb-4 mx-auto transition-all"
+                                    >
+                                        ⏳
+                                    </div>
+                                    <h3
+                                        class="h5 fw-bold mb-3 text-body-emphasis transition-all"
+                                    >
+                                        3. Landlord Review
+                                    </h3>
+                                    <p
+                                        class="small text-body-secondary mb-0 transition-all"
+                                    >
+                                        The verified landlord receives your request instantly. You'll receive an automated email containing your unique <strong>EBM</strong> tracking code.
+                                    </p>
                                 </div>
-                                <h3
-                                    class="h5 fw-bold mb-3 text-body-emphasis transition-all"
-                                >
-                                    3. Landlord Review
-                                </h3>
-                                <p
-                                    class="small text-body-secondary mb-0 transition-all"
-                                >
-                                    The verified landlord receives your request instantly. You'll receive an automated email containing your unique <strong>EBM</strong> tracking code.
-                                </p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-10 col-sm-6 col-lg-3 flex-shrink-0">
+                    <!-- Step 4 -->
+                    <div class="guide-card-wrapper">
                         <div
                             class="card h-100 border border-secondary-subtle bg-body shadow-sm rounded-4 guide-card-interactive transition-all"
                         >
-                            <div class="card-body p-4 text-center">
-                                <div
-                                    class="step-icon mb-4 mx-auto transition-all"
-                                >
-                                    🔍
+                            <div class="card-body p-4 text-center d-flex flex-column align-items-center justify-content-between">
+                                <div>
+                                    <div
+                                        class="step-icon mb-4 mx-auto transition-all"
+                                    >
+                                        🔍
+                                    </div>
+                                    <h3
+                                        class="h5 fw-bold mb-3 text-body-emphasis transition-all"
+                                    >
+                                        4. Track Live Status
+                                    </h3>
+                                    <p
+                                        class="small text-body-secondary mb-0 transition-all"
+                                    >
+                                        Enter your <strong>EBM</strong> tracking code on our Track Reservation page anytime to view live approval status and unlock contact info!
+                                    </p>
                                 </div>
-                                <h3
-                                    class="h5 fw-bold mb-3 text-body-emphasis transition-all"
-                                >
-                                    4. Track Live Status
-                                </h3>
-                                <p
-                                    class="small text-body-secondary mb-0 transition-all"
-                                >
-                                    Enter your <strong>EBM</strong> tracking code on our Track Reservation page anytime to view live approval status and unlock contact info!
-                                </p>
                             </div>
                         </div>
                     </div>
@@ -462,18 +459,40 @@ onBeforeUnmount(() => {
 
 <style scoped>
 /* Mobile Scroll Snapping & Hide Scrollbar */
-.guide-scroll-container {
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Firefox */
+@media (max-width: 991.98px) {
+    .guide-scroll-container {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    .guide-scroll-container::-webkit-scrollbar {
+        display: none;
+    }
+    .guide-card-wrapper {
+        flex: 0 0 270px !important;
+        width: 270px !important;
+        scroll-snap-align: center;
+    }
 }
-.guide-scroll-container::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
+
+/* Desktop Grid layout: 4 Equal Columns in 1 Row */
+@media (min-width: 992px) {
+    .guide-scroll-container {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow: visible !important;
+    }
+    .guide-card-wrapper {
+        flex: 1 1 0px !important;
+        width: 100% !important;
+    }
 }
 
 /* Card Interactions */
 .guide-card-interactive {
-    scroll-snap-align: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border: 1px solid rgba(0,0,0,0.05); /* Subtle border */
 }
