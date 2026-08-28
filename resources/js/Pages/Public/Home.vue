@@ -308,8 +308,10 @@ onBeforeUnmount(() => {
             class="snap-section-tertiary bg-body-tertiary d-flex align-items-center py-5 min-vh-100 transition-all"
         >
             <div class="container py-5">
-                <div class="row justify-content-center text-center mb-5">
-                    <div class="col-lg-8">
+                <!-- 2-COLUMN ABOUT SECTION -->
+                <div class="row align-items-center gy-5 mb-5">
+                    <!-- Left Column (Text) -->
+                    <div class="col-12 col-lg-7">
                         <span
                             class="badge rounded-pill border border-success-subtle bg-body text-success mb-3 px-3 py-2 transition-all shadow-sm"
                         >
@@ -322,46 +324,44 @@ onBeforeUnmount(() => {
                             Built exclusively for TPC students.
                         </h2>
 
-                        <p class="lead text-body-secondary mb-0 transition-all">
-                            Finding a safe and affordable place to stay near campus shouldn't be stressful. E-BoardMate bridges the gap between Talibon Polytechnic College students and verified local landlords. We provide a seamless, map-based platform where you can secure your bedspace online—<strong
+                        <p class="fs-5 text-secondary pe-lg-4 mb-0 transition-all">
+                            Finding a safe and affordable place to stay near campus shouldn't be stressful. E-BoardMate bridges the gap between Talibon Polytechnic College students and verified local landlords. We provide a seamless, map-based platform where you can secure your bedspace online—<strong class="text-body-emphasis"
                                 >completely free and with zero account registration required.</strong
                             >
                         </p>
+                    </div>
 
-                        <!-- Live Tracker Card (Adaptive Light & Dark Mode UI) -->
-                        <div class="row justify-content-center mt-5 w-100 mx-0">
-                            <div class="col-12 col-md-10 col-lg-7 col-xl-6 px-3">
-                                <div class="ebm-card card border border-secondary-subtle shadow-sm rounded-4 text-start bg-body transition-all">
-                                    <div class="card-body p-4 p-md-5">
-                                        
-                                        <!-- Glowing Badge -->
-                                        <div class="d-inline-flex align-items-center mb-3 px-3 py-1 rounded-pill border border-success-subtle text-success bg-success-subtle small fw-bold">
-                                            <i class="bi bi-clock-history me-2"></i> Live Tracker
-                                        </div>
-                                        
-                                        <!-- Typography -->
-                                        <h3 class="text-body-emphasis fw-bold mb-3">Already Reserved a Spot?</h3>
-                                        <p class="text-body-secondary mb-4" style="font-size: 1.05rem; line-height: 1.6;">
-                                            Check your real-time approval status and landlord message using your reservation tracking reference code.
-                                        </p>
-                                        
-                                        <!-- Full-Width Action Button -->
-                                        <Link href="/track-reservation" class="btn btn-success w-100 py-3 fw-bold rounded-pill shadow-sm text-white fs-6 transition-all hover-lift">
-                                            Track Reservation Status
-                                        </Link>
-                                        
-                                    </div>
+                    <!-- Right Column (Live Tracker Card) -->
+                    <div class="col-12 col-lg-5 col-xl-4 offset-xl-1 mb-5 pb-4 mb-lg-0 pb-lg-0">
+                        <div class="ebm-card card border border-secondary-subtle shadow-sm rounded-4 text-start bg-body transition-all">
+                            <div class="card-body p-4 p-md-5">
+                                
+                                <!-- Glowing Badge -->
+                                <div class="d-inline-flex align-items-center mb-3 px-3 py-1 rounded-pill border border-success-subtle text-success bg-success-subtle small fw-bold">
+                                    <i class="bi bi-clock-history me-2"></i> Live Tracker
                                 </div>
+                                
+                                <!-- Typography -->
+                                <h3 class="text-body-emphasis fw-bold mb-3">Already Reserved a Spot?</h3>
+                                <p class="text-body-secondary mb-4" style="font-size: 1.05rem; line-height: 1.6;">
+                                    Check your real-time approval status and landlord message using your reservation tracking reference code.
+                                </p>
+                                
+                                <!-- Full-Width Action Button -->
+                                <Link href="/track-reservation" class="btn btn-success w-100 py-3 fw-bold rounded-pill shadow-sm text-white fs-6 transition-all hover-lift">
+                                    Track Reservation Status
+                                </Link>
+                                
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 4-STEP SYSTEM FLOW CARDS -->
-                <div class="row g-4 mt-2">
-                    <div class="col-md-6 col-lg-3">
+                <!-- 4-STEP SYSTEM FLOW CARDS (HORIZONTAL SCROLL & SNAPPING) -->
+                <div class="d-flex flex-nowrap flex-lg-wrap overflow-x-auto overflow-y-hidden gap-3 px-3 py-4 guide-scroll-container">
+                    <div class="col-10 col-sm-6 col-lg-3 flex-shrink-0">
                         <div
-                            class="card h-100 border border-secondary-subtle bg-body shadow-sm rounded-4 hover-lift transition-all"
+                            class="card h-100 border border-secondary-subtle bg-body shadow-sm rounded-4 guide-card-interactive transition-all"
                         >
                             <div class="card-body p-4 text-center">
                                 <div
@@ -383,9 +383,9 @@ onBeforeUnmount(() => {
                         </div>
                     </div>
 
-                    <div class="col-md-6 col-lg-3">
+                    <div class="col-10 col-sm-6 col-lg-3 flex-shrink-0">
                         <div
-                            class="card h-100 border border-secondary-subtle bg-body shadow-sm rounded-4 hover-lift transition-all"
+                            class="card h-100 border border-secondary-subtle bg-body shadow-sm rounded-4 guide-card-interactive transition-all"
                         >
                             <div class="card-body p-4 text-center">
                                 <div
@@ -407,9 +407,9 @@ onBeforeUnmount(() => {
                         </div>
                     </div>
 
-                    <div class="col-md-6 col-lg-3">
+                    <div class="col-10 col-sm-6 col-lg-3 flex-shrink-0">
                         <div
-                            class="card h-100 border border-secondary-subtle bg-body shadow-sm rounded-4 hover-lift transition-all"
+                            class="card h-100 border border-secondary-subtle bg-body shadow-sm rounded-4 guide-card-interactive transition-all"
                         >
                             <div class="card-body p-4 text-center">
                                 <div
@@ -431,9 +431,9 @@ onBeforeUnmount(() => {
                         </div>
                     </div>
 
-                    <div class="col-md-6 col-lg-3">
+                    <div class="col-10 col-sm-6 col-lg-3 flex-shrink-0">
                         <div
-                            class="card h-100 border border-secondary-subtle bg-body shadow-sm rounded-4 hover-lift transition-all"
+                            class="card h-100 border border-secondary-subtle bg-body shadow-sm rounded-4 guide-card-interactive transition-all"
                         >
                             <div class="card-body p-4 text-center">
                                 <div
@@ -461,6 +461,31 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+/* Mobile Scroll Snapping & Hide Scrollbar */
+.guide-scroll-container {
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+}
+.guide-scroll-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+/* Card Interactions */
+.guide-card-interactive {
+    scroll-snap-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.05); /* Subtle border */
+}
+
+/* Desktop Hover Effect (Only on devices that can hover) */
+@media (hover: hover) and (pointer: fine) {
+    .guide-card-interactive:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,0.1) !important;
+    }
+}
+
 /* 🪄 RESPONSIVE HERO LAYOUT */
 .hero-section {
     background:
