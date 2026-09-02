@@ -114,7 +114,7 @@ const completeOnboarding = () => {
                             Step {{ currentSlideIndex + 1 }} of {{ totalSlides }}
                         </span>
                         <span class="small text-body-secondary fw-semibold">
-                            Freshmen Student Security Guide
+                           Welcome, Newcomer! Your Stay Starts Here
                         </span>
                     </div>
                 </div>
