@@ -194,7 +194,7 @@ const formatPrice = (price) => {
                         Executive Control Center
                     </span>
                     <h1 class="text-body-emphasis fw-bold mb-1 tracking-tight">
-                        Platform Telemetry & System Health
+                        Overview and Analytics
                     </h1>
                     <p class="text-body-secondary mb-0">
                         High-level capacity, property verification, and owner infrastructure metrics.

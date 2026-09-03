@@ -97,10 +97,40 @@ const handleVisibilityChange = () => {
     }
 };
 
+// --- 📱 MOBILE FLOATING RESERVE FAB & SCROLL OBSERVER ---
+const staticReserveRef = ref(null);
+const showFloatingReserve = ref(true);
+let reserveObserver = null;
+
+const initReserveObserver = () => {
+    if (!staticReserveRef.value) return;
+
+    reserveObserver = new IntersectionObserver((entries) => {
+        const entry = entries[0];
+        if (entry) {
+            // Hide floating button when static button enters the viewport
+            showFloatingReserve.value = !entry.isIntersecting;
+        }
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -40px 0px',
+    });
+
+    reserveObserver.observe(staticReserveRef.value);
+};
+
+const scrollToStaticReserveOrOpen = () => {
+    if (props.boardingHouse.is_full) return;
+    openModal('reservationModal');
+};
+
 onMounted(() => {
     window.addEventListener('keydown', handleKeydown);
     startPolling();
     document.addEventListener('visibilitychange', handleVisibilityChange);
+    nextTick(() => {
+        initReserveObserver();
+    });
 });
 
 onUnmounted(() => {
@@ -108,6 +138,10 @@ onUnmounted(() => {
     stopPolling();
     document.removeEventListener('visibilitychange', handleVisibilityChange);
     cleanupModalBackdrop();
+    if (reserveObserver) {
+        reserveObserver.disconnect();
+        reserveObserver = null;
+    }
 });
 
 // --- 📝 RESERVATION LOGIC ---
@@ -217,7 +251,7 @@ const submitReservation = () => {
             <meta name="description" :content="`View rent price, available rooms, photos, amenities, and reservation details for ${boardingHouse.name}.`">
         </Head>
 
-        <section class="py-4 py-md-5 bg-body transition-all min-vh-100 detail-page-wrapper">
+        <section class="py-4 py-md-5 bg-body transition-all min-vh-100">
             <div class="container">
                 
                 <!-- 📌 CONSISTENT BACK BUTTON -->
@@ -431,7 +465,7 @@ const submitReservation = () => {
                             </div>
 
                             <!-- Action Buttons -->
-                            <div class="d-flex flex-column gap-3 pt-2">
+                            <div ref="staticReserveRef" class="d-flex flex-column gap-3 pt-2">
                                 <button 
                                     v-if="!boardingHouse.is_full" 
                                     type="button" 
@@ -670,51 +704,26 @@ const submitReservation = () => {
             </div>
         </div>
 
-        <!-- 📱 MOBILE STICKY BOTTOM RESERVATION BAR (d-flex d-lg-none) -->
-        <div class="mobile-sticky-reservation-bar fixed-bottom d-flex d-lg-none align-items-center justify-content-between px-3 py-2 bg-body border-top border-secondary-subtle shadow-lg">
-            <!-- Left Side: Micro-pricing & Availability Counter -->
-            <div class="d-flex flex-column justify-content-center pe-2">
-                <div class="d-flex align-items-baseline gap-1">
-                    <span class="fs-5 fw-bold text-success font-monospace lh-1">₱{{ formatPrice(boardingHouse.rent_price) }}</span>
-                    <span class="small text-body-secondary lh-1">/mo</span>
+        <!-- 📱 MOBILE FLOATING RESERVATION BUTTON (FAB) (d-flex d-lg-none) -->
+        <Transition name="fab-slide">
+            <button
+                v-if="showFloatingReserve && !boardingHouse.is_full"
+                type="button"
+                @click="scrollToStaticReserveOrOpen"
+                class="mobile-reserve-fab btn btn-success shadow-lg rounded-pill d-flex d-lg-none align-items-center gap-2"
+                data-bs-toggle="modal"
+                data-bs-target="#reservationModal"
+                aria-label="Reserve Boarding House"
+                title="Reserve this boarding house"
+            >
+                <div class="fab-icon-box bg-white text-success rounded-circle d-flex align-items-center justify-content-center flex-shrink-0">
+                    <i class="bi bi-calendar-check-fill fs-5"></i>
                 </div>
-                <div class="mt-1 d-flex align-items-center gap-1">
-                    <span 
-                        class="badge rounded-pill px-2 py-0 small fw-semibold"
-                        :class="boardingHouse.is_full ? 'bg-danger-subtle text-danger border border-danger-subtle' : 'bg-success-subtle text-success border border-success-subtle'"
-                        style="font-size: 0.72rem;"
-                    >
-                        <i :class="boardingHouse.is_full ? 'bi bi-x-circle-fill' : 'bi bi-check-circle-fill'" class="me-1"></i>
-                        {{ boardingHouse.is_full ? 'Fully Occupied' : `${boardingHouse.available_bedspaces} beds left` }}
-                    </span>
-                    <span v-if="!boardingHouse.is_full" class="text-body-secondary small" style="font-size: 0.72rem;">
-                        ({{ boardingHouse.available_rooms }} rms)
-                    </span>
-                </div>
-            </div>
-
-            <!-- Right Side: Prominent Reserve Action Button -->
-            <div>
-                <button 
-                    v-if="!boardingHouse.is_full" 
-                    type="button" 
-                    class="btn btn-success btn-ebm-primary rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2" 
-                    data-bs-toggle="modal" 
-                    data-bs-target="#reservationModal"
-                >
-                    <i class="bi bi-calendar-check-fill"></i>
-                    <span>Reserve Now</span>
-                </button>
-                <button 
-                    v-else 
-                    type="button" 
-                    class="btn btn-secondary rounded-pill px-3 py-2 fw-semibold opacity-75 small" 
-                    disabled
-                >
-                    Fully Occupied
-                </button>
-            </div>
-        </div>
+                <span class="fab-text fw-bold me-1 text-nowrap">
+                    Reserve
+                </span>
+            </button>
+        </Transition>
     </PublicLayout>
 </template>
 
@@ -931,21 +940,38 @@ const submitReservation = () => {
 .receipt-row:last-child { border-bottom: none; padding-bottom: 0; }
 .receipt-row:first-child { padding-top: 0; }
 
-/* 📱 Mobile Sticky Bottom Reservation Bar */
-.mobile-sticky-reservation-bar {
+/* 📱 Mobile Floating Reservation Action Button (FAB) */
+.mobile-reserve-fab {
+    position: fixed;
+    bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    right: 1.25rem;
     z-index: 1040;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    background-color: var(--bs-body-bg) !important;
-    padding-top: 0.75rem;
-    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px)) !important;
-    box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.12) !important;
+    padding: 0.55rem 1rem 0.55rem 0.55rem;
+    box-shadow: 0 8px 24px rgba(25, 135, 84, 0.4) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
 }
 
-@media (max-width: 991.98px) {
-    /* Content shielding: Ensure page content, photo galleries, and footers are never masked behind the sticky bar */
-    .detail-page-wrapper {
-        padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)) !important;
-    }
+.mobile-reserve-fab:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 12px 28px rgba(25, 135, 84, 0.5) !important;
+}
+
+.mobile-reserve-fab .fab-icon-box {
+    width: 38px;
+    height: 38px;
+}
+
+/* FAB Smooth Scale & Slide Transitions */
+.fab-slide-enter-active,
+.fab-slide-leave-active {
+    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.fab-slide-enter-from,
+.fab-slide-leave-to {
+    opacity: 0;
+    transform: translateY(20px) scale(0.85);
+    pointer-events: none;
 }
 </style>
