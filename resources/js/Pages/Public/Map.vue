@@ -199,39 +199,6 @@ const addMapLayers = () => {
             map.addSource('boarding-houses', {
                 type: 'geojson',
                 data: getBoardingHouseGeoJSON(),
-                cluster: true,
-                clusterMaxZoom: 17,
-                clusterRadius: 50,
-            });
-        }
-
-        if (!map.getLayer('clusters')) {
-            map.addLayer({
-                id: 'clusters',
-                type: 'circle',
-                source: 'boarding-houses',
-                filter: ['has', 'point_count'],
-                paint: {
-                    'circle-color': '#198754',
-                    'circle-radius': ['step', ['get', 'point_count'], 20, 5, 30, 10, 40],
-                    'circle-stroke-width': 3,
-                    'circle-stroke-color': '#ffffff',
-                },
-            });
-        }
-
-        if (!map.getLayer('cluster-count')) {
-            map.addLayer({
-                id: 'cluster-count',
-                type: 'symbol',
-                source: 'boarding-houses',
-                filter: ['has', 'point_count'],
-                layout: {
-                    'text-field': '{point_count_abbreviated}',
-                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                    'text-size': 14,
-                },
-                paint: { 'text-color': '#ffffff' },
             });
         }
 
@@ -240,7 +207,6 @@ const addMapLayers = () => {
                 id: 'unclustered-point',
                 type: 'symbol',
                 source: 'boarding-houses',
-                filter: ['!', ['has', 'point_count']],
                 layout: {
                     'icon-image': 'house-icon',
                     'icon-size': 1,
@@ -354,15 +320,6 @@ const initializeMap = async () => {
         }
     });
 
-    mapInstance.value.on('click', 'clusters', (e) => {
-        const features = mapInstance.value.queryRenderedFeatures(e.point, { layers: ['clusters'] });
-        const clusterId = features[0].properties.cluster_id;
-        mapInstance.value.getSource('boarding-houses').getClusterExpansionZoom(clusterId, (err, zoom) => {
-            if (err) return;
-            mapInstance.value.easeTo({ center: features[0].geometry.coordinates, zoom: zoom });
-        });
-    });
-
     mapInstance.value.on('click', 'unclustered-point', (e) => {
         const coordinates = e.features[0].geometry.coordinates.slice();
         const houseData = e.features[0].properties;
@@ -376,13 +333,11 @@ const initializeMap = async () => {
         fetchWalkingRoute(coordinates[0], coordinates[1], houseData.id);
     });
 
-    mapInstance.value.on('mouseenter', 'clusters', () => mapInstance.value.getCanvas().style.cursor = 'pointer');
-    mapInstance.value.on('mouseleave', 'clusters', () => mapInstance.value.getCanvas().style.cursor = '');
     mapInstance.value.on('mouseenter', 'unclustered-point', () => mapInstance.value.getCanvas().style.cursor = 'pointer');
     mapInstance.value.on('mouseleave', 'unclustered-point', () => mapInstance.value.getCanvas().style.cursor = '');
 
     mapInstance.value.on('click', (e) => {
-        if (!mapInstance.value.queryRenderedFeatures(e.point, { layers: ['clusters', 'unclustered-point'] }).length) {
+        if (!mapInstance.value.queryRenderedFeatures(e.point, { layers: ['unclustered-point'] }).length) {
             closeBottomSheet();
         }
     });
