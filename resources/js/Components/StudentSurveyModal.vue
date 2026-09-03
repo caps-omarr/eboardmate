@@ -1,6 +1,21 @@
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
+
+const props = defineProps({
+    hideFab: {
+        type: Boolean,
+        default: false,
+    },
+});
+
+const page = usePage();
+
+// Suppress exclusively on boarding house details page to eliminate UI collisions
+const isSuppressed = computed(() => {
+    return props.hideFab || page.component === 'Public/BoardingHouseDetail';
+});
 
 // Modal & Scroll State
 const isOpen = ref(false);
@@ -10,6 +25,18 @@ const totalSteps = 4;
 const isSubmitting = ref(false);
 const isSubmitted = ref(false);
 const errorMessage = ref('');
+
+const openSurveyFromEvent = () => {
+    isOpen.value = true;
+};
+
+onMounted(() => {
+    window.addEventListener('open-student-survey', openSurveyFromEvent);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('open-student-survey', openSurveyFromEvent);
+});
 
 // Form Data State
 const form = reactive({
@@ -185,8 +212,9 @@ const resetAndClose = () => {
 </script>
 
 <template>
-    <!-- FLOATING ACTION BUTTON (FAB) -->
+    <!-- FLOATING ACTION BUTTON (FAB) (Suppressed on Detail Page) -->
     <button
+        v-if="!isSuppressed"
         type="button"
         @click="isOpen = true"
         class="survey-fab btn btn-success shadow-lg rounded-pill d-flex align-items-center gap-2 transition-all"

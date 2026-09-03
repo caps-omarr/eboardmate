@@ -212,12 +212,12 @@ const submitReservation = () => {
 </script>
 
 <template>
-    <PublicLayout>
+    <PublicLayout :hide-floating-survey="true">
         <Head :title="`${boardingHouse.name} | Verified Boarding House near TPC`">
             <meta name="description" :content="`View rent price, available rooms, photos, amenities, and reservation details for ${boardingHouse.name}.`">
         </Head>
 
-        <section class="py-4 py-md-5 bg-body transition-all min-vh-100">
+        <section class="py-4 py-md-5 bg-body transition-all min-vh-100 detail-page-wrapper">
             <div class="container">
                 
                 <!-- 📌 CONSISTENT BACK BUTTON -->
@@ -669,6 +669,52 @@ const submitReservation = () => {
                 </div>
             </div>
         </div>
+
+        <!-- 📱 MOBILE STICKY BOTTOM RESERVATION BAR (d-flex d-lg-none) -->
+        <div class="mobile-sticky-reservation-bar fixed-bottom d-flex d-lg-none align-items-center justify-content-between px-3 py-2 bg-body border-top border-secondary-subtle shadow-lg">
+            <!-- Left Side: Micro-pricing & Availability Counter -->
+            <div class="d-flex flex-column justify-content-center pe-2">
+                <div class="d-flex align-items-baseline gap-1">
+                    <span class="fs-5 fw-bold text-success font-monospace lh-1">₱{{ formatPrice(boardingHouse.rent_price) }}</span>
+                    <span class="small text-body-secondary lh-1">/mo</span>
+                </div>
+                <div class="mt-1 d-flex align-items-center gap-1">
+                    <span 
+                        class="badge rounded-pill px-2 py-0 small fw-semibold"
+                        :class="boardingHouse.is_full ? 'bg-danger-subtle text-danger border border-danger-subtle' : 'bg-success-subtle text-success border border-success-subtle'"
+                        style="font-size: 0.72rem;"
+                    >
+                        <i :class="boardingHouse.is_full ? 'bi bi-x-circle-fill' : 'bi bi-check-circle-fill'" class="me-1"></i>
+                        {{ boardingHouse.is_full ? 'Fully Occupied' : `${boardingHouse.available_bedspaces} beds left` }}
+                    </span>
+                    <span v-if="!boardingHouse.is_full" class="text-body-secondary small" style="font-size: 0.72rem;">
+                        ({{ boardingHouse.available_rooms }} rms)
+                    </span>
+                </div>
+            </div>
+
+            <!-- Right Side: Prominent Reserve Action Button -->
+            <div>
+                <button 
+                    v-if="!boardingHouse.is_full" 
+                    type="button" 
+                    class="btn btn-success btn-ebm-primary rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#reservationModal"
+                >
+                    <i class="bi bi-calendar-check-fill"></i>
+                    <span>Reserve Now</span>
+                </button>
+                <button 
+                    v-else 
+                    type="button" 
+                    class="btn btn-secondary rounded-pill px-3 py-2 fw-semibold opacity-75 small" 
+                    disabled
+                >
+                    Fully Occupied
+                </button>
+            </div>
+        </div>
     </PublicLayout>
 </template>
 
@@ -884,4 +930,22 @@ const submitReservation = () => {
 }
 .receipt-row:last-child { border-bottom: none; padding-bottom: 0; }
 .receipt-row:first-child { padding-top: 0; }
+
+/* 📱 Mobile Sticky Bottom Reservation Bar */
+.mobile-sticky-reservation-bar {
+    z-index: 1040;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background-color: var(--bs-body-bg) !important;
+    padding-top: 0.75rem;
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px)) !important;
+    box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.12) !important;
+}
+
+@media (max-width: 991.98px) {
+    /* Content shielding: Ensure page content, photo galleries, and footers are never masked behind the sticky bar */
+    .detail-page-wrapper {
+        padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+}
 </style>
