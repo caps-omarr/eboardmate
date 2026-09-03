@@ -16,7 +16,14 @@ class PublicMapController extends Controller
         $tpcLongitude = 124.2833;
 
         
-        $boardingHouses = Cache::remember('public_map_markers', 1440, function () use ($tpcLatitude, $tpcLongitude) {
+        // Invalidate stale 24-hour cache when a specific house is queried or to clear legacy cache
+        if (request()->has('house_id')) {
+            Cache::forget('public_map_markers');
+            Cache::forget('public_map_markers_v2');
+        }
+
+        // Cache for 60 seconds (never 24 hours/1440 mins) so newly approved/edited listings appear in real time
+        $boardingHouses = Cache::remember('public_map_markers_v2', now()->addMinutes(1), function () use ($tpcLatitude, $tpcLongitude) {
             return BoardingHouse::query()
                 ->with('primaryPhoto')
                 ->where('status', BoardingHouse::STATUS_APPROVED)

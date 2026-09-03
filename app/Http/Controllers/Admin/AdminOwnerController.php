@@ -76,6 +76,8 @@ class AdminOwnerController extends Controller
             'user_agent' => $request->userAgent(),
         ]);
 
+        BoardingHouse::clearPublicCaches();
+
         return back()->with('success', 'Owner account created successfully.');
     }
 

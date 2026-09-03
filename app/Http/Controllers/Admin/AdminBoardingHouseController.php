@@ -88,6 +88,8 @@ class AdminBoardingHouseController extends Controller
             'user_agent' => $request->userAgent(),
         ]);
 
+        BoardingHouse::clearPublicCaches($boardingHouse->id);
+
         return back()->with('success', 'Boarding house listing created successfully.');
     }
 
@@ -107,8 +109,7 @@ class AdminBoardingHouseController extends Controller
         ]);
 
         
-        Cache::forget('public_map_markers');
-        Cache::forget("boarding_house_public_details_{$boardingHouse->id}");
+        BoardingHouse::clearPublicCaches($boardingHouse->id);
 
         return back()->with('success', 'Boarding house listing updated successfully.');
     }

@@ -115,6 +115,7 @@ class BoardingHouse extends Model
     {
         \Illuminate\Support\Facades\Cache::forget('public_boarding_houses_index');
         \Illuminate\Support\Facades\Cache::forget('public_map_markers');
+        \Illuminate\Support\Facades\Cache::forget('public_map_markers_v2');
 
         if ($boardingHouseId) {
             \Illuminate\Support\Facades\Cache::forget("boarding_house_public_details_{$boardingHouseId}");

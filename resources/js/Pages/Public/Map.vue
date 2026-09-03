@@ -3,7 +3,7 @@ import { Head, Link, usePage } from '@inertiajs/vue3';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 const props = defineProps({
     boardingHouses: {
@@ -211,12 +211,16 @@ const addMapLayers = () => {
                     'icon-image': 'house-icon',
                     'icon-size': 1,
                     'icon-allow-overlap': true,
+                    'icon-ignore-placement': true,
                     'text-field': ['get', 'name'],
                     'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-                    'text-size': 13,
+                    'text-size': 12,
                     'text-offset': [0, 1.3],
                     'text-anchor': 'top',
                     'text-max-width': 12,
+                    'text-allow-overlap': true,
+                    'text-ignore-placement': true,
+                    'text-optional': true,
                 },
                 paint: {
                     'text-color': '#ffffff',
@@ -240,6 +244,41 @@ const addMapLayers = () => {
 };
 
 const getMapOffset = () => window.innerWidth >= 768 ? [140, 0] : [0, -80];
+
+const focusHouseFromUrl = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const houseIdFromUrl = urlParams.get('house_id');
+
+    if (houseIdFromUrl && props.boardingHouses.length > 0) {
+        const targetHouse = props.boardingHouses.find(h => h.id == houseIdFromUrl);
+
+        if (targetHouse && targetHouse.longitude && targetHouse.latitude) {
+            const lng = Number(targetHouse.longitude);
+            const lat = Number(targetHouse.latitude);
+
+            targetHouse.is_verified = targetHouse.is_verified === true || targetHouse.is_verified === 'true';
+            targetHouse.is_full = targetHouse.is_full === true || targetHouse.is_full === 'true';
+
+            selectedLocation.value = { type: 'house', data: targetHouse };
+
+            setTimeout(() => {
+                if (mapInstance.value) {
+                    mapInstance.value.flyTo({ center: [lng, lat], zoom: 17.5, offset: getMapOffset(), duration: 1000 });
+                }
+            }, 300);
+
+            fetchWalkingRoute(lng, lat, targetHouse.id);
+        }
+    }
+};
+
+// 🚀 Reactively update GeoJSON source and focus when boarding houses prop updates
+watch(() => props.boardingHouses, () => {
+    if (mapInstance.value && mapInstance.value.getSource('boarding-houses')) {
+        mapInstance.value.getSource('boarding-houses').setData(getBoardingHouseGeoJSON());
+    }
+    focusHouseFromUrl();
+}, { deep: true });
 
 const initializeMap = async () => {
     if (!hasMapboxToken.value) return;
@@ -293,31 +332,7 @@ const initializeMap = async () => {
 
         new mapboxgl.Marker({ element: tpcMarkerEl, anchor: 'bottom' }).setLngLat([centerLng, centerLat]).addTo(mapInstance.value);
 
-        // Auto-Zoom for ?house_id= URL parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        const houseIdFromUrl = urlParams.get('house_id');
-
-        if (houseIdFromUrl) {
-            const targetHouse = props.boardingHouses.find(h => h.id == houseIdFromUrl);
-
-            if (targetHouse && targetHouse.longitude && targetHouse.latitude) {
-                const lng = Number(targetHouse.longitude);
-                const lat = Number(targetHouse.latitude);
-
-                targetHouse.is_verified = targetHouse.is_verified === true || targetHouse.is_verified === 'true';
-                targetHouse.is_full = targetHouse.is_full === true || targetHouse.is_full === 'true';
-
-                selectedLocation.value = { type: 'house', data: targetHouse };
-
-                setTimeout(() => {
-                    if (mapInstance.value) {
-                        mapInstance.value.flyTo({ center: [lng, lat], zoom: 17, offset: getMapOffset(), duration: 1000 });
-                    }
-                }, 300);
-
-                fetchWalkingRoute(lng, lat, targetHouse.id);
-            }
-        }
+        focusHouseFromUrl();
     });
 
     mapInstance.value.on('click', 'unclustered-point', (e) => {
