@@ -34,6 +34,8 @@ const form = useForm({
     description: props.boardingHouse?.description || '',
     location_description: props.boardingHouse?.location_description || '',
     address: props.boardingHouse?.address || '',
+    latitude: props.boardingHouse?.latitude ?? '',
+    longitude: props.boardingHouse?.longitude ?? '',
     rent_price: props.boardingHouse?.rent_price || 0,
     total_rooms: props.boardingHouse?.total_rooms || 0,
     available_rooms: props.boardingHouse?.available_rooms || 0,
@@ -394,6 +396,50 @@ const statusBadgeClass = computed(() => {
                                     <label for="address" class="form-label fw-bold small text-body-secondary text-uppercase ms-1 mb-1">Full Address</label>
                                     <input id="address" v-model="form.address" type="text" class="form-control bg-body-tertiary rounded-4 py-2" :class="{ 'is-invalid': form.errors.address }" placeholder="Talibon, Bohol">
                                     <div v-if="form.errors.address" class="invalid-feedback fw-bold ps-2">{{ form.errors.address }}</div>
+                                </div>
+
+                                <!-- 🗺️ Explicit GPS Coordinates -->
+                                <div class="col-12 col-md-6">
+                                    <label for="latitude" class="form-label fw-bold small text-body-secondary text-uppercase ms-1 mb-1">
+                                        <i class="bi bi-geo-alt-fill text-primary me-1"></i>Latitude
+                                    </label>
+                                    <input 
+                                        id="latitude" 
+                                        v-model="form.latitude" 
+                                        type="number" 
+                                        step="0.0000001" 
+                                        min="-90" 
+                                        max="90" 
+                                        class="form-control bg-body-tertiary rounded-4 py-2 font-monospace" 
+                                        :class="{ 'is-invalid': form.errors.latitude }" 
+                                        placeholder="e.g. 10.1360500"
+                                    >
+                                    <div v-if="form.errors.latitude" class="invalid-feedback fw-bold ps-2">{{ form.errors.latitude }}</div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label for="longitude" class="form-label fw-bold small text-body-secondary text-uppercase ms-1 mb-1">
+                                        <i class="bi bi-geo-alt-fill text-primary me-1"></i>Longitude
+                                    </label>
+                                    <input 
+                                        id="longitude" 
+                                        v-model="form.longitude" 
+                                        type="number" 
+                                        step="0.0000001" 
+                                        min="-180" 
+                                        max="180" 
+                                        class="form-control bg-body-tertiary rounded-4 py-2 font-monospace" 
+                                        :class="{ 'is-invalid': form.errors.longitude }" 
+                                        placeholder="e.g. 124.3242900"
+                                    >
+                                    <div v-if="form.errors.longitude" class="invalid-feedback fw-bold ps-2">{{ form.errors.longitude }}</div>
+                                </div>
+
+                                <div class="col-12 mt-1">
+                                    <div class="p-2 px-3 bg-body-tertiary rounded-3 border border-secondary-subtle small text-body-secondary d-flex align-items-center gap-2">
+                                        <i class="bi bi-info-circle-fill text-primary"></i>
+                                        <span>Coordinates position your pin on the student interactive map. You can copy them directly from Google Maps or GPS.</span>
+                                    </div>
                                 </div>
                                 
                                 <div class="col-12">

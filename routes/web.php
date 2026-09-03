@@ -208,6 +208,15 @@ Route::middleware(['auth', 'role:super_admin'])
         Route::patch('/owners/{owner}/toggle-status', [AdminOwnerController::class, 'toggleStatus'])
             ->name('owners.toggle-status');
 
+        Route::put('/owners/{owner}', [AdminOwnerController::class, 'update'])
+            ->name('owners.update');
+
+        Route::post('/owners/{owner}/reset-password', [AdminOwnerController::class, 'resetPassword'])
+            ->name('owners.reset-password');
+
+        Route::delete('/owners/{owner}', [AdminOwnerController::class, 'destroy'])
+            ->name('owners.destroy');
+
         Route::get('/boarding-houses', [AdminBoardingHouseController::class, 'index'])
             ->name('boarding-houses.index');
 
@@ -216,6 +225,9 @@ Route::middleware(['auth', 'role:super_admin'])
 
         Route::put('/boarding-houses/{boardingHouse}', [AdminBoardingHouseController::class, 'update'])
             ->name('boarding-houses.update');
+
+        Route::delete('/boarding-houses/{boardingHouse}', [AdminBoardingHouseController::class, 'destroy'])
+            ->name('boarding-houses.destroy');
 
         Route::patch('/boarding-houses/{boardingHouse}/approve', [AdminBoardingHouseController::class, 'approve'])
             ->name('boarding-houses.approve');

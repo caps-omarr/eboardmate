@@ -79,6 +79,8 @@ class OwnerListingController extends Controller
             'description' => ['nullable', 'string', 'max:3000'],
             'location_description' => ['nullable', 'string', 'max:2000'],
             'address' => ['nullable', 'string', 'max:255'],
+            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
             'rent_price' => ['required', 'numeric', 'min:0', 'max:999999.99'],
             'total_rooms' => ['required', 'integer', 'min:0', 'max:999'],
             'available_rooms' => ['required', 'integer', 'min:0', 'max:999'],
@@ -122,6 +124,8 @@ class OwnerListingController extends Controller
             'description' => $validated['description'] ?? null,
             'location_description' => $validated['location_description'] ?? null,
             'address' => $validated['address'] ?? null,
+            'latitude' => $validated['latitude'] ?? null,
+            'longitude' => $validated['longitude'] ?? null,
             'rent_price' => $validated['rent_price'],
             'total_rooms' => $validated['total_rooms'],
             'available_rooms' => $validated['available_rooms'],
@@ -145,9 +149,7 @@ class OwnerListingController extends Controller
             'user_agent' => $request->userAgent(),
         ]);
 
-        
-        Cache::forget('public_map_markers');
-        Cache::forget("boarding_house_public_details_{$boardingHouse->id}");
+        BoardingHouse::clearPublicCaches($boardingHouse->id);
 
         return back()->with('success', 'Boarding house listing updated successfully.');
     }
