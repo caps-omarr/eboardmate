@@ -12,9 +12,6 @@ defineProps({
     },
 });
 
-const openSurvey = () => {
-    window.dispatchEvent(new CustomEvent('open-student-survey'));
-};
 </script>
 
 <template>
@@ -26,8 +23,9 @@ const openSurvey = () => {
         <nav class="navbar bg-body border-bottom border-secondary-subtle sticky-top shadow-sm snap-section transition-all py-0">
             <div class="container-fluid px-3 py-0 d-flex flex-nowrap align-items-center w-100 m-0">
                 
-                <!-- Left Side: Logo Wrapper (Caged to 70% width max) -->
-                <div class="d-flex align-items-center justify-content-start overflow-hidden flex-grow-1" style="max-width: 75%;">
+                <!-- Left Side: Logo Wrapper (Caged to 80% width max) -->
+                <!-- overflow-hidden ensures the invisible image padding is ignored -->
+                <div class="d-flex align-items-center justify-content-start overflow-hidden" style="width: 80%;">
                     <Link href="/" class="navbar-brand m-0 p-0" title="E-BoardMate Home">
                         <img 
                             src="../Pages/Public/Images/eboarmatelogo.png" 
@@ -38,17 +36,9 @@ const openSurvey = () => {
                     </Link> 
                 </div>
 
-                <!-- Right Side: Feedback Button & Theme Toggle Wrapper -->
-                <div class="d-flex align-items-center justify-content-end ms-auto gap-2">
-                    <button 
-                        type="button" 
-                        class="btn btn-sm btn-outline-success rounded-pill px-3 d-none d-sm-inline-flex align-items-center gap-1 fw-semibold shadow-sm text-nowrap"
-                        @click="openSurvey"
-                        title="Share your feedback to improve E-BoardMate"
-                    >
-                        <i class="bi bi-chat-heart-fill"></i>
-                        <span>Feedback</span>
-                    </button>
+                <!-- Right Side: Theme Toggle Wrapper (Locked to 20% width) -->
+                <!-- justify-content-end forces it flush against the right edge -->
+                <div class="d-flex align-items-center justify-content-end ms-auto" style="width: 20%;">
                     <ThemeToggle />
                 </div>
                 
@@ -91,15 +81,6 @@ const openSurvey = () => {
                             </li>
                             <li>
                                 <Link href="/track-reservation" class="text-decoration-none text-body-secondary text-hover-primary fw-medium transition-all">Track Reservation</Link>
-                            </li>
-                            <li>
-                                <button 
-                                    type="button" 
-                                    class="btn btn-link p-0 text-decoration-none text-body-secondary text-hover-primary fw-medium transition-all small d-inline-flex align-items-center gap-1 border-0 bg-transparent text-start"
-                                    @click="openSurvey"
-                                >
-                                    <i class="bi bi-chat-heart text-success"></i> System Feedback Survey
-                                </button>
                             </li>
                         </ul>
                     </div>
