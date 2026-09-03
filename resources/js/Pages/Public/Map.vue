@@ -84,21 +84,50 @@ const houseIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24
     <path d="M7 11.5L12 7L17 11.5V17H8.5C7.7 17 7 16.3 7 15.5V11.5Z" fill="white"/>
 </svg>`;
 
-// --- 🌐 GEOJSON DATA PREPARATION ---
+// --- 🌐 GEOJSON DATA PREPARATION WITH SMART SPATIAL DISAMBIGUATION ---
 const getBoardingHouseGeoJSON = () => {
+    const rawHouses = props.boardingHouses.map(house => {
+        const lng = Number(house.longitude);
+        const lat = Number(house.latitude);
+        if (Number.isNaN(lng) || Number.isNaN(lat)) return null;
+        return { house, lng, lat };
+    }).filter(Boolean);
+
+    // Detect closely neighboring boarding houses (< 25 meters) and apply gentle micro-separation
+    const adjustedFeatures = rawHouses.map((item, index) => {
+        let adjLng = item.lng;
+        let adjLat = item.lat;
+
+        // Check for adjacent properties sharing the same lot or within ~24 meters
+        const closeNeighbors = rawHouses.filter((other, oIdx) => {
+            if (oIdx === index) return false;
+            const dLat = other.lat - item.lat;
+            const dLng = other.lng - item.lng;
+            return Math.hypot(dLat, dLng) < 0.00022; // ~24 meters threshold
+        });
+
+        if (closeNeighbors.length > 0) {
+            // Rank houses stably by ID to apply a clean, opposing angular offset
+            const clusterGroup = [item, ...closeNeighbors].sort((a, b) => a.house.id - b.house.id);
+            const rank = clusterGroup.findIndex(h => h.house.id === item.house.id);
+            const total = clusterGroup.length;
+            const angle = (rank / total) * 2 * Math.PI;
+            const radius = 0.00010; // ~11 meters gentle visual separation
+
+            adjLng = item.lng + Math.cos(angle) * radius;
+            adjLat = item.lat + Math.sin(angle) * radius;
+        }
+
+        return {
+            type: 'Feature',
+            properties: { ...item.house },
+            geometry: { type: 'Point', coordinates: [adjLng, adjLat] },
+        };
+    });
+
     return {
         type: 'FeatureCollection',
-        features: props.boardingHouses.map(house => {
-            const lng = Number(house.longitude);
-            const lat = Number(house.latitude);
-            if (Number.isNaN(lng) || Number.isNaN(lat)) return null;
-
-            return {
-                type: 'Feature',
-                properties: { ...house },
-                geometry: { type: 'Point', coordinates: [lng, lat] },
-            };
-        }).filter(f => f !== null),
+        features: adjustedFeatures,
     };
 };
 
@@ -213,19 +242,20 @@ const addMapLayers = () => {
                     'icon-allow-overlap': true,
                     'icon-ignore-placement': true,
                     'text-field': ['get', 'name'],
-                    'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+                    'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
                     'text-size': 12,
-                    'text-offset': [0, 1.3],
-                    'text-anchor': 'top',
-                    'text-max-width': 12,
-                    'text-allow-overlap': true,
-                    'text-ignore-placement': true,
+                    'text-variable-anchor': ['top', 'bottom', 'left', 'right', 'top-left', 'top-right', 'bottom-left', 'bottom-right'],
+                    'text-radial-offset': 1.4,
+                    'text-justify': 'auto',
+                    'text-max-width': 10,
+                    'text-allow-overlap': false,
                     'text-optional': true,
                 },
                 paint: {
                     'text-color': '#ffffff',
-                    'text-halo-color': 'rgba(0, 0, 0, 0.75)',
-                    'text-halo-width': 1.5,
+                    'text-halo-color': 'rgba(15, 23, 42, 0.95)',
+                    'text-halo-width': 2.2,
+                    'text-halo-blur': 0.5,
                 },
             });
         }
