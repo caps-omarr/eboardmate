@@ -246,7 +246,7 @@ const submitReservation = () => {
 </script>
 
 <template>
-    <PublicLayout :hide-floating-survey="true">
+    <PublicLayout :hide-floating-tracker="true">
         <Head :title="`${boardingHouse.name} | Verified Boarding House near TPC`">
             <meta name="description" :content="`View rent price, available rooms, photos, amenities, and reservation details for ${boardingHouse.name}.`">
         </Head>

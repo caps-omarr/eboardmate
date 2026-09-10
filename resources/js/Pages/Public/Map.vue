@@ -275,6 +275,28 @@ const addMapLayers = () => {
 
 const getMapOffset = () => window.innerWidth >= 768 ? [140, 0] : [0, -80];
 
+// 🗺️ Intelligent camera framing ensuring route line, TPC Campus, and property pins remain fully visible
+const fitRouteBounds = (propLng, propLat) => {
+    if (!mapInstance.value) return;
+
+    const bounds = new mapboxgl.LngLatBounds();
+    bounds.extend([centerLng, centerLat]); // Fixed TPC Campus Coordinates
+    bounds.extend([propLng, propLat]);      // Selected Boarding House Coordinates
+
+    const isMobile = window.innerWidth < 768;
+    // On mobile viewports, increase bottom padding dynamically to keep route visible above bottom sheet
+    // On desktop, add left padding to keep route visible beside the left drawer card
+    const padding = isMobile
+        ? { top: 60, bottom: 290, left: 45, right: 45 }
+        : { top: 70, bottom: 70, left: 400, right: 70 };
+
+    mapInstance.value.fitBounds(bounds, {
+        padding,
+        maxZoom: 15.2,
+        duration: 1000,
+    });
+};
+
 const focusHouseFromUrl = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const houseIdFromUrl = urlParams.get('house_id');
@@ -293,7 +315,7 @@ const focusHouseFromUrl = () => {
 
             setTimeout(() => {
                 if (mapInstance.value) {
-                    mapInstance.value.flyTo({ center: [lng, lat], zoom: 17.5, offset: getMapOffset(), duration: 1000 });
+                    fitRouteBounds(lng, lat);
                 }
             }, 300);
 
@@ -357,7 +379,7 @@ const initializeMap = async () => {
             e.stopPropagation();
             clearWalkingRoute();
             selectedLocation.value = { type: 'tpc' };
-            mapInstance.value.flyTo({ center: [centerLng, centerLat], zoom: 17.5, offset: getMapOffset(), duration: 800 });
+            mapInstance.value.flyTo({ center: [centerLng, centerLat], zoom: 15.5, offset: getMapOffset(), duration: 800 });
         });
 
         new mapboxgl.Marker({ element: tpcMarkerEl, anchor: 'bottom' }).setLngLat([centerLng, centerLat]).addTo(mapInstance.value);
@@ -373,7 +395,7 @@ const initializeMap = async () => {
         houseData.is_full = houseData.is_full === true || houseData.is_full === 'true';
 
         selectedLocation.value = { type: 'house', data: houseData };
-        mapInstance.value.flyTo({ center: coordinates, zoom: 17, offset: getMapOffset(), duration: 800 });
+        fitRouteBounds(coordinates[0], coordinates[1]);
 
         fetchWalkingRoute(coordinates[0], coordinates[1], houseData.id);
     });

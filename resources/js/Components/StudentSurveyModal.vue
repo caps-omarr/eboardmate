@@ -212,24 +212,6 @@ const resetAndClose = () => {
 </script>
 
 <template>
-    <!-- FLOATING ACTION BUTTON (FAB) (Suppressed on Detail Page) -->
-    <button
-        v-if="!isSuppressed"
-        type="button"
-        @click="isOpen = true"
-        class="survey-fab btn btn-success shadow-lg rounded-pill d-flex align-items-center gap-2 transition-all"
-        :class="{ 'fab-shrunk': isScrolled }"
-        aria-label="Open Student System Feedback Survey"
-        title="Share your feedback to improve E-BoardMate!"
-    >
-        <div class="fab-icon-box bg-white text-success rounded-circle d-flex align-items-center justify-content-center flex-shrink-0">
-            <i class="bi bi-chat-heart-fill fs-5"></i>
-        </div>
-        <span class="fab-text fw-bold me-1 text-nowrap d-none d-sm-inline">
-            System Survey
-        </span>
-    </button>
-
     <!-- SURVEY MODAL DIALOG -->
     <Teleport to="body">
         <Transition name="survey-fade">
@@ -559,37 +541,6 @@ const resetAndClose = () => {
 </template>
 
 <style scoped>
-/* Floating Action Button Styling */
-.survey-fab {
-    position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    z-index: 1050;
-    padding: 0.6rem 1rem 0.6rem 0.6rem;
-    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35) !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.survey-fab:hover {
-    transform: translateY(-3px) scale(1.03);
-    box-shadow: 0 12px 28px rgba(16, 185, 129, 0.45) !important;
-}
-
-.fab-icon-box {
-    width: 38px;
-    height: 38px;
-}
-
-/* Scroll / Mobile Shrunk FAB state */
-.survey-fab.fab-shrunk {
-    padding: 0.6rem;
-    border-radius: 50% !important;
-}
-
-.survey-fab.fab-shrunk .fab-text {
-    display: none !important;
-}
-
 .survey-modal-body {
     max-height: calc(85vh - 130px);
     overflow-y: auto;

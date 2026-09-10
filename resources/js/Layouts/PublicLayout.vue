@@ -2,10 +2,15 @@
 import ThemeToggle from '@/Components/ThemeToggle.vue';
 import StudentOnboardingModal from '@/Components/StudentOnboardingModal.vue';
 import StudentSurveyModal from '@/Components/StudentSurveyModal.vue';
+import TrackReservationFab from '@/Components/TrackReservationFab.vue';
 import GlobalToast from '@/Components/GlobalToast.vue';
 import { Link } from '@inertiajs/vue3';
 
 defineProps({
+    hideFloatingTracker: {
+        type: Boolean,
+        default: false,
+    },
     hideFloatingSurvey: {
         type: Boolean,
         default: false,
@@ -18,7 +23,8 @@ defineProps({
     <div class="vh-100 d-flex flex-column bg-body snap-container transition-all">
         <GlobalToast />
         <StudentOnboardingModal />
-        <StudentSurveyModal :hide-fab="hideFloatingSurvey" />
+        <StudentSurveyModal />
+        <TrackReservationFab :hide="hideFloatingTracker || hideFloatingSurvey" />
         
         <nav class="navbar bg-body border-bottom border-secondary-subtle sticky-top shadow-sm snap-section transition-all py-0">
             <div class="container-fluid px-3 py-0 d-flex flex-nowrap align-items-center w-100 m-0">
