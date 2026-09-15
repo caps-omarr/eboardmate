@@ -64,6 +64,10 @@ class AdminBoardingHouseController extends Controller
                     'available_bedspaces' => $boardingHouse->available_bedspaces,
                     'amenities' => $boardingHouse->amenities ?? [],
                     'rules' => $boardingHouse->rules,
+                    'business_permit_url' => $boardingHouse->business_permit_url,
+                    'is_permit_processing' => (bool) $boardingHouse->is_permit_processing,
+                    'permit_processing_notes' => $boardingHouse->permit_processing_notes,
+                    'house_rules_image_url' => $boardingHouse->house_rules_image_url,
                     'allowed_genders' => $boardingHouse->allowed_genders ?? 'Any Gender (All)',
                     'includes_water' => (bool) $boardingHouse->includes_water,
                     'includes_electricity' => (bool) $boardingHouse->includes_electricity,
@@ -165,6 +169,19 @@ class AdminBoardingHouseController extends Controller
             'water_billing_details' => $waterBillingDetails,
             'electricity_billing_details' => $electricityBillingDetails,
         ];
+
+        if ($request->boolean('remove_business_permit')) {
+            $updateData['business_permit_url'] = null;
+        }
+        if ($request->boolean('remove_house_rules_image')) {
+            $updateData['house_rules_image_url'] = null;
+        }
+        if ($request->has('is_permit_processing')) {
+            $updateData['is_permit_processing'] = $request->boolean('is_permit_processing');
+            $updateData['permit_processing_notes'] = $updateData['is_permit_processing']
+                ? ($validated['permit_processing_notes'] ?? null)
+                : null;
+        }
 
         $boardingHouse->update($updateData);
 
@@ -291,6 +308,10 @@ class AdminBoardingHouseController extends Controller
             'includes_electricity' => ['nullable', 'boolean'],
             'water_billing_details' => ['nullable', 'string', 'max:255'],
             'electricity_billing_details' => ['nullable', 'string', 'max:255'],
+            'is_permit_processing' => ['nullable', 'boolean'],
+            'permit_processing_notes' => ['nullable', 'string', 'max:2000'],
+            'remove_business_permit' => ['nullable', 'boolean'],
+            'remove_house_rules_image' => ['nullable', 'boolean'],
         ]);
     }
 

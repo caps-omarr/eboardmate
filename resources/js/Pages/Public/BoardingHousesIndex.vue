@@ -235,6 +235,19 @@ onUnmounted(() => {
                                                 </div>
                                             </div>
 
+                                            <!-- Legal Compliance & Rules Badges -->
+                                            <div v-if="house.business_permit_url || house.is_permit_processing || house.house_rules_image_url" class="d-flex flex-wrap gap-1 mb-2">
+                                                <span v-if="house.business_permit_url" class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-2 px-2 py-1 fw-medium" style="font-size: 0.72rem;">
+                                                    <i class="bi bi-file-earmark-check-fill me-1"></i> Permit Verified
+                                                </span>
+                                                <span v-else-if="house.is_permit_processing" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-2 px-2 py-1 fw-medium" style="font-size: 0.72rem;">
+                                                    <i class="bi bi-hourglass-split me-1"></i> Permit In-Process
+                                                </span>
+                                                <span v-if="house.house_rules_image_url" class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle rounded-2 px-2 py-1 fw-medium" style="font-size: 0.72rem;">
+                                                    <i class="bi bi-card-image me-1"></i> Rules Notice
+                                                </span>
+                                            </div>
+
                                             <!-- Utility Transparency Summary -->
                                             <div class="mb-3 d-flex flex-column gap-1 border-top border-secondary-subtle pt-2" style="font-size: 0.78rem;">
                                                 <span v-if="house.includes_water && house.includes_electricity" class="text-success fw-semibold">

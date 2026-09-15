@@ -185,6 +185,10 @@ const openModal = (modalId) => {
     if (modal) modal.show();
 };
 
+const openRulesModal = () => {
+    openModal('rulesPhotoModal');
+};
+
 const showResultModal = async () => {
     closeModal('reservationModal');
     await nextTick();
@@ -284,6 +288,19 @@ const submitReservation = () => {
                                 <span v-if="boardingHouse.allowed_genders" class="badge bg-info-subtle text-info-emphasis border border-info-subtle rounded-2 px-2.5 py-1.5 fw-semibold">
                                     <i class="bi bi-person-heart me-1"></i> {{ boardingHouse.allowed_genders }}
                                 </span>
+
+                                <!-- 🏛️ Legal & Compliance Badges -->
+                                <a v-if="boardingHouse.business_permit_url" :href="boardingHouse.business_permit_url" target="_blank" rel="noopener noreferrer" class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-2 px-2.5 py-1.5 fw-semibold text-decoration-none d-inline-flex align-items-center gap-1" title="Click to view official verified business permit">
+                                    <i class="bi bi-file-earmark-check-fill"></i> Business Permit Verified <i class="bi bi-box-arrow-up-right ms-1" style="font-size: 0.65rem;"></i>
+                                </a>
+                                <span v-else-if="boardingHouse.is_permit_processing" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-2 px-2.5 py-1.5 fw-semibold d-inline-flex align-items-center gap-1" :title="boardingHouse.permit_processing_notes || 'Permit renewal or application under processing with local LGU'">
+                                    <i class="bi bi-hourglass-split"></i> Permit Under Processing
+                                </span>
+
+                                <!-- 📜 Rules Notice Badge -->
+                                <a v-if="boardingHouse.house_rules_image_url" href="#house-rules-section" class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle rounded-2 px-2.5 py-1.5 fw-semibold text-decoration-none d-inline-flex align-items-center gap-1">
+                                    <i class="bi bi-clipboard-check"></i> Rules Notice Available
+                                </a>
                             </div>
 
                             <h1 class="display-6 fw-bold mb-2 text-body-emphasis tracking-tight transition-all">
@@ -405,9 +422,110 @@ const submitReservation = () => {
                         </div>
 
                         <!-- 📜 HOUSE RULES -->
+                        <div id="house-rules-section" class="ebm-card p-4 p-md-5 mb-4 border border-secondary-subtle rounded-4 shadow-sm bg-body transition-all">
+                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                                <h2 class="h4 fw-bold mb-0 text-body-emphasis">
+                                    <i class="bi bi-clipboard-check text-primary me-2"></i> House Rules & Guidelines
+                                </h2>
+                                <span v-if="boardingHouse.house_rules_image_url" class="badge bg-info-subtle text-info-emphasis border border-info-subtle rounded-pill px-3 py-1.5 fw-semibold">
+                                    <i class="bi bi-camera-fill me-1"></i> Photo Notice Board
+                                </span>
+                            </div>
+
+                            <!-- Photo Rules Notice Display if uploaded -->
+                            <div v-if="boardingHouse.house_rules_image_url" class="mb-4">
+                                <div class="p-3 bg-body-tertiary rounded-3 border border-secondary-subtle">
+                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                                        <span class="fw-semibold small text-body-secondary text-uppercase">
+                                            <i class="bi bi-pin-angle-fill text-danger me-1"></i> Official Posted Rules Notice
+                                        </span>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <button type="button" @click="openRulesModal" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold d-inline-flex align-items-center gap-1">
+                                                <i class="bi bi-zoom-in"></i> Preview / Zoom
+                                            </button>
+                                            <a :href="boardingHouse.house_rules_image_url" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-light border rounded-pill px-2.5" title="Open full resolution in new window">
+                                                <i class="bi bi-box-arrow-up-right"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="position-relative overflow-hidden rounded-3 border border-secondary-subtle bg-dark text-center cursor-pointer" @click="openRulesModal" style="max-height: 380px;">
+                                        <img :src="boardingHouse.house_rules_image_url" alt="House Rules Notice" class="img-fluid object-fit-contain w-100" style="max-height: 380px;" />
+                                        <div class="position-absolute bottom-0 start-0 end-0 p-2 bg-dark bg-opacity-75 text-white small d-flex align-items-center justify-content-center gap-2">
+                                            <i class="bi bi-arrows-angle-expand"></i> Click to view enlarged rules photo notice
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Text Rules if provided -->
+                            <div v-if="boardingHouse.rules">
+                                <h3 v-if="boardingHouse.house_rules_image_url" class="h6 fw-bold mb-2 text-body-emphasis text-uppercase text-secondary">
+                                    Written House Guidelines
+                                </h3>
+                                <p class="text-body-secondary mb-0 transition-all lh-lg" style="white-space: pre-line;">{{ boardingHouse.rules }}</p>
+                            </div>
+                            <p v-else-if="!boardingHouse.house_rules_image_url" class="text-body-secondary mb-0 transition-all lh-lg">No specific house rules listed.</p>
+                        </div>
+
+                        <!-- 🏛️ LEGAL COMPLIANCE & BUSINESS PERMIT -->
                         <div class="ebm-card p-4 p-md-5 border border-secondary-subtle rounded-4 shadow-sm bg-body transition-all">
-                            <h2 class="h4 fw-bold mb-3 text-body-emphasis"><i class="bi bi-clipboard-check text-primary me-2"></i> House Rules</h2>
-                            <p class="text-body-secondary mb-0 transition-all lh-lg">{{ boardingHouse.rules || 'No specific house rules listed.' }}</p>
+                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                                <h2 class="h4 fw-bold mb-0 text-body-emphasis">
+                                    <i class="bi bi-shield-check text-success me-2"></i> Legal Documents & Verification
+                                </h2>
+                                <span v-if="boardingHouse.business_permit_url" class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1.5 rounded-pill fw-semibold">
+                                    <i class="bi bi-patch-check-fill me-1"></i> Verified LGU Business Permit
+                                </span>
+                                <span v-else-if="boardingHouse.is_permit_processing" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-1.5 rounded-pill fw-semibold">
+                                    <i class="bi bi-hourglass-split me-1"></i> Permit Under Processing
+                                </span>
+                                <span v-else class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle px-3 py-1.5 rounded-pill fw-semibold">
+                                    <i class="bi bi-info-circle me-1"></i> Verification Pending
+                                </span>
+                            </div>
+
+                            <p class="text-body-secondary small mb-3">
+                                Verified registrations and business permits provide assurance that the boarding house operates under local municipal housing and safety guidelines.
+                            </p>
+
+                            <!-- Permit Verified -->
+                            <div v-if="boardingHouse.business_permit_url" class="p-3 bg-body-tertiary rounded-3 border border-secondary-subtle d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="bg-success-subtle text-success rounded-3 p-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px;">
+                                        <i class="bi bi-file-earmark-check-fill fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <strong class="d-block text-body-emphasis">Official Municipal / Mayor's Business Permit</strong>
+                                        <span class="small text-body-secondary">A validated business permit document is on record for this property.</span>
+                                    </div>
+                                </div>
+                                <a :href="boardingHouse.business_permit_url" target="_blank" rel="noopener noreferrer" class="btn btn-outline-success rounded-pill px-3 py-2 fw-semibold text-nowrap d-inline-flex align-items-center justify-content-center gap-2" style="min-height: 40px;">
+                                    <i class="bi bi-eye"></i>
+                                    <span>View Permit</span>
+                                    <i class="bi bi-box-arrow-up-right small"></i>
+                                </a>
+                            </div>
+
+                            <!-- Permit Under Processing -->
+                            <div v-else-if="boardingHouse.is_permit_processing" class="p-3 bg-warning-subtle rounded-3 border border-warning-subtle">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="bg-warning text-dark rounded-3 p-2.5 d-flex align-items-center justify-content-center flex-shrink-0 mt-1" style="width: 40px; height: 40px;">
+                                        <i class="bi bi-hourglass-split fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <strong class="d-block text-warning-emphasis mb-1">Permit Application In Progress with Local LGU</strong>
+                                        <p class="small text-warning-emphasis mb-0">
+                                            {{ boardingHouse.permit_processing_notes || 'The property owner has submitted their renewal/application credentials to the municipal licensing office and is currently awaiting final document issuance.' }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Permit Missing -->
+                            <div v-else class="p-3 bg-body-tertiary rounded-3 border border-secondary-subtle text-body-secondary small">
+                                <i class="bi bi-info-circle me-1 text-secondary"></i>
+                                Official municipal business permit documentation has not yet been uploaded by the property owner. Inquiries can be made directly upon room visitation.
+                            </div>
                         </div>
 
                     </div>
@@ -520,6 +638,29 @@ const submitReservation = () => {
                         <div v-if="boardingHouse.photos.length > 1" class="lightbox-counter">
                             {{ activePhotoIndex + 1 }} / {{ boardingHouse.photos.length }}
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 📜 RULES PHOTO ENLARGED MODAL -->
+        <div id="rulesPhotoModal" class="modal fade" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content ebm-card border border-secondary-subtle rounded-4 overflow-hidden shadow-lg">
+                    <div class="modal-header border-bottom border-secondary-subtle">
+                        <h3 class="modal-title h5 fw-bold text-body-emphasis d-flex align-items-center gap-2 mb-0">
+                            <i class="bi bi-clipboard-check text-primary"></i> House Rules Notice Board
+                        </h3>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="cleanupModalBackdrop"></button>
+                    </div>
+                    <div class="modal-body p-2 p-md-3 text-center bg-dark bg-opacity-25">
+                        <img v-if="boardingHouse.house_rules_image_url" :src="boardingHouse.house_rules_image_url" alt="House Rules Full Notice" class="img-fluid rounded-3 shadow-sm" style="max-height: 75vh; width: auto;" />
+                    </div>
+                    <div class="modal-footer border-top border-secondary-subtle d-flex justify-content-between">
+                        <a v-if="boardingHouse.house_rules_image_url" :href="boardingHouse.house_rules_image_url" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                            <i class="bi bi-box-arrow-up-right me-1"></i> Open Full Resolution
+                        </a>
+                        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal" @click="cleanupModalBackdrop">Close</button>
                     </div>
                 </div>
             </div>

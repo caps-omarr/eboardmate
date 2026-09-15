@@ -89,6 +89,10 @@ const editForm = useForm({
     includes_electricity: false,
     water_billing_details: '',
     electricity_billing_details: '',
+    is_permit_processing: false,
+    permit_processing_notes: '',
+    remove_business_permit: false,
+    remove_house_rules_image: false,
 });
 
 const actionForm = useForm({
@@ -135,6 +139,10 @@ const openEditModal = (boardingHouse) => {
     editForm.includes_electricity = Boolean(boardingHouse.includes_electricity);
     editForm.water_billing_details = boardingHouse.water_billing_details || '';
     editForm.electricity_billing_details = boardingHouse.electricity_billing_details || '';
+    editForm.is_permit_processing = Boolean(boardingHouse.is_permit_processing);
+    editForm.permit_processing_notes = boardingHouse.permit_processing_notes || '';
+    editForm.remove_business_permit = false;
+    editForm.remove_house_rules_image = false;
 
     const modalElement = document.getElementById('editListingModal');
     if (modalElement) {
@@ -485,6 +493,36 @@ const houseLinks = computed(() => {
                                                         <span v-else class="text-danger fw-bold"><i class="bi bi-geo-alt-fill"></i> Missing Coords</span>
                                                     </div>
                                                     <div class="small text-body-secondary text-truncate" :title="boardingHouse.address">{{ boardingHouse.address || 'No address' }}</div>
+                                                    <div class="d-flex align-items-center gap-1 mt-1 flex-wrap">
+                                                        <a 
+                                                            v-if="boardingHouse.business_permit_url" 
+                                                            :href="boardingHouse.business_permit_url" 
+                                                            target="_blank" 
+                                                            class="badge bg-success-subtle text-success border border-success-subtle text-decoration-none"
+                                                            title="View Official Business Permit Document"
+                                                            style="font-size: 0.68rem;"
+                                                        >
+                                                            <i class="bi bi-file-earmark-check-fill me-0.5"></i> Permit
+                                                        </a>
+                                                        <span 
+                                                            v-else-if="boardingHouse.is_permit_processing" 
+                                                            class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle"
+                                                            :title="boardingHouse.permit_processing_notes || 'Business permit application is currently under processing'"
+                                                            style="font-size: 0.68rem;"
+                                                        >
+                                                            <i class="bi bi-hourglass-split me-0.5"></i> Permit In-Progress
+                                                        </span>
+                                                        <a 
+                                                            v-if="boardingHouse.house_rules_image_url" 
+                                                            :href="boardingHouse.house_rules_image_url" 
+                                                            target="_blank" 
+                                                            class="badge bg-info-subtle text-info-emphasis border border-info-subtle text-decoration-none"
+                                                            title="View Printed House Rules Photo"
+                                                            style="font-size: 0.68rem;"
+                                                        >
+                                                            <i class="bi bi-image me-0.5"></i> Rules Photo
+                                                        </a>
+                                                    </div>
                                                 </div>
 
                                                 <!-- Mobile Nested Secondary Stack (d-md-none, 0.75rem) -->
@@ -496,12 +534,28 @@ const houseLinks = computed(() => {
                                                     <div class="text-body-secondary text-truncate" :title="boardingHouse.address">
                                                         <i class="bi bi-geo-alt me-1"></i>{{ boardingHouse.address || 'Talibon, Bohol' }}
                                                     </div>
-                                                    <div class="mt-1 d-flex align-items-center gap-1">
+                                                    <div class="mt-1 d-flex align-items-center gap-1 flex-wrap">
                                                         <span class="badge rounded-2 px-2 py-0.5 text-capitalize text-nowrap" :class="statusBadgeClass(boardingHouse.status)">
                                                             {{ boardingHouse.status }}
                                                         </span>
                                                         <span v-if="boardingHouse.is_verified" class="badge badge-soft-success rounded-2 px-1.5 py-0.5 fw-semibold" style="font-size: 0.7rem;">
                                                             <i class="bi bi-patch-check-fill"></i> Verified
+                                                        </span>
+                                                        <a 
+                                                            v-if="boardingHouse.business_permit_url" 
+                                                            :href="boardingHouse.business_permit_url" 
+                                                            target="_blank" 
+                                                            class="badge bg-success-subtle text-success border border-success-subtle text-decoration-none"
+                                                            style="font-size: 0.68rem;"
+                                                        >
+                                                            Permit
+                                                        </a>
+                                                        <span 
+                                                            v-else-if="boardingHouse.is_permit_processing" 
+                                                            class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle"
+                                                            style="font-size: 0.68rem;"
+                                                        >
+                                                            In-Progress
                                                         </span>
                                                     </div>
                                                 </div>
@@ -718,6 +772,80 @@ const houseLinks = computed(() => {
                             <div class="col-12">
                                 <label for="edit_rules" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-1.5">House Rules & Curfew</label>
                                 <textarea id="edit_rules" v-model="editForm.rules" class="form-control rounded-3" rows="2" placeholder="10:00 PM Curfew, No smoking inside..." />
+                            </div>
+
+                            <!-- House Rules Photo Notice (if uploaded by owner) -->
+                            <div v-if="selectedEditListing?.house_rules_image_url && !editForm.remove_house_rules_image" class="col-12">
+                                <div class="p-3 bg-body-tertiary rounded-3 border border-secondary-subtle">
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <span class="small fw-bold text-body-secondary text-uppercase tracking-wider">
+                                            <i class="bi bi-image me-1 text-primary"></i> Printed House Rules Notice Photo
+                                        </span>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <a :href="selectedEditListing.house_rules_image_url" target="_blank" class="btn btn-sm btn-outline-primary rounded-2 py-0 px-2" style="font-size: 0.75rem;">
+                                                View Full Image
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-danger rounded-2 py-0 px-2" style="font-size: 0.75rem;" @click="editForm.remove_house_rules_image = true">
+                                                Remove Photo
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <img 
+                                        :src="selectedEditListing.house_rules_image_url" 
+                                        alt="Rules Photo" 
+                                        class="img-fluid rounded-2 border border-secondary-subtle" 
+                                        style="max-height: 160px; object-fit: contain;"
+                                    >
+                                </div>
+                            </div>
+
+                            <!-- Legal Documents & Compliance Section -->
+                            <div class="col-12">
+                                <div class="p-3 bg-body-tertiary rounded-3 border border-secondary-subtle">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <i class="bi bi-patch-check-fill text-success"></i>
+                                        <span class="small fw-bold text-body-secondary text-uppercase tracking-wider">
+                                            Legal Documents &amp; Compliance
+                                        </span>
+                                    </div>
+
+                                    <!-- Existing Business Permit Document Link -->
+                                    <div v-if="selectedEditListing?.business_permit_url && !editForm.remove_business_permit" class="p-2.5 bg-body rounded-3 border border-secondary-subtle d-flex align-items-center justify-content-between mb-3">
+                                        <div class="d-flex align-items-center gap-2 text-truncate me-2">
+                                            <i class="bi bi-file-earmark-check-fill text-success fs-5 flex-shrink-0"></i>
+                                            <a :href="selectedEditListing.business_permit_url" target="_blank" class="small fw-semibold text-truncate text-body-emphasis">
+                                                View Attached Business Permit
+                                            </a>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 rounded-2 flex-shrink-0" style="font-size: 0.75rem;" @click="editForm.remove_business_permit = true">
+                                            Remove Document
+                                        </button>
+                                    </div>
+                                    <div v-else class="small text-body-secondary mb-3">
+                                        <i class="bi bi-info-circle me-1"></i> No business permit document file attached.
+                                    </div>
+
+                                    <!-- Permit Processing Toggle & Notes -->
+                                    <div class="form-check form-switch mb-2">
+                                        <input id="edit_is_permit_processing" v-model="editForm.is_permit_processing" class="form-check-input" type="checkbox">
+                                        <label for="edit_is_permit_processing" class="form-check-label small fw-semibold text-body-emphasis">
+                                            Business permit is currently under processing
+                                        </label>
+                                    </div>
+
+                                    <div v-if="editForm.is_permit_processing" class="mt-2">
+                                        <label for="edit_permit_notes" class="form-label text-body-secondary fw-bold small text-uppercase mb-1" style="font-size: 0.72rem;">
+                                            Permit Processing Status Notes
+                                        </label>
+                                        <textarea 
+                                            id="edit_permit_notes" 
+                                            v-model="editForm.permit_processing_notes" 
+                                            class="form-control bg-body rounded-3 border-secondary-subtle" 
+                                            rows="2" 
+                                            placeholder="Notes on LGU permit processing status..."
+                                        ></textarea>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
