@@ -49,14 +49,21 @@ const isVisible = computed(() => {
     z-index: 1040;
     padding: 0.55rem 1rem 0.55rem 0.55rem;
     box-shadow: 0 8px 24px rgba(25, 135, 84, 0.4) !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                background-color 0.2s ease;
     color: #ffffff !important;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .track-fab:hover {
-    transform: translateY(-3px) scale(1.03);
+    transform: translateY(-3px) scale(1.02);
     box-shadow: 0 12px 28px rgba(25, 135, 84, 0.5) !important;
     color: #ffffff !important;
+}
+
+.track-fab:active {
+    transform: translateY(0) scale(0.96);
 }
 
 .fab-icon-box {
@@ -69,6 +76,14 @@ const isVisible = computed(() => {
     .track-fab {
         padding: 0.55rem;
         border-radius: 50% !important;
+        width: 50px;
+        height: 50px;
+        justify-content: center;
+    }
+
+    .fab-icon-box {
+        width: 34px;
+        height: 34px;
     }
 }
 

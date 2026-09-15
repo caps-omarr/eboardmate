@@ -476,8 +476,14 @@ onBeforeUnmount(() => {
             
             <!-- CLEAN TOP BAR: BACK BUTTON & MAP STYLE SELECTOR -->
             <div class="map-top-bar d-flex align-items-center justify-content-between px-3 py-2 bg-body border-bottom border-secondary-subtle z-3 position-relative">
-                <Link href="/boarding-houses" class="btn btn-sm border-secondary-subtle bg-body text-body-emphasis shadow-sm rounded-3 fw-semibold px-3 py-2 transition-all hover-bg-tertiary d-inline-flex align-items-center gap-1">
-                    <i class="bi bi-arrow-left text-success fs-6"></i> Back to Catalog
+                <Link 
+                    href="/boarding-houses" 
+                    class="btn btn-outline-secondary border-secondary-subtle px-3 py-2 fw-medium d-inline-flex align-items-center gap-2 transition-all shadow-sm" 
+                    style="min-height: 40px; border-radius: 10px;"
+                    title="Return to Boarding House Listings"
+                >
+                    <i class="bi bi-arrow-left fs-6"></i>
+                    <span>Back to Accommodations</span>
                 </Link>
 
                 <div class="d-flex align-items-center gap-2">

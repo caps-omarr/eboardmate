@@ -254,10 +254,16 @@ const submitReservation = () => {
         <section class="py-4 py-md-5 bg-body transition-all min-vh-100">
             <div class="container">
                 
-                <!-- 📌 CONSISTENT BACK BUTTON -->
+                <!-- 📌 CONSISTENT PREDICTABLE BACK BUTTON (Matches Track Reservation System) -->
                 <div class="mb-4">
-                    <Link href="/boarding-houses" class="btn btn-sm border-secondary-subtle bg-body text-body-emphasis shadow-sm rounded-pill fw-semibold px-3 py-2 transition-all hover-bg-tertiary d-inline-flex align-items-center gap-1">
-                        <i class="bi bi-arrow-left text-success fs-6"></i> Back to Boarding Houses
+                    <Link
+                        href="/boarding-houses"
+                        class="btn btn-outline-secondary border-secondary-subtle px-3 py-2 fw-medium d-inline-flex align-items-center gap-2 transition-all shadow-sm"
+                        style="min-height: 44px; border-radius: 10px;"
+                        title="Return to Boarding House Listings"
+                    >
+                        <i class="bi bi-arrow-left fs-6"></i>
+                        <span>Back to Accommodations</span>
                     </Link>
                 </div>
 

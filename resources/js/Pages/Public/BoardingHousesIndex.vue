@@ -300,12 +300,20 @@ onUnmounted(() => {
     background-color: #10b981;
     color: white;
     border: none;
-    transition: all 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                background-color 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .btn-native-primary:hover {
     background-color: #059669;
     color: white;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25) !important;
+}
+
+.btn-native-primary:active {
+    transform: translateY(0) scale(0.98);
 }
 </style>

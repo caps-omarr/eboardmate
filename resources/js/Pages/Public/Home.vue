@@ -216,22 +216,22 @@ onBeforeUnmount(() => {
                             Browse verified boarding houses, inspect real walking distances, submit reservation requests, and check live status online—with zero account registration required.
                         </p>
 
-                        <!-- High-Affordance Hero CTAs -->
-                        <div class="d-grid d-sm-flex gap-3 mb-5">
+                        <!-- High-Affordance Hero CTAs (Responsive & Proportional on Mobile and Desktop) -->
+                        <div class="hero-cta-group d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-2.5 gap-sm-3 mb-4 mb-lg-5">
                             <Link
                                 href="/boarding-houses"
-                                class="btn btn-ebm-primary btn-lg px-4 fw-bold shadow-sm transition-all rounded-3 d-inline-flex align-items-center justify-content-center gap-2"
-                                style="min-height: 48px;"
+                                class="hero-btn hero-btn-primary btn shadow-sm text-decoration-none"
+                                title="Browse Verified Accommodations"
                             >
-                                <i class="bi bi-search"></i>
+                                <i class="bi bi-search fs-6"></i>
                                 <span>Explore Accommodations</span>
                             </Link>
                             <Link
                                 href="/map"
-                                class="btn btn-outline-success btn-lg px-4 fw-bold shadow-sm transition-all rounded-3 d-inline-flex align-items-center justify-content-center gap-2"
-                                style="min-height: 48px;"
+                                class="hero-btn hero-btn-outline btn shadow-sm text-decoration-none"
+                                title="Open Interactive Map"
                             >
-                                <i class="bi bi-geo-alt"></i>
+                                <i class="bi bi-geo-alt fs-6"></i>
                                 <span>Open Interactive Map</span>
                             </Link>
                         </div>
@@ -587,6 +587,80 @@ onBeforeUnmount(() => {
         background-color 0.4s ease-in-out,
         color 0.4s ease-in-out,
         border-color 0.4s ease-in-out;
+}
+
+/* 📱 RESPONSIVE HERO BUTTON SYSTEM */
+.hero-cta-group {
+    max-width: 520px;
+    width: 100%;
+}
+
+.hero-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    height: 44px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 0 1.25rem;
+    border-radius: 10px;
+    white-space: nowrap;
+    text-decoration: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                background-color 0.2s ease,
+                border-color 0.2s ease,
+                color 0.2s ease;
+}
+
+.hero-btn-primary {
+    background-color: var(--ebm-primary, #2e7d5b);
+    border: 1.5px solid var(--ebm-primary, #2e7d5b);
+    color: #ffffff !important;
+}
+
+.hero-btn-primary:hover {
+    background-color: #24684c;
+    border-color: #24684c;
+    color: #ffffff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(46, 125, 91, 0.28);
+}
+
+.hero-btn-primary:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.hero-btn-outline {
+    background-color: transparent;
+    border: 1.5px solid var(--ebm-primary, #2e7d5b);
+    color: var(--ebm-primary, #2e7d5b) !important;
+}
+
+.hero-btn-outline:hover {
+    background-color: var(--ebm-primary, #2e7d5b);
+    border-color: var(--ebm-primary, #2e7d5b);
+    color: #ffffff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(46, 125, 91, 0.2);
+}
+
+.hero-btn-outline:active {
+    transform: translateY(0) scale(0.98);
+}
+
+@media (min-width: 576px) {
+    .hero-btn {
+        min-height: 46px;
+        height: 46px;
+        font-size: 1rem;
+        padding: 0 1.5rem;
+        width: auto;
+    }
 }
 </style>
 
