@@ -217,7 +217,7 @@ onBeforeUnmount(() => {
                         </p>
 
                         <!-- High-Affordance Hero CTAs (Responsive & Proportional on Mobile and Desktop) -->
-                        <div class="hero-cta-group d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-2.5 gap-sm-3 mb-4 mb-lg-5">
+                        <div class="hero-cta-group d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-3 mb-4 mb-lg-5">
                             <Link
                                 href="/boarding-houses"
                                 class="hero-btn hero-btn-primary btn shadow-sm text-decoration-none"
@@ -593,6 +593,7 @@ onBeforeUnmount(() => {
 .hero-cta-group {
     max-width: 520px;
     width: 100%;
+    gap: 0.85rem;
 }
 
 .hero-btn {
