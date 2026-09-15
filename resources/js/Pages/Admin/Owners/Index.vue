@@ -569,101 +569,97 @@ const cleanLabel = (label) => {
 
         <!-- ✏️ EDIT OWNER MODAL -->
         <div id="editOwnerModal" class="modal fade" tabindex="-1" aria-labelledby="editOwnerModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content rounded-4 border-0 shadow">
-                    <div class="modal-header border-bottom border-secondary-subtle p-4">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <form @submit.prevent="submitEditOwner" class="modal-content rounded-4 border-0 shadow overflow-hidden">
+                    <div class="modal-header border-bottom border-secondary-subtle px-4 py-3 bg-body-tertiary flex-shrink-0">
                         <div>
                             <span class="text-uppercase small fw-bold text-secondary tracking-wider d-block mb-1">Account Record</span>
                             <h2 id="editOwnerModalLabel" class="modal-title h5 fw-bold text-body-emphasis mb-0">
                                 Edit Owner Profile
                             </h2>
                         </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
-                    <form @submit.prevent="submitEditOwner">
-                        <div class="modal-body p-4">
-                            <div class="mb-3">
-                                <label for="edit_name" class="form-label fw-bold small text-body-secondary text-uppercase mb-2">Full Name</label>
-                                <input id="edit_name" v-model="editForm.name" type="text" class="form-control rounded-3" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.name }" required>
-                                <div v-if="editForm.errors.name" class="invalid-feedback">{{ editForm.errors.name }}</div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="edit_email" class="form-label fw-bold small text-body-secondary text-uppercase mb-2">Email Address</label>
-                                <input id="edit_email" v-model="editForm.email" type="email" class="form-control rounded-3" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.email }" required>
-                                <div v-if="editForm.errors.email" class="invalid-feedback">{{ editForm.errors.email }}</div>
-                            </div>
-
-                            <div class="mb-2">
-                                <label for="edit_phone" class="form-label fw-bold small text-body-secondary text-uppercase mb-2">Contact Number</label>
-                                <input id="edit_phone" v-model="editForm.phone" type="text" class="form-control rounded-3" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.phone }" placeholder="09123456789">
-                                <div v-if="editForm.errors.phone" class="invalid-feedback">{{ editForm.errors.phone }}</div>
-                            </div>
+                    <div class="modal-body p-4 overflow-y-auto">
+                        <div class="mb-3">
+                            <label for="edit_name" class="form-label fw-bold small text-body-secondary text-uppercase mb-2">Full Name</label>
+                            <input id="edit_name" v-model="editForm.name" type="text" class="form-control rounded-3" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.name }" required>
+                            <div v-if="editForm.errors.name" class="invalid-feedback">{{ editForm.errors.name }}</div>
                         </div>
 
-                        <div class="modal-footer border-top border-secondary-subtle p-3">
-                            <button type="button" class="btn btn-light rounded-3 px-4" style="min-height: 44px;" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-success rounded-3 px-4 fw-semibold" style="min-height: 44px;" :disabled="editForm.processing">
-                                Save Changes
-                            </button>
+                        <div class="mb-3">
+                            <label for="edit_email" class="form-label fw-bold small text-body-secondary text-uppercase mb-2">Email Address</label>
+                            <input id="edit_email" v-model="editForm.email" type="email" class="form-control rounded-3" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.email }" required>
+                            <div v-if="editForm.errors.email" class="invalid-feedback">{{ editForm.errors.email }}</div>
                         </div>
-                    </form>
-                </div>
+
+                        <div class="mb-2">
+                            <label for="edit_phone" class="form-label fw-bold small text-body-secondary text-uppercase mb-2">Contact Number</label>
+                            <input id="edit_phone" v-model="editForm.phone" type="text" class="form-control rounded-3" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.phone }" placeholder="09123456789">
+                            <div v-if="editForm.errors.phone" class="invalid-feedback">{{ editForm.errors.phone }}</div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer border-top border-secondary-subtle px-4 py-3 bg-body-tertiary flex-shrink-0">
+                        <button type="button" class="btn btn-light rounded-3 px-4" style="min-height: 44px;" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success rounded-3 px-4 fw-semibold" style="min-height: 44px;" :disabled="editForm.processing">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 
         <!-- 🔑 RESET PASSWORD MODAL -->
         <div id="resetPasswordModal" class="modal fade" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content rounded-4 border-0 shadow">
-                    <div class="modal-header border-bottom border-secondary-subtle p-4">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <form @submit.prevent="submitResetPassword" class="modal-content rounded-4 border-0 shadow overflow-hidden">
+                    <div class="modal-header border-bottom border-secondary-subtle px-4 py-3 bg-body-tertiary flex-shrink-0">
                         <div>
                             <span class="text-uppercase small fw-bold text-secondary tracking-wider d-block mb-1">Credential Management</span>
                             <h2 id="resetPasswordModalLabel" class="modal-title h5 fw-bold text-body-emphasis mb-0">
                                 Reset Owner Password
                             </h2>
                         </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
-                    <form @submit.prevent="submitResetPassword">
-                        <div class="modal-body p-4">
-                            <p class="text-body-secondary small mb-3">
-                                Reset password for <strong>{{ selectedOwner?.name }}</strong> ({{ selectedOwner?.email }}).
-                            </p>
+                    <div class="modal-body p-4 overflow-y-auto">
+                        <p class="text-body-secondary small mb-3">
+                            Reset password for <strong>{{ selectedOwner?.name }}</strong> ({{ selectedOwner?.email }}).
+                        </p>
 
-                            <div class="mb-3">
-                                <label for="reset_password" class="form-label fw-bold small text-body-secondary text-uppercase mb-2">New Password</label>
-                                <div class="input-group">
-                                    <input
-                                        id="reset_password"
-                                        v-model="passwordForm.password"
-                                        type="text"
-                                        class="form-control rounded-start-3 font-monospace"
-                                        style="min-height: 44px;"
-                                        :class="{ 'is-invalid': passwordForm.errors.password }"
-                                        placeholder="Enter password or auto-generate"
-                                    >
-                                    <button type="button" class="btn btn-outline-primary rounded-end-3" style="min-height: 44px;" @click="generateSecurePassword">
-                                        <i class="bi bi-arrow-repeat me-1"></i> Generate
-                                    </button>
-                                </div>
-                                <div v-if="passwordForm.errors.password" class="invalid-feedback d-block">{{ passwordForm.errors.password }}</div>
-                                <div class="form-text small text-body-secondary mt-1">
-                                    Leaving this blank will auto-generate a secure 10-character string upon saving.
-                                </div>
+                        <div class="mb-3">
+                            <label for="reset_password" class="form-label fw-bold small text-body-secondary text-uppercase mb-2">New Password</label>
+                            <div class="input-group">
+                                <input
+                                    id="reset_password"
+                                    v-model="passwordForm.password"
+                                    type="text"
+                                    class="form-control rounded-start-3 font-monospace"
+                                    style="min-height: 44px;"
+                                    :class="{ 'is-invalid': passwordForm.errors.password }"
+                                    placeholder="Enter password or auto-generate"
+                                >
+                                <button type="button" class="btn btn-outline-primary rounded-end-3" style="min-height: 44px;" @click="generateSecurePassword">
+                                    <i class="bi bi-arrow-repeat me-1"></i> Generate
+                                </button>
+                            </div>
+                            <div v-if="passwordForm.errors.password" class="invalid-feedback d-block">{{ passwordForm.errors.password }}</div>
+                            <div class="form-text small text-body-secondary mt-1">
+                                Leaving this blank will auto-generate a secure 10-character string upon saving.
                             </div>
                         </div>
+                    </div>
 
-                        <div class="modal-footer border-top border-secondary-subtle p-3">
-                            <button type="button" class="btn btn-light rounded-3 px-4" style="min-height: 44px;" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary rounded-3 px-4 fw-semibold" style="min-height: 44px;" :disabled="passwordForm.processing">
-                                Confirm Password Reset
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    <div class="modal-footer border-top border-secondary-subtle px-4 py-3 bg-body-tertiary flex-shrink-0">
+                        <button type="button" class="btn btn-light rounded-3 px-4" style="min-height: 44px;" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary rounded-3 px-4 fw-semibold" style="min-height: 44px;" :disabled="passwordForm.processing">
+                            Confirm Password Reset
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 

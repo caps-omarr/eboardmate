@@ -326,6 +326,36 @@ a:hover {
     width: 100% !important;
 }
 
+/* 📱 Responsive Modal Dialog Scrollable Support */
+.modal-dialog-scrollable form.modal-content,
+.modal-dialog-scrollable .modal-content > form {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 3.5rem);
+    height: 100%;
+    overflow: hidden;
+}
+
+@media (max-width: 575.98px) {
+    .modal-dialog-scrollable form.modal-content,
+    .modal-dialog-scrollable .modal-content > form {
+        max-height: calc(100vh - 1rem);
+    }
+}
+
+.modal-dialog-scrollable form.modal-content .modal-header,
+.modal-dialog-scrollable .modal-content > form .modal-header,
+.modal-dialog-scrollable form.modal-content .modal-footer,
+.modal-dialog-scrollable .modal-content > form .modal-footer {
+    flex-shrink: 0;
+}
+
+.modal-dialog-scrollable form.modal-content .modal-body,
+.modal-dialog-scrollable .modal-content > form .modal-body {
+    overflow-y: auto;
+    flex: 1 1 auto;
+}
+
 /* Shared UI */
 .bg-ebm {
     background-color: var(--ebm-bg);

@@ -46,6 +46,10 @@ class Reservation extends Model
         'user_agent',
     ];
 
+    protected $appends = [
+        'submitted_at_formatted',
+    ];
+
     protected function casts(): array
     {
         return [
@@ -109,5 +113,10 @@ class Reservation extends Model
         return $this->status === self::STATUS_PENDING
             && $this->expires_at !== null
             && now()->greaterThanOrEqualTo($this->expires_at);
+    }
+
+    public function getSubmittedAtFormattedAttribute(): ?string
+    {
+        return $this->created_at?->format('M d, Y h:i A');
     }
 }

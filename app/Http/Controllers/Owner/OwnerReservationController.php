@@ -57,6 +57,7 @@ class OwnerReservationController extends Controller
                 'owner_response' => $reservation->owner_response,
                 'email_notification_status' => $reservation->email_notification_status,
                 'created_at' => $reservation->created_at?->format('M d, Y h:i A'),
+                'submitted_at_formatted' => $reservation->submitted_at_formatted,
                 'expires_at' => $reservation->expires_at?->format('M d, Y h:i A'),
                 'responded_at' => $reservation->responded_at?->format('M d, Y h:i A'),
                 'can_respond' => $reservation->status === Reservation::STATUS_PENDING,

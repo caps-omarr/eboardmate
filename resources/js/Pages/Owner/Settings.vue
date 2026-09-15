@@ -11,6 +11,13 @@ const flashSuccess = computed(() => page.props.flash?.success || null);
 const activePolicyModal = ref(null);
 const showLogoutModal = ref(false);
 
+const getInitialYearMonth = () => {
+    const d = new Date();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    return `${d.getFullYear()}-${month}`;
+};
+const ledgerMonth = ref(getInitialYearMonth());
+
 // 🚀 PROFILE UPDATE FORM (Handles Photo, Name, Email)
 const profilePhotoInput = ref(null);
 const profilePhotoPreview = ref(null);
@@ -226,6 +233,48 @@ const getInitials = (name) => {
             <div class="row g-4 px-3 px-md-0 m-0 w-100">
                 <!-- LEFT COLUMN: APP SETTINGS (Links, Theme, Logout) -->
                 <div class="col-lg-5 p-0 pe-lg-3 order-2 order-lg-1">
+                    <!-- Reservation & Payment Ledger Export Card -->
+                    <h2 class="h6 fw-bold text-body-secondary text-uppercase ms-2 mb-2 tracking-tight">
+                        Accounting &amp; Reports
+                    </h2>
+                    <div class="bg-body rounded-4 shadow-sm border border-secondary-subtle p-3.5 p-md-4 mb-4">
+                        <div class="d-flex align-items-center gap-3 mb-2">
+                            <div class="settings-icon-box bg-success bg-opacity-10 text-success rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px;">
+                                <i class="bi bi-file-earmark-pdf-fill fs-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="h6 fw-bold mb-0 text-body-emphasis">Reservation &amp; Payment Ledger</h3>
+                                <span class="small text-body-secondary">Printable monthly tenant check-off sheet</span>
+                            </div>
+                        </div>
+                        <p class="small text-body-secondary mb-3">
+                            Export a printable landscape PDF ledger of approved tenants with a 3-month physical rent collection grid.
+                        </p>
+
+                        <div class="mb-3">
+                            <label for="ledger_month_picker" class="form-label small fw-bold text-body-secondary text-uppercase mb-1">
+                                Target Month
+                            </label>
+                            <input 
+                                id="ledger_month_picker" 
+                                v-model="ledgerMonth" 
+                                type="month" 
+                                class="form-control bg-body-tertiary rounded-3 border-secondary-subtle font-monospace"
+                                style="min-height: 44px;"
+                            >
+                        </div>
+
+                        <a 
+                            :href="`/owner/reports/reservations-pdf?month_year=${ledgerMonth}`" 
+                            target="_blank" 
+                            class="btn btn-success w-100 rounded-3 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2"
+                            style="min-height: 44px;"
+                        >
+                            <i class="bi bi-printer-fill"></i>
+                            <span>Export PDF Ledger</span>
+                        </a>
+                    </div>
+
                     <h2
                         class="h6 fw-bold text-body-secondary text-uppercase ms-2 mb-2 tracking-tight"
                     >

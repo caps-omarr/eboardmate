@@ -43,12 +43,48 @@ const form = useForm({
     available_bedspaces: props.boardingHouse?.available_bedspaces || 0,
     amenities_text: props.boardingHouse?.amenities?.join(', ') || '',
     rules: props.boardingHouse?.rules || '',
+    is_permit_processing: props.boardingHouse?.is_permit_processing ?? false,
+    permit_processing_notes: props.boardingHouse?.permit_processing_notes || '',
+    business_permit: null,
+    remove_business_permit: false,
+    house_rules_image: null,
+    remove_house_rules_image: false,
     allowed_genders: props.boardingHouse?.allowed_genders || 'Any Gender (All)',
     includes_water: props.boardingHouse?.includes_water ?? false,
     includes_electricity: props.boardingHouse?.includes_electricity ?? false,
     water_billing_details: props.boardingHouse?.water_billing_details || null,
     electricity_billing_details: props.boardingHouse?.electricity_billing_details || null,
 });
+
+const rulesMode = ref(props.boardingHouse?.house_rules_image_url ? 'photo' : 'text');
+const rulesPhotoInput = ref(null);
+const rulesPhotoPreview = ref(null);
+
+const onPermitFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        form.business_permit = file;
+        form.remove_business_permit = false;
+    }
+};
+
+const onRulesPhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        form.house_rules_image = file;
+        form.remove_house_rules_image = false;
+        rulesPhotoPreview.value = URL.createObjectURL(file);
+    }
+};
+
+const clearRulesPhoto = () => {
+    form.house_rules_image = null;
+    form.remove_house_rules_image = true;
+    rulesPhotoPreview.value = null;
+    if (rulesPhotoInput.value) {
+        rulesPhotoInput.value.value = '';
+    }
+};
 
 const photoForm = useForm({
     photo: null,
@@ -59,8 +95,9 @@ const primaryForm = useForm({});
 const deleteForm = useForm({});
 
 const submitListing = () => {
-    form.put('/owner/listing', {
+    form.post('/owner/listing', {
         preserveScroll: true,
+        forceFormData: true,
     });
 };
 
@@ -538,10 +575,148 @@ const statusBadgeClass = computed(() => {
                                 <div v-if="form.errors.amenities_text" class="invalid-feedback fw-bold ps-2">{{ form.errors.amenities_text }}</div>
                             </div>
 
-                            <div class="mb-4">
-                                <label for="rules" class="form-label fw-bold small text-body-secondary text-uppercase mb-2">House Rules</label>
-                                <textarea id="rules" v-model="form.rules" class="form-control bg-body-tertiary rounded-3 border-secondary-subtle py-2" :class="{ 'is-invalid': form.errors.rules }" rows="3" placeholder="Curfew, visitor rules, cleanliness..."></textarea>
-                                <div v-if="form.errors.rules" class="invalid-feedback fw-bold ps-2">{{ form.errors.rules }}</div>
+                            <!-- House Rules (Text or Photo Alternative) -->
+                            <div class="bg-body-tertiary p-3.5 p-md-4 rounded-4 border border-secondary-subtle mb-4">
+                                <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-shield-check text-warning fs-5"></i>
+                                        <label class="form-label fw-bold small text-body-secondary text-uppercase mb-0">House Rules</label>
+                                    </div>
+                                    <!-- Mode Switch Buttons -->
+                                    <div class="btn-group btn-group-sm rounded-3 overflow-hidden border border-secondary-subtle" role="group">
+                                        <button 
+                                            type="button" 
+                                            class="btn btn-sm px-3 fw-semibold" 
+                                            :class="rulesMode === 'text' ? 'btn-success text-white' : 'btn-light bg-body text-body-secondary'"
+                                            @click="rulesMode = 'text'"
+                                        >
+                                            <i class="bi bi-card-text me-1"></i> Text
+                                        </button>
+                                        <button 
+                                            type="button" 
+                                            class="btn btn-sm px-3 fw-semibold" 
+                                            :class="rulesMode === 'photo' ? 'btn-success text-white' : 'btn-light bg-body text-body-secondary'"
+                                            @click="rulesMode = 'photo'"
+                                        >
+                                            <i class="bi bi-image me-1"></i> Photo
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Text Mode Input -->
+                                <div v-show="rulesMode === 'text'">
+                                    <textarea 
+                                        id="rules" 
+                                        v-model="form.rules" 
+                                        class="form-control bg-body rounded-3 border-secondary-subtle py-2" 
+                                        :class="{ 'is-invalid': form.errors.rules }" 
+                                        rows="3" 
+                                        placeholder="Curfew hours, guest rules, quiet hours, cleanliness..."
+                                    ></textarea>
+                                    <div v-if="form.errors.rules" class="invalid-feedback fw-bold ps-2">{{ form.errors.rules }}</div>
+                                </div>
+
+                                <!-- Photo Mode Input -->
+                                <div v-show="rulesMode === 'photo'">
+                                    <!-- Existing or Selected Preview -->
+                                    <div v-if="(boardingHouse?.house_rules_image_url || rulesPhotoPreview) && !form.remove_house_rules_image" class="mb-3 position-relative text-center bg-body p-2 rounded-3 border border-secondary-subtle overflow-hidden">
+                                        <img 
+                                            :src="rulesPhotoPreview || boardingHouse?.house_rules_image_url" 
+                                            alt="House Rules" 
+                                            class="img-fluid rounded-2" 
+                                            style="max-height: 220px; object-fit: contain; width: 100%;"
+                                        >
+                                        <button 
+                                            type="button" 
+                                            class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2 rounded-pill px-2.5 py-1 shadow-sm"
+                                            @click="clearRulesPhoto"
+                                        >
+                                            <i class="bi bi-trash me-1"></i> Remove Photo
+                                        </button>
+                                    </div>
+
+                                    <label 
+                                        for="rules-photo-upload" 
+                                        class="btn btn-outline-secondary w-100 py-3 rounded-3 fw-semibold d-flex flex-column align-items-center justify-content-center gap-1 border-dashed bg-body position-relative cursor-pointer"
+                                        style="min-height: 80px;"
+                                    >
+                                        <i class="bi bi-camera fs-4 text-success"></i>
+                                        <span class="small">{{ (boardingHouse?.house_rules_image_url || rulesPhotoPreview) && !form.remove_house_rules_image ? 'Change Rules Photo' : 'Upload Printed Rules Photo' }}</span>
+                                        <span class="small text-body-secondary fw-normal" style="font-size: 0.75rem;">JPG, PNG, WebP up to 15MB</span>
+                                    </label>
+                                    <input 
+                                        id="rules-photo-upload" 
+                                        ref="rulesPhotoInput" 
+                                        type="file" 
+                                        class="d-none" 
+                                        accept="image/*" 
+                                        @change="onRulesPhotoChange"
+                                    >
+                                    <div v-if="form.errors.house_rules_image" class="invalid-feedback d-block fw-bold ps-2 mt-1">{{ form.errors.house_rules_image }}</div>
+                                </div>
+                            </div>
+
+                            <!-- Business Permit & Compliance -->
+                            <div class="bg-body-tertiary p-3.5 p-md-4 rounded-4 border border-secondary-subtle mb-4">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <i class="bi bi-patch-check-fill text-success fs-5"></i>
+                                    <label class="form-label fw-bold small text-body-secondary text-uppercase mb-0">Business Permit &amp; Compliance</label>
+                                </div>
+
+                                <!-- Permit Under Processing Checkbox -->
+                                <div class="form-check form-switch mb-3">
+                                    <input id="is_permit_processing" v-model="form.is_permit_processing" class="form-check-input" type="checkbox">
+                                    <label for="is_permit_processing" class="form-check-label fw-semibold text-body-emphasis">
+                                        Business permit is currently under processing
+                                    </label>
+                                </div>
+
+                                <!-- Permit Processing Notes (Conditional) -->
+                                <div v-if="form.is_permit_processing" class="mb-3">
+                                    <label for="permit_processing_notes" class="form-label fw-bold small text-body-secondary text-uppercase mb-1">
+                                        Permit Processing Status Notes
+                                    </label>
+                                    <textarea 
+                                        id="permit_processing_notes" 
+                                        v-model="form.permit_processing_notes" 
+                                        class="form-control bg-body rounded-3 border-secondary-subtle py-2" 
+                                        rows="2" 
+                                        placeholder="e.g. Application submitted at LGU Talibon, pending official inspection..."
+                                        :class="{ 'is-invalid': form.errors.permit_processing_notes }"
+                                    ></textarea>
+                                    <div v-if="form.errors.permit_processing_notes" class="invalid-feedback fw-bold ps-2">{{ form.errors.permit_processing_notes }}</div>
+                                </div>
+
+                                <!-- Document / Photo Upload -->
+                                <div>
+                                    <label class="form-label fw-bold small text-body-secondary text-uppercase mb-1">
+                                        Business Permit Document / Photo
+                                    </label>
+
+                                    <!-- Current Permit Link if exists -->
+                                    <div v-if="boardingHouse?.business_permit_url && !form.remove_business_permit" class="p-2.5 bg-body rounded-3 border border-secondary-subtle d-flex align-items-center justify-content-between mb-2">
+                                        <div class="d-flex align-items-center gap-2 text-truncate me-2">
+                                            <i class="bi bi-file-earmark-check-fill text-success fs-5 flex-shrink-0"></i>
+                                            <a :href="boardingHouse.business_permit_url" target="_blank" class="small text-decoration-none fw-semibold text-truncate text-body-emphasis">
+                                                View Attached Business Permit
+                                            </a>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 rounded-2 flex-shrink-0" style="font-size: 0.75rem;" @click="form.remove_business_permit = true">
+                                            Remove
+                                        </button>
+                                    </div>
+
+                                    <input 
+                                        id="business-permit-file"
+                                        type="file" 
+                                        accept="image/*,application/pdf" 
+                                        class="form-control bg-body rounded-3 border-secondary-subtle" 
+                                        @change="onPermitFileChange"
+                                        :class="{ 'is-invalid': form.errors.business_permit }"
+                                    >
+                                    <span class="form-text small text-body-secondary" style="font-size: 0.75rem;">Upload valid business permit image or PDF document (max 15MB).</span>
+                                    <div v-if="form.errors.business_permit" class="invalid-feedback d-block fw-bold ps-2 mt-1">{{ form.errors.business_permit }}</div>
+                                </div>
                             </div>
 
                             <button type="submit" class="btn btn-success rounded-3 w-100 fw-semibold shadow-sm py-2.5 mt-2 d-flex align-items-center justify-content-center gap-2" style="min-height: 48px;" :disabled="form.processing">

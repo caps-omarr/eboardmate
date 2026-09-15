@@ -116,20 +116,24 @@ const submitResponse = () => {
         onSuccess: () => Modal.getOrCreateInstance(document.getElementById('reservationResponseModal')).hide(),
     });
 };
+
+const filteredReservations = computed(() => {
+    return props.reservations || [];
+});
 </script>
 
 <template>
     <OwnerLayout>
         <Head title="Reservations | E-BoardMate Owner Portal" />
 
-        <div class="container-fluid pb-5 px-0 px-md-3 max-w-desktop mx-auto">
+        <div class="container-fluid owner-content-wrapper px-3 max-w-desktop mx-auto">
             
             <!-- ALERTS -->
-            <div v-if="flashSuccess" class="alert alert-success mx-3 mx-md-0 mb-4 shadow-sm border-0 rounded-4">{{ flashSuccess }}</div>
-            <div v-if="responseForm.errors.reservation" class="alert alert-danger mx-3 mx-md-0 mb-4 shadow-sm border-0 rounded-4">{{ responseForm.errors.reservation }}</div>
+            <div v-if="flashSuccess" class="alert alert-success mb-4 shadow-sm border-0 rounded-4">{{ flashSuccess }}</div>
+            <div v-if="responseForm.errors.reservation" class="alert alert-danger mb-4 shadow-sm border-0 rounded-4">{{ responseForm.errors.reservation }}</div>
 
             <!-- NATIVE HEADER SECTION -->
-            <header class="d-flex justify-content-between align-items-center px-3 px-md-0 mb-4 pt-3">
+            <header class="d-flex justify-content-between align-items-center mb-4 pt-3">
                 <div>
                     <h1 class="fw-bold mb-0 text-body-emphasis" style="font-size: 1.75rem;">Reservations</h1>
                     <span class="small text-body-secondary">Manage Guest Bookings</span>
@@ -140,121 +144,148 @@ const submitResponse = () => {
                 </button>
             </header>
 
-            <section v-if="!boardingHouse" class="mx-3 mx-md-0 ebm-card p-4 p-md-5 text-center shadow-sm rounded-4 border border-secondary-subtle">
+            <section v-if="!boardingHouse" class="ebm-card p-4 p-md-5 text-center shadow-sm rounded-4 border border-secondary-subtle">
                 <i class="bi bi-house-door display-4 text-secondary opacity-50 mb-3 d-block"></i>
                 <h2 class="h4 fw-bold mb-2 text-body-emphasis">No assigned property</h2>
                 <p class="text-body-secondary mb-0">Your owner account does not have an assigned boarding house listing yet.</p>
             </section>
 
             <template v-else>
-                <!-- NATIVE SEGMENTED FILTER -->
-                <div class="px-3 px-md-0 mb-4">
-                    <div class="native-segmented-control d-flex overflow-x-auto hide-scrollbar">
-                        <Link href="/owner/reservations?status=all" preserve-scroll class="flex-shrink-0" :class="{ 'active': filters.status === 'all' }">All</Link>
-                        <Link href="/owner/reservations?status=pending" preserve-scroll class="flex-shrink-0" :class="{ 'active': filters.status === 'pending' }">Pending</Link>
-                        <Link href="/owner/reservations?status=approved" preserve-scroll class="flex-shrink-0" :class="{ 'active': filters.status === 'approved' }">Approved</Link>
-                        <Link href="/owner/reservations?status=rejected" preserve-scroll class="flex-shrink-0" :class="{ 'active': filters.status === 'rejected' }">Rejected</Link>
-                        <Link href="/owner/reservations?status=expired" preserve-scroll class="flex-shrink-0" :class="{ 'active': filters.status === 'expired' }">Expired</Link>
+                <!-- NATIVE SEGMENTED FILTER (Horizontally scrollable, non-wrapping on mobile) -->
+                <div class="mb-4">
+                    <div class="d-flex gap-2 overflow-x-auto text-nowrap pb-2 mb-3 scrollbar-none native-segmented-control">
+                        <Link href="/owner/reservations?status=all" preserve-scroll class="flex-shrink-0 text-decoration-none" :class="{ 'active': filters.status === 'all' }">All</Link>
+                        <Link href="/owner/reservations?status=pending" preserve-scroll class="flex-shrink-0 text-decoration-none" :class="{ 'active': filters.status === 'pending' }">Pending</Link>
+                        <Link href="/owner/reservations?status=approved" preserve-scroll class="flex-shrink-0 text-decoration-none" :class="{ 'active': filters.status === 'approved' }">Approved</Link>
+                        <Link href="/owner/reservations?status=rejected" preserve-scroll class="flex-shrink-0 text-decoration-none" :class="{ 'active': filters.status === 'rejected' }">Rejected</Link>
+                        <Link href="/owner/reservations?status=expired" preserve-scroll class="flex-shrink-0 text-decoration-none" :class="{ 'active': filters.status === 'expired' }">Expired</Link>
                     </div>
                 </div>
 
-                <!-- NATIVE RESPONSIVE LIST VIEW -->
-                <section class="px-3 px-md-0 mb-5">
+                <!-- NATIVE RESPONSIVE MULTI-COLUMN GRID -->
+                <section class="mb-4">
                     
-                    <div v-if="reservations.length" class="bg-body rounded-4 border border-secondary-subtle overflow-hidden shadow-sm">
-                        
-                        <!-- Desktop Header Row (Hidden on mobile) -->
-                        <div class="d-none d-lg-flex align-items-center justify-content-between px-4 py-3 bg-body-tertiary border-bottom border-secondary-subtle small fw-bold text-body-secondary text-uppercase tracking-tight">
-                            <div style="width: 25%;">Guest / Ref</div>
-                            <div style="width: 25%;">Move-In / Contact</div>
-                            <div style="width: 20%;">Status</div>
-                            <div style="width: 30%;" class="text-end">Actions</div>
+                    <!-- SKELETON GRID -->
+                    <div v-if="isLoading" class="row g-3">
+                        <div v-for="i in 6" :key="i" class="col-12 col-md-6 col-xl-4">
+                            <div class="ebm-card bg-body rounded-4 border border-secondary-subtle p-3.5 p-md-4 shadow-sm h-100 d-flex flex-column placeholder-glow">
+                                <div class="d-flex align-items-center gap-3 mb-3">
+                                    <span class="placeholder rounded-circle flex-shrink-0 bg-secondary bg-opacity-25" style="width: 44px; height: 44px;"></span>
+                                    <div class="flex-grow-1">
+                                        <span class="placeholder col-6 py-2 rounded mb-2 d-block bg-secondary bg-opacity-25"></span>
+                                        <span class="placeholder col-4 py-1 rounded d-block bg-secondary bg-opacity-25"></span>
+                                    </div>
+                                </div>
+                                <div class="my-auto py-2">
+                                    <span class="placeholder col-8 py-2 rounded mb-2 d-block bg-secondary bg-opacity-25"></span>
+                                    <span class="placeholder col-10 py-2 rounded d-block bg-secondary bg-opacity-25"></span>
+                                </div>
+                                <div class="mt-3 pt-3 border-top border-secondary-subtle d-flex gap-2">
+                                    <span class="placeholder col-6 py-3 rounded-3 bg-secondary bg-opacity-25"></span>
+                                    <span class="placeholder col-6 py-3 rounded-3 bg-secondary bg-opacity-25"></span>
+                                </div>
+                            </div>
                         </div>
+                    </div>
 
-                        <div class="d-flex flex-column reservations-scroll-container">
-                            
-                            <!-- SKELETON LIST ITEMS -->
-                            <template v-if="isLoading">
-                                <div v-for="i in 4" :key="i" class="p-3 p-md-4 border-bottom border-secondary-subtle placeholder-glow">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <span class="placeholder rounded-circle flex-shrink-0 bg-secondary bg-opacity-25" style="width: 44px; height: 44px;"></span>
-                                        <div class="flex-grow-1">
-                                            <span class="placeholder col-4 py-2 rounded mb-2 d-block bg-secondary bg-opacity-25"></span>
-                                            <span class="placeholder col-3 py-1 rounded d-block bg-secondary bg-opacity-25"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </template>
-
-                            <template v-else>
-                                <div v-for="(res, index) in reservations" :key="res.id" 
-                                     class="native-list-item p-3 p-md-4 transition-all"
-                                     :class="{ 'border-bottom border-secondary-subtle': index !== reservations.length - 1 }">
+                    <!-- LOADED RESERVATIONS GRID -->
+                    <div v-else-if="filteredReservations.length" class="row g-3">
+                        <div v-for="res in filteredReservations" :key="res.id" class="col-12 col-md-6 col-xl-4">
+                            <div class="ebm-card reservation-card bg-body rounded-4 border border-secondary-subtle p-3.5 p-md-4 shadow-sm h-100 d-flex flex-column transition-all">
                                 
-                                <div class="row align-items-center g-3">
-                                    
-                                    <!-- Col 1: Guest Avatar & Info -->
-                                    <div class="col-12 col-lg-3">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <div class="guest-avatar bg-success-subtle text-success fw-bold flex-shrink-0 border border-success-subtle">
-                                                {{ getInitials(res.guest_name) }}
-                                            </div>
-                                            <div style="min-width: 0;">
-                                                <h3 class="h6 fw-bold mb-1 text-body-emphasis text-truncate" style="line-height: 1.2;">
-                                                    {{ res.guest_name }}
-                                                </h3>
-                                                <div class="small font-monospace text-body-secondary text-truncate">
-                                                    Ref: {{ res.reference_code }}
-                                                </div>
+                                <!-- Top Header: Avatar, Name/Ref, Status Badge -->
+                                <div class="d-flex align-items-start justify-content-between gap-2 mb-3">
+                                    <div class="d-flex align-items-center gap-2.5" style="min-width: 0;">
+                                        <div class="guest-avatar bg-success-subtle text-success fw-bold flex-shrink-0 border border-success-subtle">
+                                            {{ getInitials(res.guest_name) }}
+                                        </div>
+                                        <div style="min-width: 0;">
+                                            <h3 class="h6 fw-bold mb-0.5 text-body-emphasis text-truncate" style="max-width: 155px;" :title="res.guest_name">
+                                                {{ res.guest_name }}
+                                            </h3>
+                                            <div class="small font-monospace text-body-secondary text-truncate">
+                                                Ref: {{ res.reference_code }}
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Col 2: Move-in & Email -->
-                                    <div class="col-12 col-lg-3">
-                                        <div class="small text-body-secondary d-flex flex-column gap-1">
-                                            <div class="d-flex align-items-center gap-1">
-                                                <i class="bi bi-calendar-event text-success"></i> Move-in: <strong class="text-body-emphasis">{{ res.preferred_move_in_date }}</strong>
-                                            </div>
-                                            <div class="text-truncate" :title="res.guest_email">
-                                                <i class="bi bi-envelope me-1"></i> {{ res.guest_email }}
-                                            </div>
+                                    <span class="badge rounded-2 px-2.5 py-1.5 shadow-sm text-center fw-semibold flex-shrink-0" :class="statusBadgeClass(res.status)">
+                                        {{ res.status_label }}
+                                    </span>
+                                </div>
+
+                                <!-- Middle Content: Details, Move-In, Contact -->
+                                <div class="my-auto d-flex flex-column gap-2 py-1">
+                                    <div class="small text-body-secondary d-flex align-items-center gap-1.5">
+                                        <i class="bi bi-clock-history text-secondary flex-shrink-0"></i>
+                                        <span>Requested:</span>
+                                        <span class="text-body-emphasis fw-medium">{{ res.submitted_at_formatted || res.created_at || 'N/A' }}</span>
+                                    </div>
+                                    <div class="small text-body-secondary d-flex align-items-center gap-1.5">
+                                        <i class="bi bi-calendar-event text-success flex-shrink-0"></i>
+                                        <span>Move-in:</span>
+                                        <strong class="text-body-emphasis">{{ res.preferred_move_in_date || 'N/A' }}</strong>
+                                    </div>
+                                    <div class="small text-body-secondary text-truncate" style="max-width: 100%;" :title="res.guest_email">
+                                        <i class="bi bi-envelope me-1 text-primary flex-shrink-0"></i>
+                                        <span>{{ res.guest_email }}</span>
+                                    </div>
+                                    <div v-if="res.guest_phone" class="small text-body-secondary text-truncate" :title="res.guest_phone">
+                                        <i class="bi bi-telephone me-1 text-secondary flex-shrink-0"></i>
+                                        <span>{{ res.guest_phone }}</span>
+                                    </div>
+
+                                    <!-- Guest Message & Landlord Response Box -->
+                                    <div v-if="res.message || res.owner_response" class="bg-body-tertiary rounded-3 p-2.5 small border border-secondary-subtle mt-2">
+                                        <div v-if="res.message" class="text-break mb-1.5" style="word-break: break-word;">
+                                            <span class="fw-bold opacity-75 d-block text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.04em;">Guest Message</span>
+                                            <span class="fst-italic text-body-emphasis">"{{ res.message }}"</span>
+                                        </div>
+                                        <div v-if="res.owner_response" class="text-success text-break" style="word-break: break-word;">
+                                            <span class="fw-bold d-block text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.04em;">Landlord Response</span>
+                                            <span>{{ res.owner_response }}</span>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <!-- Col 3: Status Badge (Concentric 6px) -->
-                                    <div class="col-12 col-sm-6 col-lg-2">
-                                        <span class="badge rounded-2 px-2.5 py-1.5 shadow-sm d-inline-block text-center fw-semibold" :class="statusBadgeClass(res.status)">
-                                            {{ res.status_label }}
-                                        </span>
-                                    </div>
-
-                                    <!-- Col 4: Responsive Action Buttons -->
-                                    <div class="col-12 col-sm-6 col-lg-4 text-sm-end mt-2 mt-sm-0">
-                                        <div class="d-flex align-items-center justify-content-start justify-content-sm-end flex-wrap gap-2">
-                                            <template v-if="res.can_respond">
-                                                <button class="btn btn-sm btn-native-primary rounded-3 px-3 py-1.5 fw-bold shadow-sm" @click="openResponseModal(res, 'approve')">Approve Request</button>
-                                                <button class="btn btn-sm btn-outline-danger rounded-3 px-3 py-1.5 fw-bold" @click="openResponseModal(res, 'reject')">Decline Request</button>
-                                            </template>
-                                            <button class="btn btn-sm btn-outline-secondary rounded-3 fw-semibold px-3 py-1.5 d-inline-flex align-items-center gap-1" @click="openArchiveModal(res)" title="Archive Reservation">
-                                                <i class="bi bi-archive"></i>
-                                                <span>Archive</span>
+                                <!-- Footer: Action Buttons (Pinned to Bottom) -->
+                                <div class="mt-auto pt-3 border-top border-secondary-subtle">
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <template v-if="res.can_respond">
+                                            <button 
+                                                type="button" 
+                                                class="btn btn-sm btn-native-primary rounded-3 px-3 py-2 fw-bold shadow-sm flex-grow-1 text-nowrap d-flex align-items-center justify-content-center gap-1.5"
+                                                style="min-height: 40px;"
+                                                @click="openResponseModal(res, 'approve')"
+                                            >
+                                                <i class="bi bi-check-circle-fill"></i>
+                                                <span>Approve</span>
                                             </button>
-                                        </div>
+                                            <button 
+                                                type="button" 
+                                                class="btn btn-sm btn-outline-danger rounded-3 px-3 py-2 fw-bold flex-grow-1 text-nowrap d-flex align-items-center justify-content-center gap-1.5"
+                                                style="min-height: 40px;"
+                                                @click="openResponseModal(res, 'reject')"
+                                            >
+                                                <i class="bi bi-x-circle"></i>
+                                                <span>Decline</span>
+                                            </button>
+                                        </template>
+                                        <button 
+                                            type="button" 
+                                            class="btn btn-sm btn-outline-secondary rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center justify-content-center gap-1.5"
+                                            :class="{ 'w-100': !res.can_respond }"
+                                            style="min-height: 40px;"
+                                            @click="openArchiveModal(res)" 
+                                            title="Archive Reservation"
+                                        >
+                                            <i class="bi bi-archive"></i>
+                                            <span>Archive</span>
+                                        </button>
                                     </div>
-
-                                    <!-- Col 5: Guest & Owner Messages (If present) -->
-                                    <div v-if="res.message || res.owner_response" class="col-12 mt-2">
-                                        <div class="bg-body-tertiary rounded-3 p-3 small border border-secondary-subtle">
-                                            <div v-if="res.message" class="mb-1 text-break"><span class="fw-bold opacity-75">Guest Request Message:</span> <span class="fst-italic">"{{ res.message }}"</span></div>
-                                            <div v-if="res.owner_response" class="text-success text-break"><span class="fw-bold">Landlord Response:</span> {{ res.owner_response }}</div>
-                                        </div>
-                                    </div>
-
                                 </div>
-                                </div>
-                            </template>
 
+                            </div>
                         </div>
                     </div>
 
@@ -339,7 +370,17 @@ const submitResponse = () => {
 <style scoped>
 /* Restrict max width on desktop */
 .max-w-desktop {
-    max-width: 1200px;
+    max-width: 1320px;
+}
+
+.owner-content-wrapper {
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 768px) {
+    .owner-content-wrapper {
+        padding-bottom: 2rem;
+    }
 }
 
 /* =========================================
@@ -356,7 +397,7 @@ const submitResponse = () => {
     text-decoration: none;
     background: transparent;
     border: none;
-    padding: 8px 20px;
+    padding: 8px 18px;
     font-size: 0.85rem;
     font-weight: 600;
     color: var(--bs-secondary-color);
@@ -369,26 +410,32 @@ const submitResponse = () => {
     color: var(--bs-body-color);
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
-.hide-scrollbar {
+
+.scrollbar-none {
     -ms-overflow-style: none;
     scrollbar-width: none;
 }
-.hide-scrollbar::-webkit-scrollbar {
+.scrollbar-none::-webkit-scrollbar {
     display: none;
 }
 
-/* List View Elements */
-.native-list-item:hover {
-    background-color: rgba(var(--bs-secondary-bg-rgb), 0.3);
+/* Card Visuals */
+.reservation-card {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
+.reservation-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+}
+
 .guest-avatar {
-    width: 45px;
-    height: 45px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
 /* Native-style Badges */
@@ -402,28 +449,16 @@ const submitResponse = () => {
     background-color: #10b981;
     color: white;
     border: none;
+    transition: all 0.2s ease;
 }
-.btn-native-primary:hover { background-color: #059669; color: white; }
+.btn-native-primary:hover { 
+    background-color: #059669; 
+    color: white; 
+}
 .btn-native-outline-danger {
     background-color: transparent;
     color: #dc3545;
     border: 1px solid #dc3545;
 }
 .btn-native-outline-danger:hover { background-color: #dc3545; color: white; }
-
-.reservations-scroll-container {
-    max-height: 650px;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    touch-action: pan-y;
-    padding-bottom: 20px;
-}
-
-.reservations-scroll-container::-webkit-scrollbar {
-    width: 6px;
-}
-.reservations-scroll-container::-webkit-scrollbar-thumb {
-    background-color: rgba(var(--bs-secondary-rgb), 0.3);
-    border-radius: 10px;
-}
 </style>

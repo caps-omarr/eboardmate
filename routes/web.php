@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\OwnerAuthController;
 use App\Http\Controllers\Owner\OwnerDashboardController;
 use App\Http\Controllers\Owner\OwnerReservationController;
 use App\Http\Controllers\Owner\OwnerSettingsController;
+use App\Http\Controllers\Owner\OwnerReportController;
 use App\Http\Controllers\Public\PublicBoardingHouseController;
 use App\Http\Controllers\Public\PublicMapController;
 use App\Http\Controllers\Public\PublicReservationController;
@@ -112,7 +113,7 @@ Route::middleware(['auth', 'role:owner'])
         Route::get('/listing', [OwnerListingController::class, 'edit'])
             ->name('listing.edit');
 
-        Route::put('/listing', [OwnerListingController::class, 'update'])
+        Route::match(['put', 'post'], '/listing', [OwnerListingController::class, 'update'])
             ->middleware('throttle:15,1')
             ->name('listing.update');
 
@@ -156,6 +157,10 @@ Route::middleware(['auth', 'role:owner'])
         Route::put('/settings/password', [OwnerSettingsController::class, 'updatePassword'])
             ->middleware('throttle:10,1')
             ->name('settings.update-password');
+
+        // --- OWNER REPORT ROUTES ---
+        Route::get('/reports/reservations-pdf', [OwnerReportController::class, 'exportReservationsPdf'])
+            ->name('reports.reservations-pdf');
     });
 
 /*

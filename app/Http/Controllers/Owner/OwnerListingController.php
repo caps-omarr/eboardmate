@@ -8,6 +8,8 @@ use App\Models\BoardingHouse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache; 
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -44,6 +46,10 @@ class OwnerListingController extends Controller
                 'available_bedspaces' => $boardingHouse->available_bedspaces,
                 'amenities' => $boardingHouse->amenities ?? [],
                 'rules' => $boardingHouse->rules,
+                'business_permit_url' => $boardingHouse->business_permit_url,
+                'is_permit_processing' => (bool) $boardingHouse->is_permit_processing,
+                'permit_processing_notes' => $boardingHouse->permit_processing_notes,
+                'house_rules_image_url' => $boardingHouse->house_rules_image_url,
                 'allowed_genders' => $boardingHouse->allowed_genders ?? 'Any Gender (All)',
                 'includes_water' => (bool) $boardingHouse->includes_water,
                 'includes_electricity' => (bool) $boardingHouse->includes_electricity,
@@ -88,6 +94,12 @@ class OwnerListingController extends Controller
             'available_bedspaces' => ['required', 'integer', 'min:0', 'max:9999'],
             'amenities_text' => ['nullable', 'string', 'max:1000'],
             'rules' => ['nullable', 'string', 'max:2000'],
+            'is_permit_processing' => ['nullable', 'boolean'],
+            'permit_processing_notes' => ['nullable', 'string', 'max:2000'],
+            'business_permit' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:15360'],
+            'house_rules_image' => ['nullable', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:15360'],
+            'remove_business_permit' => ['nullable', 'boolean'],
+            'remove_house_rules_image' => ['nullable', 'boolean'],
             'allowed_genders' => ['nullable', 'string', 'max:255'],
             'includes_water' => ['nullable', 'boolean'],
             'includes_electricity' => ['nullable', 'boolean'],
@@ -120,6 +132,55 @@ class OwnerListingController extends Controller
             ->values()
             ->all();
 
+        $targetDisk = config('filesystems.default') === 'cloudinary' ? 'cloudinary' : 'public';
+
+        // Business Permit handling
+        $businessPermitUrl = $boardingHouse->business_permit_url;
+        if ($request->boolean('remove_business_permit')) {
+            $businessPermitUrl = null;
+        }
+        if ($request->hasFile('business_permit')) {
+            $permitFile = $request->file('business_permit');
+            $permitExt = $permitFile->getClientOriginalExtension() ?: 'jpg';
+            $permitName = Str::uuid() . '.' . $permitExt;
+            $permitPath = 'boarding-houses/' . $boardingHouse->id . '/permits/' . $permitName;
+
+            Storage::disk($targetDisk)->putFileAs(
+                dirname($permitPath),
+                $permitFile,
+                basename($permitPath)
+            );
+
+            $businessPermitUrl = ($targetDisk === 'cloudinary')
+                ? Storage::disk('cloudinary')->url($permitPath)
+                : asset('storage/' . $permitPath);
+        }
+
+        // House Rules photo handling
+        $houseRulesImageUrl = $boardingHouse->house_rules_image_url;
+        if ($request->boolean('remove_house_rules_image')) {
+            $houseRulesImageUrl = null;
+        }
+        if ($request->hasFile('house_rules_image')) {
+            $rulesFile = $request->file('house_rules_image');
+            $rulesExt = $rulesFile->getClientOriginalExtension() ?: 'jpg';
+            $rulesName = Str::uuid() . '.' . $rulesExt;
+            $rulesPath = 'boarding-houses/' . $boardingHouse->id . '/rules/' . $rulesName;
+
+            Storage::disk($targetDisk)->putFileAs(
+                dirname($rulesPath),
+                $rulesFile,
+                basename($rulesPath)
+            );
+
+            $houseRulesImageUrl = ($targetDisk === 'cloudinary')
+                ? Storage::disk('cloudinary')->url($rulesPath)
+                : asset('storage/' . $rulesPath);
+        }
+
+        $isPermitProcessing = (bool) ($validated['is_permit_processing'] ?? false);
+        $permitProcessingNotes = $isPermitProcessing ? ($validated['permit_processing_notes'] ?? null) : null;
+
         $boardingHouse->update([
             'description' => $validated['description'] ?? null,
             'location_description' => $validated['location_description'] ?? null,
@@ -133,6 +194,10 @@ class OwnerListingController extends Controller
             'available_bedspaces' => $validated['available_bedspaces'],
             'amenities' => $amenities,
             'rules' => $validated['rules'] ?? null,
+            'business_permit_url' => $businessPermitUrl,
+            'is_permit_processing' => $isPermitProcessing,
+            'permit_processing_notes' => $permitProcessingNotes,
+            'house_rules_image_url' => $houseRulesImageUrl,
             'allowed_genders' => $validated['allowed_genders'] ?? 'Any Gender (All)',
             'includes_water' => $includesWater,
             'includes_electricity' => $includesElectricity,

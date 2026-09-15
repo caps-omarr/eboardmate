@@ -261,4 +261,10 @@ const navLinks = [
         padding-bottom: calc(110px + env(safe-area-inset-bottom)) !important;
     }
 }
+
+@media (min-width: 768px) {
+    .pwa-nav-wrapper {
+        display: none !important;
+    }
+}
 </style>

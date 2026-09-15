@@ -619,119 +619,117 @@ const houseLinks = computed(() => {
         <!-- ✏️ EDIT LISTING MODAL -->
         <div id="editListingModal" class="modal fade" tabindex="-1" aria-labelledby="editListingModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
-                <div class="modal-content rounded-4 border-0 shadow">
-                    <form @submit.prevent="submitEditListing">
-                        
-                        <div class="modal-header border-bottom border-secondary-subtle bg-body-tertiary p-4">
-                            <div>
-                                <span class="text-uppercase small fw-bold text-secondary tracking-wider d-block mb-1">Property Record</span>
-                                <h2 id="editListingModalLabel" class="modal-title h5 fw-bold text-body-emphasis mb-0">
-                                    {{ selectedEditListing?.name }}
-                                </h2>
-                            </div>
-                            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                <form @submit.prevent="submitEditListing" class="modal-content rounded-4 border-0 shadow overflow-hidden">
+                    
+                    <div class="modal-header border-bottom border-secondary-subtle bg-body-tertiary px-3 px-md-4 py-3 flex-shrink-0">
+                        <div>
+                            <span class="text-uppercase small fw-bold text-secondary tracking-wider d-block mb-1">Property Record</span>
+                            <h2 id="editListingModalLabel" class="modal-title h5 fw-bold text-body-emphasis mb-0">
+                                {{ selectedEditListing?.name }}
+                            </h2>
                         </div>
+                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
 
-                        <div class="modal-body p-4">
-                            <div class="row g-3">
-                                <div class="col-md-12">
-                                    <label for="edit_owner_id" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Assign Owner</label>
-                                    <select id="edit_owner_id" v-model="editForm.owner_id" class="form-select rounded-3 border-secondary-subtle" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.owner_id }">
-                                        <option value="">No owner assigned</option>
-                                        <option v-for="owner in owners" :key="owner.id" :value="owner.id">{{ owner.name }} - {{ owner.email }}</option>
-                                    </select>
-                                </div>
+                    <div class="modal-body px-3 px-md-4 py-3 py-md-4 overflow-y-auto">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="edit_owner_id" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-1.5">Assign Owner</label>
+                                <select id="edit_owner_id" v-model="editForm.owner_id" class="form-select rounded-3 border-secondary-subtle" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.owner_id }">
+                                    <option value="">No owner assigned</option>
+                                    <option v-for="owner in owners" :key="owner.id" :value="owner.id">{{ owner.name }} - {{ owner.email }}</option>
+                                </select>
+                            </div>
 
-                                <div class="col-md-6">
-                                    <label for="edit_name" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Property Name</label>
-                                    <input id="edit_name" v-model="editForm.name" type="text" class="form-control rounded-3" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.name }" required>
-                                </div>
+                            <div class="col-12 col-md-6">
+                                <label for="edit_name" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-1.5">Property Name</label>
+                                <input id="edit_name" v-model="editForm.name" type="text" class="form-control rounded-3" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.name }" required>
+                            </div>
 
-                                <div class="col-md-6">
-                                    <label for="edit_address" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Address</label>
-                                    <input id="edit_address" v-model="editForm.address" type="text" class="form-control rounded-3" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.address }">
-                                </div>
+                            <div class="col-12 col-md-6">
+                                <label for="edit_address" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-1.5">Address</label>
+                                <input id="edit_address" v-model="editForm.address" type="text" class="form-control rounded-3" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.address }">
+                            </div>
 
-                                <div class="col-md-4">
-                                    <label for="edit_rent_price" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Monthly Rent (₱)</label>
-                                    <input id="edit_rent_price" v-model="editForm.rent_price" type="number" step="0.01" min="0" class="form-control rounded-3 text-success fw-bold" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.rent_price }" required>
-                                </div>
+                            <div class="col-12 col-md-4">
+                                <label for="edit_rent_price" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-1.5">Monthly Rent (₱)</label>
+                                <input id="edit_rent_price" v-model="editForm.rent_price" type="number" step="0.01" min="0" class="form-control rounded-3 text-success fw-bold" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.rent_price }" required>
+                            </div>
 
-                                <div class="col-md-4">
-                                    <label for="edit_latitude" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">
-                                        <i class="bi bi-geo-alt-fill text-primary"></i> Latitude
-                                    </label>
-                                    <input id="edit_latitude" v-model="editForm.latitude" type="number" step="0.0000001" min="-90" max="90" class="form-control rounded-3 font-monospace" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.latitude }">
-                                </div>
+                            <div class="col-12 col-sm-6 col-md-4">
+                                <label for="edit_latitude" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-1.5">
+                                    <i class="bi bi-geo-alt-fill text-primary"></i> Latitude
+                                </label>
+                                <input id="edit_latitude" v-model="editForm.latitude" type="number" step="0.0000001" min="-90" max="90" class="form-control rounded-3 font-monospace" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.latitude }">
+                            </div>
 
-                                <div class="col-md-4">
-                                    <label for="edit_longitude" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">
-                                        <i class="bi bi-geo-alt-fill text-primary"></i> Longitude
-                                    </label>
-                                    <input id="edit_longitude" v-model="editForm.longitude" type="number" step="0.0000001" min="-180" max="180" class="form-control rounded-3 font-monospace" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.longitude }">
-                                </div>
+                            <div class="col-12 col-sm-6 col-md-4">
+                                <label for="edit_longitude" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-1.5">
+                                    <i class="bi bi-geo-alt-fill text-primary"></i> Longitude
+                                </label>
+                                <input id="edit_longitude" v-model="editForm.longitude" type="number" step="0.0000001" min="-180" max="180" class="form-control rounded-3 font-monospace" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.longitude }">
+                            </div>
 
-                                <div class="col-md-3">
-                                    <label for="edit_total_rooms" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Total Rooms</label>
-                                    <input id="edit_total_rooms" v-model="editForm.total_rooms" type="number" min="0" class="form-control rounded-3" style="min-height: 44px;">
-                                </div>
+                            <div class="col-6 col-md-3">
+                                <label for="edit_total_rooms" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-1.5">Total Rooms</label>
+                                <input id="edit_total_rooms" v-model="editForm.total_rooms" type="number" min="0" class="form-control rounded-3" style="min-height: 44px;">
+                            </div>
 
-                                <div class="col-md-3">
-                                    <label for="edit_available_rooms" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Available Rooms</label>
-                                    <input id="edit_available_rooms" v-model="editForm.available_rooms" type="number" min="0" class="form-control rounded-3" style="min-height: 44px;">
-                                </div>
+                            <div class="col-6 col-md-3">
+                                <label for="edit_available_rooms" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-1.5">Available Rooms</label>
+                                <input id="edit_available_rooms" v-model="editForm.available_rooms" type="number" min="0" class="form-control rounded-3" style="min-height: 44px;">
+                            </div>
 
-                                <div class="col-md-3">
-                                    <label for="edit_total_bedspaces" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Total Beds</label>
-                                    <input id="edit_total_bedspaces" v-model="editForm.total_bedspaces" type="number" min="0" class="form-control rounded-3" style="min-height: 44px;">
-                                </div>
+                            <div class="col-6 col-md-3">
+                                <label for="edit_total_bedspaces" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-1.5">Total Beds</label>
+                                <input id="edit_total_bedspaces" v-model="editForm.total_bedspaces" type="number" min="0" class="form-control rounded-3" style="min-height: 44px;">
+                            </div>
 
-                                <div class="col-md-3">
-                                    <label for="edit_available_bedspaces" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Available Beds</label>
-                                    <input id="edit_available_bedspaces" v-model="editForm.available_bedspaces" type="number" min="0" class="form-control rounded-3" style="min-height: 44px;">
-                                </div>
+                            <div class="col-6 col-md-3">
+                                <label for="edit_available_bedspaces" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-1.5">Available Beds</label>
+                                <input id="edit_available_bedspaces" v-model="editForm.available_bedspaces" type="number" min="0" class="form-control rounded-3" style="min-height: 44px;">
+                            </div>
 
-                                <div class="col-md-6">
-                                    <label for="edit_allowed_genders" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Gender Accommodation</label>
-                                    <select id="edit_allowed_genders" v-model="editForm.allowed_genders" class="form-select rounded-3" style="min-height: 44px;">
-                                        <option value="Any Gender (All)">Any Gender (All)</option>
-                                        <option value="Male Only">Male Only</option>
-                                        <option value="Female Only">Female Only</option>
-                                        <option value="Separated by Room">Separated by Room</option>
-                                    </select>
-                                </div>
+                            <div class="col-12 col-md-6">
+                                <label for="edit_allowed_genders" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-1.5">Gender Accommodation</label>
+                                <select id="edit_allowed_genders" v-model="editForm.allowed_genders" class="form-select rounded-3" style="min-height: 44px;">
+                                    <option value="Any Gender (All)">Any Gender (All)</option>
+                                    <option value="Male Only">Male Only</option>
+                                    <option value="Female Only">Female Only</option>
+                                    <option value="Separated by Room">Separated by Room</option>
+                                </select>
+                            </div>
 
-                                <div class="col-md-6">
-                                    <label for="edit_amenities" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Amenities (Comma separated)</label>
-                                    <input id="edit_amenities" v-model="editForm.amenities_text" type="text" class="form-control rounded-3" style="min-height: 44px;" placeholder="WiFi, Study Area, Kitchen, CCTV">
-                                </div>
+                            <div class="col-12 col-md-6">
+                                <label for="edit_amenities" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-1.5">Amenities (Comma separated)</label>
+                                <input id="edit_amenities" v-model="editForm.amenities_text" type="text" class="form-control rounded-3" style="min-height: 44px;" placeholder="WiFi, Study Area, Kitchen, CCTV">
+                            </div>
 
-                                <div class="col-md-12">
-                                    <label for="edit_description" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Description</label>
-                                    <textarea id="edit_description" v-model="editForm.description" class="form-control rounded-3" rows="3" placeholder="Listing description..." />
-                                </div>
+                            <div class="col-12">
+                                <label for="edit_description" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-1.5">Description</label>
+                                <textarea id="edit_description" v-model="editForm.description" class="form-control rounded-3" rows="3" placeholder="Listing description..." />
+                            </div>
 
-                                <div class="col-md-12">
-                                    <label for="edit_location_description" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Location Landmarks</label>
-                                    <textarea id="edit_location_description" v-model="editForm.location_description" class="form-control rounded-3" rows="2" placeholder="Near TPC main gate, 5 mins walk..." />
-                                </div>
+                            <div class="col-12">
+                                <label for="edit_location_description" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-1.5">Location Landmarks</label>
+                                <textarea id="edit_location_description" v-model="editForm.location_description" class="form-control rounded-3" rows="2" placeholder="Near TPC main gate, 5 mins walk..." />
+                            </div>
 
-                                <div class="col-md-12">
-                                    <label for="edit_rules" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">House Rules & Curfew</label>
-                                    <textarea id="edit_rules" v-model="editForm.rules" class="form-control rounded-3" rows="2" placeholder="10:00 PM Curfew, No smoking inside..." />
-                                </div>
+                            <div class="col-12">
+                                <label for="edit_rules" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-1.5">House Rules & Curfew</label>
+                                <textarea id="edit_rules" v-model="editForm.rules" class="form-control rounded-3" rows="2" placeholder="10:00 PM Curfew, No smoking inside..." />
                             </div>
                         </div>
+                    </div>
 
-                        <div class="modal-footer border-top border-secondary-subtle p-3">
-                            <button type="button" class="btn btn-light rounded-3 px-4" style="min-height: 44px;" data-bs-dismiss="modal" :disabled="editForm.processing">Cancel</button>
-                            <button type="submit" class="btn btn-success rounded-3 px-4 fw-semibold" style="min-height: 44px;" :disabled="editForm.processing">
-                                <span v-if="editForm.processing" class="spinner-border spinner-border-sm me-2"></span>
-                                Update Listing
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    <div class="modal-footer border-top border-secondary-subtle px-3 px-md-4 py-3 bg-body-tertiary flex-shrink-0">
+                        <button type="button" class="btn btn-light rounded-3 px-4" style="min-height: 44px;" data-bs-dismiss="modal" :disabled="editForm.processing">Cancel</button>
+                        <button type="submit" class="btn btn-success rounded-3 px-4 fw-semibold" style="min-height: 44px;" :disabled="editForm.processing">
+                            <span v-if="editForm.processing" class="spinner-border spinner-border-sm me-2"></span>
+                            Update Listing
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 
