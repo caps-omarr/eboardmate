@@ -22,3 +22,21 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Papers and Documentations
+*.docx
+*.docx.bak
+~$*.docx
+*.doc
+*.pdf
+*.xlsx
+/docs/
+eboardmate_*.md
+EBoardMate_*.md
+test_mermaid.html
+test_rendered.png
+
+# Python Scripts and Cache
+*.py
+*.pyc
+__pycache__/

@@ -4,19 +4,48 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 :root {
-    --ebm-primary: #25855A;
-    --ebm-primary-hover: #1F6F4A;
+    /* ─── Skill-Compliant Design System Tokens (ui-ux-design-system) ─── */
+    /* Surface & Canvas (Sanitized: Never pure #000000 or pure #FFFFFF) */
+    --surface-canvas: var(--user-canvas, #F8FAF9);
+    --surface-card: var(--user-surface, #FFFFFF);
+    --surface-subtle: var(--user-subtle, #F0F4F2);
+    --surface-overlay: var(--user-overlay, rgba(15, 23, 42, 0.85));
+
+    /* Typography & Icons */
+    --text-primary: var(--user-text-primary, #1F2933);
+    --text-secondary: var(--user-text-secondary, #6B7280);
+    --text-disabled: var(--user-text-disabled, #9CA3AF);
+
+    /* Borders & Dividers */
+    --border-subtle: var(--user-border-subtle, #E5E7EB);
+    --border-focus: var(--user-border-focus, #25855A);
+
+    /* Brand / Action Tokens */
+    --brand-primary: var(--user-brand-primary, #25855A);
+    --brand-primary-hover: var(--user-brand-hover, #1F6F4A);
+    --brand-primary-active: var(--user-brand-active, #1F5C43);
+    --brand-accent: var(--user-brand-accent, #ED8936);
+
+    /* Status / Feedback Tokens */
+    --status-success: var(--user-success, #25855A);
+    --status-danger: var(--user-danger, #E53E3E);
+    --status-warning: var(--user-warning, #D69E2E);
+    --status-info: var(--user-info, #2563EB);
+
+    /* Legacy EBM Token Mapping (Preserves full backwards compatibility) */
+    --ebm-primary: var(--brand-primary);
+    --ebm-primary-hover: var(--brand-primary-hover);
     --ebm-soft-green: #E6F4EA;
     --ebm-teal: #2D3748;
-    --ebm-bg: #F8FAF9;
-    --ebm-text: #1F2933;
-    --ebm-muted: #6B7280;
-    --ebm-border: #E5E7EB;
-    --ebm-accent: #ED8936;
-    --ebm-success: #25855A;
-    --ebm-warning: #D69E2E;
-    --ebm-danger: #E53E3E;
-    --bs-primary: #25855A;
+    --ebm-bg: var(--surface-canvas);
+    --ebm-text: var(--text-primary);
+    --ebm-muted: var(--text-secondary);
+    --ebm-border: var(--border-subtle);
+    --ebm-accent: var(--brand-accent);
+    --ebm-success: var(--status-success);
+    --ebm-warning: var(--status-warning);
+    --ebm-danger: var(--status-danger);
+    --bs-primary: var(--brand-primary);
     --bs-primary-rgb: 37, 133, 90;
 }
 
@@ -1035,17 +1064,34 @@ a:hover {
 
 /* 🚀 FIX: Premium Dark Mode Variables & Hardcoded Overrides */
 [data-bs-theme="dark"] {
+    /* Skill Design System Token Overrides */
+    --surface-canvas: #121212;
+    --surface-card: #1c1c1e;
+    --surface-subtle: #242426;
+    --surface-overlay: rgba(18, 18, 18, 0.85);
+
+    --text-primary: #e4e4e7;
+    --text-secondary: #a1a1aa;
+    --text-disabled: #71717a;
+
+    --border-subtle: #2c2c2e;
+    --border-focus: #2bb075;
+
+    --brand-primary: #2bb075;
+    --brand-primary-hover: #25855a;
+    --brand-primary-active: #1f6f4a;
+
     /* Bootstrap Global Overrides */
-    --bs-body-bg: #121212; 
-    --bs-body-color: #e4e4e7; 
-    --bs-tertiary-bg: #1c1c1e; 
-    --bs-border-color: #2c2c2e; 
+    --bs-body-bg: var(--surface-canvas); 
+    --bs-body-color: var(--text-primary); 
+    --bs-tertiary-bg: var(--surface-card); 
+    --bs-border-color: var(--border-subtle); 
     
     /* EBM Custom Variable Overrides */
-    --ebm-bg: #121212;
-    --ebm-text: #e4e4e7;
-    --ebm-border: #2c2c2e;
-    --ebm-muted: #a1a1aa;
+    --ebm-bg: var(--surface-canvas);
+    --ebm-text: var(--text-primary);
+    --ebm-border: var(--border-subtle);
+    --ebm-muted: var(--text-secondary);
 }
 
 /* Force override the hardcoded #ffffff gradient in the hero section */
