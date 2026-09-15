@@ -193,10 +193,10 @@ const formatPrice = (price) => {
             <!-- ON-SCREEN HEADER (Hidden in print) -->
             <header class="d-print-none mb-4 d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
                 <div>
-                    <span class="badge bg-body text-body border border-secondary-subtle mb-2 px-3 py-2 rounded-pill shadow-sm">
+                    <span class="text-uppercase small fw-bold text-secondary tracking-wider d-block mb-1">
                         Compliance & Audit Engine
                     </span>
-                    <h1 class="text-body-emphasis fw-bold mb-1 tracking-tight">
+                    <h1 class="h3 text-body-emphasis fw-bold mb-1 tracking-tight">
                         Administrative Reports & Privacy-Compliant Exports
                     </h1>
                     <p class="text-body-secondary mb-0">
@@ -207,11 +207,12 @@ const formatPrice = (price) => {
                 <!-- Print Action Button -->
                 <button 
                     type="button" 
-                    class="btn btn-primary rounded-pill px-4 py-2 shadow-sm d-flex align-items-center gap-2 fw-semibold"
+                    class="btn btn-primary rounded-3 px-4 py-2 shadow-sm d-flex align-items-center gap-2 fw-semibold"
+                    style="min-height: 44px;"
                     @click="printReport"
                 >
                     <i class="bi bi-printer-fill fs-5"></i>
-                    <span>Print / Save as PDF</span>
+                    <span>Export PDF / Print</span>
                 </button>
             </header>
 
@@ -224,24 +225,24 @@ const formatPrice = (price) => {
                         </h2>
                         <div class="row g-3 text-center">
                             <div class="col-4">
-                                <div class="p-3 rounded-4 bg-body-tertiary border border-secondary-subtle">
+                                <div class="p-3 rounded-3 bg-body-tertiary border border-secondary-subtle">
                                     <div class="small text-body-secondary fw-bold text-uppercase">Properties</div>
                                     <div class="h3 fw-bold text-body-emphasis mb-0 mt-1">{{ stats.total_boarding_houses }}</div>
-                                    <span class="badge badge-soft-success rounded-pill mt-1">{{ stats.approved_boarding_houses }} active</span>
+                                    <span class="badge badge-soft-success rounded-2 mt-1">{{ stats.approved_boarding_houses }} active</span>
                                 </div>
                             </div>
                             <div class="col-4">
-                                <div class="p-3 rounded-4 bg-body-tertiary border border-secondary-subtle">
+                                <div class="p-3 rounded-3 bg-body-tertiary border border-secondary-subtle">
                                     <div class="small text-body-secondary fw-bold text-uppercase">Owners</div>
                                     <div class="h3 fw-bold text-body-emphasis mb-0 mt-1">{{ stats.total_owners }}</div>
-                                    <span class="badge badge-soft-primary rounded-pill mt-1">Verified</span>
+                                    <span class="badge badge-soft-primary rounded-2 mt-1">Verified</span>
                                 </div>
                             </div>
                             <div class="col-4">
-                                <div class="p-3 rounded-4 bg-body-tertiary border border-secondary-subtle">
+                                <div class="p-3 rounded-3 bg-body-tertiary border border-secondary-subtle">
                                     <div class="small text-body-secondary fw-bold text-uppercase">Bookings</div>
                                     <div class="h3 fw-bold text-body-emphasis mb-0 mt-1">{{ stats.total_reservations }}</div>
-                                    <span class="badge badge-soft-warning rounded-pill mt-1">{{ stats.pending_reservations }} pending</span>
+                                    <span class="badge badge-soft-warning rounded-2 mt-1">{{ stats.pending_reservations }} pending</span>
                                 </div>
                             </div>
                         </div>
@@ -262,24 +263,26 @@ const formatPrice = (price) => {
             <div class="d-print-none d-flex align-items-center gap-2 mb-4 border-bottom border-secondary-subtle pb-3">
                 <button 
                     type="button" 
-                    class="btn rounded-pill px-4 py-2 fw-semibold d-flex align-items-center gap-2"
+                    class="btn rounded-3 px-3 py-2 fw-semibold d-flex align-items-center gap-2"
+                    style="min-height: 44px;"
                     :class="activeReportTab === 'reservations' ? 'btn-success shadow-sm' : 'btn-light border border-secondary-subtle text-body-secondary'"
                     @click="activeReportTab = 'reservations'"
                 >
-                    <i class="bi bi-calendar-check-fill"></i>
+                    <i class="bi bi-calendar-check"></i>
                     <span>Reservation Master List</span>
-                    <span class="badge bg-white text-dark rounded-pill ms-1">{{ reservations.length }}</span>
+                    <span class="badge bg-white text-dark rounded-2 ms-1">{{ reservations.length }}</span>
                 </button>
 
                 <button 
                     type="button" 
-                    class="btn rounded-pill px-4 py-2 fw-semibold d-flex align-items-center gap-2"
+                    class="btn rounded-3 px-3 py-2 fw-semibold d-flex align-items-center gap-2"
+                    style="min-height: 44px;"
                     :class="activeReportTab === 'directory' ? 'btn-success shadow-sm' : 'btn-light border border-secondary-subtle text-body-secondary'"
                     @click="activeReportTab = 'directory'"
                 >
-                    <i class="bi bi-buildings-fill"></i>
+                    <i class="bi bi-buildings"></i>
                     <span>Boarding House Directory</span>
-                    <span class="badge bg-white text-dark rounded-pill ms-1">{{ directoryReport.length }}</span>
+                    <span class="badge bg-white text-dark rounded-2 ms-1">{{ directoryReport.length }}</span>
                 </button>
             </div>
 
@@ -294,8 +297,8 @@ const formatPrice = (price) => {
                         
                         <!-- Boarding House Select -->
                         <div class="col-md-3">
-                            <label for="filter_bh" class="form-label fw-bold small text-body-secondary text-uppercase">Boarding House</label>
-                            <select id="filter_bh" v-model="selectedBh" class="form-select rounded-3 border-secondary-subtle" @change="applyFilters">
+                            <label for="filter_bh" class="form-label fw-bold small text-body-secondary text-uppercase mb-2">Boarding House</label>
+                            <select id="filter_bh" v-model="selectedBh" class="form-select rounded-3 border-secondary-subtle" style="min-height: 44px;" @change="applyFilters">
                                 <option value="all">All Boarding Houses (Global)</option>
                                 <option v-for="house in boardingHousesList" :key="house.id" :value="house.id">
                                     {{ house.name }}
@@ -305,8 +308,8 @@ const formatPrice = (price) => {
 
                         <!-- Status Select -->
                         <div class="col-md-2">
-                            <label for="filter_status" class="form-label fw-bold small text-body-secondary text-uppercase">Status</label>
-                            <select id="filter_status" v-model="selectedStatus" class="form-select rounded-3 border-secondary-subtle" @change="applyFilters">
+                            <label for="filter_status" class="form-label fw-bold small text-body-secondary text-uppercase mb-2">Status</label>
+                            <select id="filter_status" v-model="selectedStatus" class="form-select rounded-3 border-secondary-subtle" style="min-height: 44px;" @change="applyFilters">
                                 <option value="all">All Statuses</option>
                                 <option value="pending">Pending</option>
                                 <option value="approved">Approved</option>
@@ -318,24 +321,25 @@ const formatPrice = (price) => {
 
                         <!-- Date From -->
                         <div class="col-md-2">
-                            <label for="filter_date_from" class="form-label fw-bold small text-body-secondary text-uppercase">Move-in From</label>
-                            <input id="filter_date_from" v-model="dateFrom" type="date" class="form-control rounded-3 border-secondary-subtle" @change="applyFilters">
+                            <label for="filter_date_from" class="form-label fw-bold small text-body-secondary text-uppercase mb-2">Move-in From</label>
+                            <input id="filter_date_from" v-model="dateFrom" type="date" class="form-control rounded-3 border-secondary-subtle" style="min-height: 44px;" @change="applyFilters">
                         </div>
 
                         <!-- Date To -->
                         <div class="col-md-2">
-                            <label for="filter_date_to" class="form-label fw-bold small text-body-secondary text-uppercase">Move-in To</label>
-                            <input id="filter_date_to" v-model="dateTo" type="date" class="form-control rounded-3 border-secondary-subtle" @change="applyFilters">
+                            <label for="filter_date_to" class="form-label fw-bold small text-body-secondary text-uppercase mb-2">Move-in To</label>
+                            <input id="filter_date_to" v-model="dateTo" type="date" class="form-control rounded-3 border-secondary-subtle" style="min-height: 44px;" @change="applyFilters">
                         </div>
 
                         <!-- Text Search -->
                         <div class="col-md-2">
-                            <label for="filter_search" class="form-label fw-bold small text-body-secondary text-uppercase">Search</label>
+                            <label for="filter_search" class="form-label fw-bold small text-body-secondary text-uppercase mb-2">Search</label>
                             <input 
                                 id="filter_search" 
                                 v-model="searchQuery" 
                                 type="text" 
                                 class="form-control rounded-3 border-secondary-subtle" 
+                                style="min-height: 44px;"
                                 placeholder="Code, Guest, House..."
                                 @input="handleSearchInput"
                             >
@@ -343,8 +347,8 @@ const formatPrice = (price) => {
 
                         <!-- Reset Button -->
                         <div class="col-md-1">
-                            <button type="button" class="btn btn-outline-secondary w-100 rounded-3" title="Reset Filters" @click="resetFilters">
-                                <i class="bi bi-arrow-counterclockwise"></i>
+                            <button type="button" class="btn btn-outline-secondary w-100 rounded-3 d-flex align-items-center justify-content-center" style="min-height: 44px;" title="Reset Filters" @click="resetFilters">
+                                <i class="bi bi-arrow-counterclockwise fs-5"></i>
                             </button>
                         </div>
                     </div>
@@ -352,8 +356,8 @@ const formatPrice = (price) => {
 
                 <!-- PRIVACY COMPLIANCE NOTICE -->
                 <div class="p-3 mb-4 rounded-4 border border-secondary-subtle bg-body d-flex align-items-center gap-3 d-print-none shadow-sm">
-                    <div class="p-2 rounded-circle bg-success bg-opacity-10 text-success">
-                        <i class="bi bi-shield-lock-fill fs-5"></i>
+                    <div class="rounded-3 bg-success bg-opacity-10 text-success d-inline-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px;">
+                        <i class="bi bi-shield-check fs-5"></i>
                     </div>
                     <div class="small">
                         <strong class="text-body-emphasis">Data Privacy Standard Enforced:</strong>
@@ -420,7 +424,7 @@ const formatPrice = (price) => {
 
                                     <!-- Status -->
                                     <td class="py-3">
-                                        <span class="badge rounded-pill px-3 py-1 shadow-sm text-capitalize print-badge" :class="statusBadgeClass(res.status)">
+                                        <span class="badge rounded-2 px-2.5 py-1 text-capitalize print-badge" :class="statusBadgeClass(res.status)">
                                             {{ res.status_label }}
                                         </span>
                                     </td>
@@ -435,10 +439,10 @@ const formatPrice = (price) => {
                     </div>
 
                     <div v-else class="text-center p-5">
-                        <div class="fs-1 mb-2 opacity-50">📋</div>
+                        <i class="bi bi-folder-x display-5 text-secondary opacity-50 mb-2 d-block"></i>
                         <h3 class="h5 fw-bold mb-1">No reservations found</h3>
                         <p class="text-body-secondary small mb-3">No reservation records matched your filter criteria.</p>
-                        <button class="btn btn-sm btn-outline-secondary rounded-pill" @click="resetFilters">
+                        <button class="btn btn-sm btn-outline-secondary rounded-3 px-3 py-2" @click="resetFilters">
                             Reset Filters
                         </button>
                     </div>
@@ -494,7 +498,7 @@ const formatPrice = (price) => {
                                         <div v-if="house.latitude && house.longitude" class="font-monospace small text-primary">
                                             {{ house.latitude }}, {{ house.longitude }}
                                         </div>
-                                        <span v-else class="badge badge-soft-danger rounded-pill small">Missing Coordinates</span>
+                                        <span v-else class="badge badge-soft-danger rounded-2 small">Missing Coordinates</span>
                                     </td>
 
                                     <!-- Room Allocation -->
@@ -509,7 +513,7 @@ const formatPrice = (price) => {
 
                                     <!-- Status -->
                                     <td class="py-3 text-end pe-4">
-                                        <span class="badge rounded-pill px-3 py-1 text-capitalize print-badge" :class="statusBadgeClass(house.status)">
+                                        <span class="badge rounded-2 px-2.5 py-1 text-capitalize print-badge" :class="statusBadgeClass(house.status)">
                                             {{ house.status }}
                                         </span>
                                     </td>

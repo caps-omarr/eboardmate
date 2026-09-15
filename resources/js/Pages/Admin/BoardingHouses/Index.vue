@@ -313,10 +313,10 @@ const houseLinks = computed(() => {
 
             <!-- HEADER SECTION -->
             <header class="mb-4">
-                <span class="badge bg-body text-body border border-secondary-subtle mb-2 px-3 py-2 rounded-pill shadow-sm">
+                <span class="text-uppercase small fw-bold text-secondary tracking-wider d-block mb-1">
                     Super Admin Portal
                 </span>
-                <h1 class="text-body-emphasis fw-bold mb-1 tracking-tight">
+                <h1 class="h3 text-body-emphasis fw-bold mb-1 tracking-tight">
                     Boarding House Property Management
                 </h1>
                 <p class="text-body-secondary mb-0">
@@ -330,13 +330,13 @@ const houseLinks = computed(() => {
                 <section class="col-lg-4" aria-label="Create Boarding House Form">
                     <div class="ebm-card border border-secondary-subtle shadow-sm p-4 bg-body-tertiary rounded-4 h-100">
                         <h2 class="h5 text-body-emphasis fw-bold mb-4 border-bottom border-secondary-subtle pb-2 d-flex align-items-center gap-2">
-                            <i class="bi bi-house-add-fill text-success"></i> New Property Listing
+                            <i class="bi bi-house-add text-success"></i> New Property Listing
                         </h2>
 
                         <form @submit.prevent="submitListing">
                             <div class="mb-3">
-                                <label for="owner_id" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Assign Owner</label>
-                                <select id="owner_id" v-model="listingForm.owner_id" class="form-select border-secondary-subtle bg-body shadow-sm rounded-3 py-2" :class="{ 'is-invalid': listingForm.errors.owner_id }">
+                                <label for="owner_id" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Assign Owner</label>
+                                <select id="owner_id" v-model="listingForm.owner_id" class="form-select border-secondary-subtle bg-body shadow-sm rounded-3 py-2" style="min-height: 44px;" :class="{ 'is-invalid': listingForm.errors.owner_id }">
                                     <option value="">No owner assigned</option>
                                     <option v-for="owner in owners" :key="owner.id" :value="owner.id">
                                         {{ owner.name }} - {{ owner.email }}
@@ -346,62 +346,62 @@ const houseLinks = computed(() => {
                             </div>
 
                             <div class="mb-3">
-                                <label for="name" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Name</label>
-                                <input id="name" v-model="listingForm.name" type="text" class="form-control border-secondary-subtle bg-body shadow-sm rounded-3 py-2" :class="{ 'is-invalid': listingForm.errors.name }" placeholder="e.g. Sunrise Boarding House" required>
+                                <label for="name" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Name</label>
+                                <input id="name" v-model="listingForm.name" type="text" class="form-control border-secondary-subtle bg-body shadow-sm rounded-3 py-2" style="min-height: 44px;" :class="{ 'is-invalid': listingForm.errors.name }" placeholder="e.g. Sunrise Boarding House" required>
                                 <div v-if="listingForm.errors.name" class="invalid-feedback">{{ listingForm.errors.name }}</div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="address" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Address</label>
-                                <input id="address" v-model="listingForm.address" type="text" class="form-control border-secondary-subtle bg-body shadow-sm rounded-3 py-2" :class="{ 'is-invalid': listingForm.errors.address }" placeholder="Talibon, Bohol">
+                                <label for="address" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Address</label>
+                                <input id="address" v-model="listingForm.address" type="text" class="form-control border-secondary-subtle bg-body shadow-sm rounded-3 py-2" style="min-height: 44px;" :class="{ 'is-invalid': listingForm.errors.address }" placeholder="Talibon, Bohol">
                                 <div v-if="listingForm.errors.address" class="invalid-feedback">{{ listingForm.errors.address }}</div>
                             </div>
 
                             <div class="row g-3 mb-3">
                                 <div class="col-6">
-                                    <label for="latitude" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Latitude</label>
-                                    <input id="latitude" v-model="listingForm.latitude" type="number" step="0.0000001" min="-90" max="90" class="form-control border-secondary-subtle bg-body shadow-sm font-monospace rounded-3" :class="{ 'is-invalid': listingForm.errors.latitude }" placeholder="10.13605">
+                                    <label for="latitude" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Latitude</label>
+                                    <input id="latitude" v-model="listingForm.latitude" type="number" step="0.0000001" min="-90" max="90" class="form-control border-secondary-subtle bg-body shadow-sm font-monospace rounded-3" style="min-height: 44px;" :class="{ 'is-invalid': listingForm.errors.latitude }" placeholder="10.13605">
                                     <div v-if="listingForm.errors.latitude" class="invalid-feedback">{{ listingForm.errors.latitude }}</div>
                                 </div>
                                 <div class="col-6">
-                                    <label for="longitude" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Longitude</label>
-                                    <input id="longitude" v-model="listingForm.longitude" type="number" step="0.0000001" min="-180" max="180" class="form-control border-secondary-subtle bg-body shadow-sm font-monospace rounded-3" :class="{ 'is-invalid': listingForm.errors.longitude }" placeholder="124.32429">
+                                    <label for="longitude" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Longitude</label>
+                                    <input id="longitude" v-model="listingForm.longitude" type="number" step="0.0000001" min="-180" max="180" class="form-control border-secondary-subtle bg-body shadow-sm font-monospace rounded-3" style="min-height: 44px;" :class="{ 'is-invalid': listingForm.errors.longitude }" placeholder="124.32429">
                                     <div v-if="listingForm.errors.longitude" class="invalid-feedback">{{ listingForm.errors.longitude }}</div>
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="rent_price" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Monthly Rent (₱)</label>
-                                <input id="rent_price" v-model="listingForm.rent_price" type="number" step="0.01" min="0" class="form-control border-secondary-subtle bg-body shadow-sm rounded-3 py-2 text-success fw-bold" :class="{ 'is-invalid': listingForm.errors.rent_price }" placeholder="2500" required>
+                                <label for="rent_price" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Monthly Rent (₱)</label>
+                                <input id="rent_price" v-model="listingForm.rent_price" type="number" step="0.01" min="0" class="form-control border-secondary-subtle bg-body shadow-sm rounded-3 py-2 text-success fw-bold" style="min-height: 44px;" :class="{ 'is-invalid': listingForm.errors.rent_price }" placeholder="2500" required>
                                 <div v-if="listingForm.errors.rent_price" class="invalid-feedback">{{ listingForm.errors.rent_price }}</div>
                             </div>
 
                             <div class="row g-3 mb-3">
                                 <div class="col-6">
-                                    <label for="total_rooms" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Total Rooms</label>
-                                    <input id="total_rooms" v-model="listingForm.total_rooms" type="number" min="0" class="form-control border-secondary-subtle bg-body shadow-sm rounded-3" :class="{ 'is-invalid': listingForm.errors.total_rooms }">
+                                    <label for="total_rooms" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Total Rooms</label>
+                                    <input id="total_rooms" v-model="listingForm.total_rooms" type="number" min="0" class="form-control border-secondary-subtle bg-body shadow-sm rounded-3" style="min-height: 44px;" :class="{ 'is-invalid': listingForm.errors.total_rooms }">
                                 </div>
                                 <div class="col-6">
-                                    <label for="available_rooms" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Avail Rooms</label>
-                                    <input id="available_rooms" v-model="listingForm.available_rooms" type="number" min="0" class="form-control border-secondary-subtle bg-body shadow-sm rounded-3" :class="{ 'is-invalid': listingForm.errors.available_rooms }">
+                                    <label for="available_rooms" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Avail Rooms</label>
+                                    <input id="available_rooms" v-model="listingForm.available_rooms" type="number" min="0" class="form-control border-secondary-subtle bg-body shadow-sm rounded-3" style="min-height: 44px;" :class="{ 'is-invalid': listingForm.errors.available_rooms }">
                                 </div>
                             </div>
 
                             <div class="row g-3 mb-3">
                                 <div class="col-6">
-                                    <label for="total_bedspaces" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Total Beds</label>
-                                    <input id="total_bedspaces" v-model="listingForm.total_bedspaces" type="number" min="0" class="form-control border-secondary-subtle bg-body shadow-sm rounded-3" :class="{ 'is-invalid': listingForm.errors.total_bedspaces }">
+                                    <label for="total_bedspaces" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Total Beds</label>
+                                    <input id="total_bedspaces" v-model="listingForm.total_bedspaces" type="number" min="0" class="form-control border-secondary-subtle bg-body shadow-sm rounded-3" style="min-height: 44px;" :class="{ 'is-invalid': listingForm.errors.total_bedspaces }">
                                 </div>
                                 <div class="col-6">
-                                    <label for="available_bedspaces" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Avail Beds</label>
-                                    <input id="available_bedspaces" v-model="listingForm.available_bedspaces" type="number" min="0" class="form-control border-secondary-subtle bg-body shadow-sm rounded-3" :class="{ 'is-invalid': listingForm.errors.available_bedspaces }">
+                                    <label for="available_bedspaces" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Avail Beds</label>
+                                    <input id="available_bedspaces" v-model="listingForm.available_bedspaces" type="number" min="0" class="form-control border-secondary-subtle bg-body shadow-sm rounded-3" style="min-height: 44px;" :class="{ 'is-invalid': listingForm.errors.available_bedspaces }">
                                 </div>
                             </div>
 
-                            <button type="submit" class="btn btn-success w-100 mt-3 py-2 fw-bold shadow-sm rounded-pill" :disabled="listingForm.processing">
-                                <span v-if="listingForm.processing" class="spinner-border spinner-border-sm me-2"></span>
-                                <i v-else class="bi bi-plus-circle-fill me-1"></i>
-                                Create Listing
+                            <button type="submit" class="btn btn-success w-100 mt-3 py-2 fw-semibold shadow-sm rounded-3 d-flex align-items-center justify-content-center gap-2" style="min-height: 44px;" :disabled="listingForm.processing">
+                                <span v-if="listingForm.processing" class="spinner-border spinner-border-sm"></span>
+                                <i v-else class="bi bi-plus-circle"></i>
+                                <span>Register Property Listing</span>
                             </button>
                         </form>
                     </div>
@@ -430,7 +430,8 @@ const houseLinks = computed(() => {
                                 <input
                                     v-model="searchQuery"
                                     type="text"
-                                    class="form-control form-control-sm ps-5 pe-4 rounded-pill border-secondary-subtle bg-body shadow-sm"
+                                    class="form-control ps-5 pe-4 rounded-3 border-secondary-subtle bg-body shadow-sm"
+                                    style="min-height: 40px;"
                                     placeholder="Search house, owner, address..."
                                     @input="handleSearch"
                                 >
@@ -488,47 +489,47 @@ const houseLinks = computed(() => {
 
                                             <!-- Status -->
                                             <td class="text-nowrap border-secondary-subtle">
-                                                <span class="badge shadow-sm rounded-pill px-3 py-1 text-capitalize" :class="statusBadgeClass(boardingHouse.status)">
+                                                <span class="badge rounded-2 px-2.5 py-1 text-capitalize" :class="statusBadgeClass(boardingHouse.status)">
                                                     {{ boardingHouse.status }}
                                                 </span>
                                                 <div v-if="boardingHouse.is_verified" class="small text-success mt-1 fw-bold tracking-tight">
-                                                    <i class="bi bi-check-circle-fill"></i> Verified
+                                                    <i class="bi bi-patch-check-fill"></i> Verified
                                                 </div>
                                                 <div v-else class="small text-body-secondary mt-1">Not verified</div>
                                             </td>
 
                                             <!-- Actions -->
                                             <td class="border-secondary-subtle text-end pe-4">
-                                                <div class="d-flex justify-content-end align-items-center gap-1">
+                                                <div class="d-flex justify-content-end align-items-center gap-1.5">
                                                     
                                                     <!-- Edit Button -->
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-circle d-inline-flex align-items-center justify-content-center p-2" title="Edit Listing Details" style="width: 32px; height: 32px;" @click="openEditModal(boardingHouse)">
-                                                        <i class="bi bi-pencil-fill" style="font-size: 0.75rem;"></i>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-2 d-inline-flex align-items-center justify-content-center p-2" title="Edit Listing Details" style="width: 36px; height: 36px;" @click="openEditModal(boardingHouse)">
+                                                        <i class="bi bi-pencil" style="font-size: 0.85rem;"></i>
                                                     </button>
 
                                                     <!-- Approve -->
-                                                    <button v-if="boardingHouse.status === 'pending' || boardingHouse.status === 'rejected'" type="button" class="btn btn-sm btn-outline-success rounded-circle d-inline-flex align-items-center justify-content-center p-2" title="Approve & Verify" style="width: 32px; height: 32px;" @click="openActionModal(boardingHouse, 'approve')">
-                                                        <i class="bi bi-check-lg" style="font-size: 0.9rem;"></i>
+                                                    <button v-if="boardingHouse.status === 'pending' || boardingHouse.status === 'rejected'" type="button" class="btn btn-sm btn-outline-success rounded-2 d-inline-flex align-items-center justify-content-center p-2" title="Approve & Verify" style="width: 36px; height: 36px;" @click="openActionModal(boardingHouse, 'approve')">
+                                                        <i class="bi bi-check-lg" style="font-size: 0.95rem;"></i>
                                                     </button>
 
                                                     <!-- Reject -->
-                                                    <button v-if="boardingHouse.status === 'pending' || boardingHouse.status === 'approved'" type="button" class="btn btn-sm btn-outline-warning rounded-circle d-inline-flex align-items-center justify-content-center p-2" title="Reject Listing" style="width: 32px; height: 32px;" @click="openActionModal(boardingHouse, 'reject')">
-                                                        <i class="bi bi-x-lg" style="font-size: 0.8rem;"></i>
+                                                    <button v-if="boardingHouse.status === 'pending' || boardingHouse.status === 'approved'" type="button" class="btn btn-sm btn-outline-warning rounded-2 d-inline-flex align-items-center justify-content-center p-2" title="Reject Listing" style="width: 36px; height: 36px;" @click="openActionModal(boardingHouse, 'reject')">
+                                                        <i class="bi bi-x-lg" style="font-size: 0.85rem;"></i>
                                                     </button>
 
                                                     <!-- Deactivate -->
-                                                    <button v-if="boardingHouse.status === 'approved'" type="button" class="btn btn-sm btn-outline-secondary rounded-circle d-inline-flex align-items-center justify-content-center p-2" title="Deactivate Listing" style="width: 32px; height: 32px;" @click="openActionModal(boardingHouse, 'deactivate')">
-                                                        <i class="bi bi-eye-slash-fill" style="font-size: 0.75rem;"></i>
+                                                    <button v-if="boardingHouse.status === 'approved'" type="button" class="btn btn-sm btn-outline-secondary rounded-2 d-inline-flex align-items-center justify-content-center p-2" title="Deactivate Listing" style="width: 36px; height: 36px;" @click="openActionModal(boardingHouse, 'deactivate')">
+                                                        <i class="bi bi-eye-slash" style="font-size: 0.85rem;"></i>
                                                     </button>
 
                                                     <!-- Reactivate -->
-                                                    <button v-if="boardingHouse.status === 'deactivated'" type="button" class="btn btn-sm btn-outline-success rounded-circle d-inline-flex align-items-center justify-content-center p-2" title="Reactivate Listing" style="width: 32px; height: 32px;" @click="openActionModal(boardingHouse, 'reactivate')">
-                                                        <i class="bi bi-arrow-repeat" style="font-size: 0.85rem;"></i>
+                                                    <button v-if="boardingHouse.status === 'deactivated'" type="button" class="btn btn-sm btn-outline-success rounded-2 d-inline-flex align-items-center justify-content-center p-2" title="Reactivate Listing" style="width: 36px; height: 36px;" @click="openActionModal(boardingHouse, 'reactivate')">
+                                                        <i class="bi bi-arrow-repeat" style="font-size: 0.95rem;"></i>
                                                     </button>
 
                                                     <!-- Two-Step Delete -->
-                                                    <button type="button" class="btn btn-sm btn-outline-danger rounded-circle d-inline-flex align-items-center justify-content-center p-2" title="Delete Listing Permanently" style="width: 32px; height: 32px;" @click="openDeleteModal(boardingHouse)">
-                                                        <i class="bi bi-trash-fill" style="font-size: 0.75rem;"></i>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger rounded-2 d-inline-flex align-items-center justify-content-center p-2" title="Delete Listing Permanently" style="width: 36px; height: 36px;" @click="openDeleteModal(boardingHouse)">
+                                                        <i class="bi bi-trash" style="font-size: 0.85rem;"></i>
                                                     </button>
                                                 </div>
                                             </td>
@@ -549,14 +550,14 @@ const houseLinks = computed(() => {
                                         <Link 
                                             v-if="link.url" 
                                             :href="link.url" 
-                                            class="page-link border-secondary-subtle bg-body text-body shadow-sm" 
+                                            class="page-link border-secondary-subtle bg-body text-body shadow-sm rounded-2 mx-0.5" 
                                             preserve-scroll 
                                         >
                                             {{ cleanLabel(link.label) }}
                                         </Link>
                                         <span 
                                             v-else 
-                                            class="page-link border-secondary-subtle bg-body text-body opacity-50"
+                                            class="page-link border-secondary-subtle bg-body text-body opacity-50 rounded-2 mx-0.5"
                                         >
                                             {{ cleanLabel(link.label) }}
                                         </span>
@@ -568,16 +569,13 @@ const houseLinks = computed(() => {
                         <!-- EMPTY STATE -->
                         <div v-else class="d-flex flex-column align-items-center justify-content-center text-center p-5 h-100 bg-body">
                             <div class="mb-3">
-                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-secondary opacity-50">
-                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                                </svg>
+                                <i class="bi bi-house-door display-5 text-secondary opacity-50"></i>
                             </div>
                             <h3 class="h5 text-body-emphasis fw-bold mb-1">No boarding houses found</h3>
                             <p class="text-body-secondary mb-3 small">
                                 {{ searchQuery ? 'No listings matched your search criteria.' : 'Create a boarding house listing using the form on the left.' }}
                             </p>
-                            <button v-if="searchQuery" class="btn btn-sm btn-outline-secondary rounded-pill" @click="clearSearch">
+                            <button v-if="searchQuery" class="btn btn-sm btn-outline-secondary rounded-3 px-3 py-1.5" @click="clearSearch">
                                 Clear Search Filter
                             </button>
                         </div>
@@ -594,7 +592,7 @@ const houseLinks = computed(() => {
                         
                         <div class="modal-header border-bottom border-secondary-subtle bg-body-tertiary p-4">
                             <div>
-                                <span class="badge badge-soft-primary mb-1 px-2 py-1 rounded-pill">Admin Listing Editor</span>
+                                <span class="text-uppercase small fw-bold text-secondary tracking-wider d-block mb-1">Property Record</span>
                                 <h2 id="editListingModalLabel" class="modal-title h5 fw-bold text-body-emphasis mb-0">
                                     {{ selectedEditListing?.name }}
                                 </h2>
@@ -605,65 +603,65 @@ const houseLinks = computed(() => {
                         <div class="modal-body p-4">
                             <div class="row g-3">
                                 <div class="col-md-12">
-                                    <label for="edit_owner_id" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Assign Owner</label>
-                                    <select id="edit_owner_id" v-model="editForm.owner_id" class="form-select rounded-3 border-secondary-subtle" :class="{ 'is-invalid': editForm.errors.owner_id }">
+                                    <label for="edit_owner_id" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Assign Owner</label>
+                                    <select id="edit_owner_id" v-model="editForm.owner_id" class="form-select rounded-3 border-secondary-subtle" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.owner_id }">
                                         <option value="">No owner assigned</option>
                                         <option v-for="owner in owners" :key="owner.id" :value="owner.id">{{ owner.name }} - {{ owner.email }}</option>
                                     </select>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="edit_name" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Property Name</label>
-                                    <input id="edit_name" v-model="editForm.name" type="text" class="form-control rounded-3" :class="{ 'is-invalid': editForm.errors.name }" required>
+                                    <label for="edit_name" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Property Name</label>
+                                    <input id="edit_name" v-model="editForm.name" type="text" class="form-control rounded-3" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.name }" required>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="edit_address" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Address</label>
-                                    <input id="edit_address" v-model="editForm.address" type="text" class="form-control rounded-3" :class="{ 'is-invalid': editForm.errors.address }">
+                                    <label for="edit_address" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Address</label>
+                                    <input id="edit_address" v-model="editForm.address" type="text" class="form-control rounded-3" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.address }">
                                 </div>
 
                                 <div class="col-md-4">
-                                    <label for="edit_rent_price" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Monthly Rent (₱)</label>
-                                    <input id="edit_rent_price" v-model="editForm.rent_price" type="number" step="0.01" min="0" class="form-control rounded-3 text-success fw-bold" :class="{ 'is-invalid': editForm.errors.rent_price }" required>
+                                    <label for="edit_rent_price" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Monthly Rent (₱)</label>
+                                    <input id="edit_rent_price" v-model="editForm.rent_price" type="number" step="0.01" min="0" class="form-control rounded-3 text-success fw-bold" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.rent_price }" required>
                                 </div>
 
                                 <div class="col-md-4">
-                                    <label for="edit_latitude" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">
+                                    <label for="edit_latitude" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">
                                         <i class="bi bi-geo-alt-fill text-primary"></i> Latitude
                                     </label>
-                                    <input id="edit_latitude" v-model="editForm.latitude" type="number" step="0.0000001" min="-90" max="90" class="form-control rounded-3 font-monospace" :class="{ 'is-invalid': editForm.errors.latitude }">
+                                    <input id="edit_latitude" v-model="editForm.latitude" type="number" step="0.0000001" min="-90" max="90" class="form-control rounded-3 font-monospace" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.latitude }">
                                 </div>
 
                                 <div class="col-md-4">
-                                    <label for="edit_longitude" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">
+                                    <label for="edit_longitude" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">
                                         <i class="bi bi-geo-alt-fill text-primary"></i> Longitude
                                     </label>
-                                    <input id="edit_longitude" v-model="editForm.longitude" type="number" step="0.0000001" min="-180" max="180" class="form-control rounded-3 font-monospace" :class="{ 'is-invalid': editForm.errors.longitude }">
+                                    <input id="edit_longitude" v-model="editForm.longitude" type="number" step="0.0000001" min="-180" max="180" class="form-control rounded-3 font-monospace" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.longitude }">
                                 </div>
 
                                 <div class="col-md-3">
-                                    <label for="edit_total_rooms" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Total Rooms</label>
-                                    <input id="edit_total_rooms" v-model="editForm.total_rooms" type="number" min="0" class="form-control rounded-3">
+                                    <label for="edit_total_rooms" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Total Rooms</label>
+                                    <input id="edit_total_rooms" v-model="editForm.total_rooms" type="number" min="0" class="form-control rounded-3" style="min-height: 44px;">
                                 </div>
 
                                 <div class="col-md-3">
-                                    <label for="edit_available_rooms" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Available Rooms</label>
-                                    <input id="edit_available_rooms" v-model="editForm.available_rooms" type="number" min="0" class="form-control rounded-3">
+                                    <label for="edit_available_rooms" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Available Rooms</label>
+                                    <input id="edit_available_rooms" v-model="editForm.available_rooms" type="number" min="0" class="form-control rounded-3" style="min-height: 44px;">
                                 </div>
 
                                 <div class="col-md-3">
-                                    <label for="edit_total_bedspaces" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Total Beds</label>
-                                    <input id="edit_total_bedspaces" v-model="editForm.total_bedspaces" type="number" min="0" class="form-control rounded-3">
+                                    <label for="edit_total_bedspaces" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Total Beds</label>
+                                    <input id="edit_total_bedspaces" v-model="editForm.total_bedspaces" type="number" min="0" class="form-control rounded-3" style="min-height: 44px;">
                                 </div>
 
                                 <div class="col-md-3">
-                                    <label for="edit_available_bedspaces" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Available Beds</label>
-                                    <input id="edit_available_bedspaces" v-model="editForm.available_bedspaces" type="number" min="0" class="form-control rounded-3">
+                                    <label for="edit_available_bedspaces" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Available Beds</label>
+                                    <input id="edit_available_bedspaces" v-model="editForm.available_bedspaces" type="number" min="0" class="form-control rounded-3" style="min-height: 44px;">
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="edit_allowed_genders" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Gender Accommodation</label>
-                                    <select id="edit_allowed_genders" v-model="editForm.allowed_genders" class="form-select rounded-3">
+                                    <label for="edit_allowed_genders" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Gender Accommodation</label>
+                                    <select id="edit_allowed_genders" v-model="editForm.allowed_genders" class="form-select rounded-3" style="min-height: 44px;">
                                         <option value="Any Gender (All)">Any Gender (All)</option>
                                         <option value="Male Only">Male Only</option>
                                         <option value="Female Only">Female Only</option>
@@ -672,32 +670,32 @@ const houseLinks = computed(() => {
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="edit_amenities" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Amenities (Comma separated)</label>
-                                    <input id="edit_amenities" v-model="editForm.amenities_text" type="text" class="form-control rounded-3" placeholder="WiFi, Study Area, Kitchen, CCTV">
+                                    <label for="edit_amenities" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Amenities (Comma separated)</label>
+                                    <input id="edit_amenities" v-model="editForm.amenities_text" type="text" class="form-control rounded-3" style="min-height: 44px;" placeholder="WiFi, Study Area, Kitchen, CCTV">
                                 </div>
 
                                 <div class="col-md-12">
-                                    <label for="edit_description" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Description</label>
+                                    <label for="edit_description" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Description</label>
                                     <textarea id="edit_description" v-model="editForm.description" class="form-control rounded-3" rows="3" placeholder="Listing description..." />
                                 </div>
 
                                 <div class="col-md-12">
-                                    <label for="edit_location_description" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">Location Landmarks</label>
+                                    <label for="edit_location_description" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Location Landmarks</label>
                                     <textarea id="edit_location_description" v-model="editForm.location_description" class="form-control rounded-3" rows="2" placeholder="Near TPC main gate, 5 mins walk..." />
                                 </div>
 
                                 <div class="col-md-12">
-                                    <label for="edit_rules" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">House Rules & Curfew</label>
+                                    <label for="edit_rules" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">House Rules & Curfew</label>
                                     <textarea id="edit_rules" v-model="editForm.rules" class="form-control rounded-3" rows="2" placeholder="10:00 PM Curfew, No smoking inside..." />
                                 </div>
                             </div>
                         </div>
 
                         <div class="modal-footer border-top border-secondary-subtle p-3">
-                            <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal" :disabled="editForm.processing">Cancel</button>
-                            <button type="submit" class="btn btn-success rounded-pill px-4 fw-semibold" :disabled="editForm.processing">
+                            <button type="button" class="btn btn-light rounded-3 px-4" style="min-height: 44px;" data-bs-dismiss="modal" :disabled="editForm.processing">Cancel</button>
+                            <button type="submit" class="btn btn-success rounded-3 px-4 fw-semibold" style="min-height: 44px;" :disabled="editForm.processing">
                                 <span v-if="editForm.processing" class="spinner-border spinner-border-sm me-2"></span>
-                                Save Changes
+                                Update Listing
                             </button>
                         </div>
                     </form>
@@ -726,20 +724,20 @@ const houseLinks = computed(() => {
                             <p class="text-body-emphasis mb-3">{{ actionMessage }}</p>
 
                             <div v-if="selectedListing && (!selectedListing.latitude || !selectedListing.longitude) && (actionType === 'approve' || actionType === 'reactivate')" class="alert alert-warning border-0 rounded-3 d-flex align-items-start gap-2 small">
-                                <span>⚠️</span>
+                                <i class="bi bi-exclamation-triangle-fill text-warning flex-shrink-0 mt-0.5"></i>
                                 <div><strong>Missing Coordinates:</strong> Latitude and longitude must be provided via the Edit button before this listing can be activated on the map.</div>
                             </div>
 
                             <div v-if="actionNeedsReason" class="mb-2">
-                                <label for="reason" class="form-label fw-bold small text-body-secondary text-uppercase">Reason <span class="text-danger">*</span></label>
+                                <label for="reason" class="form-label fw-bold small text-body-secondary text-uppercase mb-2">Reason <span class="text-danger">*</span></label>
                                 <textarea id="reason" v-model="actionForm.reason" class="form-control rounded-3" :class="{ 'is-invalid': actionForm.errors.reason }" rows="3" placeholder="Provide a reason..." required />
                                 <div v-if="actionForm.errors.reason" class="invalid-feedback fw-bold">{{ actionForm.errors.reason }}</div>
                             </div>
                         </div>
 
                         <div class="modal-footer border-top border-secondary-subtle p-3">
-                            <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn rounded-pill px-4 fw-semibold" :class="actionButtonClass" :disabled="actionForm.processing">
+                            <button type="button" class="btn btn-light rounded-3 px-4" style="min-height: 44px;" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn rounded-3 px-4 fw-semibold" style="min-height: 44px;" :class="actionButtonClass" :disabled="actionForm.processing">
                                 Confirm Action
                             </button>
                         </div>
@@ -773,8 +771,8 @@ const houseLinks = computed(() => {
                     </div>
 
                     <div class="modal-footer border-top border-secondary-subtle p-3">
-                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-danger rounded-pill px-4 fw-semibold" :disabled="deleteForm.processing" @click="submitDeleteListing">
+                        <button type="button" class="btn btn-light rounded-3 px-4" style="min-height: 44px;" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger rounded-3 px-4 fw-semibold" style="min-height: 44px;" :disabled="deleteForm.processing" @click="submitDeleteListing">
                             <span v-if="deleteForm.processing" class="spinner-border spinner-border-sm me-2"></span>
                             Confirm Permanent Deletion
                         </button>

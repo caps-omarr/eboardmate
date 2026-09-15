@@ -268,13 +268,14 @@ const submitReservation = () => {
                         <!-- 🏠 HERO HEADER CARD -->
                         <div class="ebm-card p-4 p-md-5 mb-4 border border-secondary-subtle rounded-4 shadow-sm bg-body transition-all">
                             <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
-                                <span v-if="boardingHouse.is_verified" class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fw-semibold">
+                                <span v-if="boardingHouse.is_verified" class="badge bg-success-subtle text-success border border-success-subtle rounded-2 px-2.5 py-1.5 fw-semibold">
                                     <i class="bi bi-patch-check-fill me-1"></i> Verified Owner
                                 </span>
-                                <span :class="boardingHouse.is_full ? 'bg-danger-subtle text-danger border-danger-subtle' : 'bg-primary-subtle text-primary border-primary-subtle'" class="badge border rounded-pill px-3 py-2 fw-semibold">
-                                    {{ boardingHouse.is_full ? '🔴 Full' : '🟢 Available for Rent' }}
+                                <span :class="boardingHouse.is_full ? 'bg-danger-subtle text-danger border-danger-subtle' : 'bg-success-subtle text-success border-success-subtle'" class="badge border rounded-2 px-2.5 py-1.5 fw-semibold">
+                                    <i :class="boardingHouse.is_full ? 'bi bi-x-circle-fill text-danger' : 'bi bi-check-circle-fill text-success'" class="me-1"></i>
+                                    {{ boardingHouse.is_full ? 'Fully Booked' : 'Available for Rent' }}
                                 </span>
-                                <span v-if="boardingHouse.allowed_genders" class="badge bg-info-subtle text-info-emphasis border border-info-subtle rounded-pill px-3 py-2 fw-semibold">
+                                <span v-if="boardingHouse.allowed_genders" class="badge bg-info-subtle text-info-emphasis border border-info-subtle rounded-2 px-2.5 py-1.5 fw-semibold">
                                     <i class="bi bi-person-heart me-1"></i> {{ boardingHouse.allowed_genders }}
                                 </span>
                             </div>
@@ -286,35 +287,35 @@ const submitReservation = () => {
                             <p class="text-body-secondary d-flex align-items-center flex-wrap gap-2 mb-4 transition-all">
                                 <span><i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ boardingHouse.address || 'Talibon, Bohol' }}</span>
                                 <span class="text-body-tertiary">•</span>
-                                <span class="badge bg-body-tertiary text-body-secondary border border-secondary-subtle rounded-pill px-2 py-1">
+                                <span class="badge bg-body-tertiary text-body-secondary border border-secondary-subtle rounded-2 px-2 py-1">
                                     <i class="bi bi-person-walking text-success me-1"></i> {{ boardingHouse.estimated_distance_km }} km to TPC Campus
                                 </span>
                             </p>
 
-                            <!-- QUICK SPECS GRID -->
-                            <div class="row g-3 p-3 bg-body-tertiary rounded-4 border border-secondary-subtle mb-4 transition-all">
+                            <!-- QUICK SPECS GRID (Concentric 12px Inner Radius) -->
+                            <div class="row g-3 p-3 bg-body-tertiary rounded-3 border border-secondary-subtle mb-4 transition-all">
                                 <div class="col-6 col-md-3 text-center">
-                                    <span class="d-block text-body-secondary small mb-1">Monthly Rent</span>
+                                    <span class="d-block text-body-secondary small mb-1 text-uppercase fw-semibold" style="font-size: 0.75rem;">Monthly Rent</span>
                                     <strong class="text-success fs-5 fw-bold d-block">₱{{ formatPrice(boardingHouse.rent_price) }}</strong>
                                     <span class="small text-body-secondary" style="font-size: 0.75rem;">
                                         {{ 
                                             boardingHouse.includes_water && boardingHouse.includes_electricity ? 'Includes Water & Electricity' :
-                                            boardingHouse.includes_water ? 'Includes Water only' :
-                                            boardingHouse.includes_electricity ? 'Includes Electricity only' :
-                                            'Utilities excluded'
+                                             boardingHouse.includes_water ? 'Includes Water only' :
+                                             boardingHouse.includes_electricity ? 'Includes Electricity only' :
+                                             'Utilities excluded'
                                         }}
                                     </span>
                                 </div>
                                 <div class="col-6 col-md-3 text-center border-start border-secondary-subtle">
-                                    <span class="d-block text-body-secondary small mb-1">Rooms</span>
+                                    <span class="d-block text-body-secondary small mb-1 text-uppercase fw-semibold" style="font-size: 0.75rem;">Rooms</span>
                                     <strong class="text-body-emphasis fs-5 fw-bold">{{ boardingHouse.available_rooms }} / {{ boardingHouse.total_rooms }}</strong>
                                 </div>
                                 <div class="col-6 col-md-3 text-center border-start-md border-secondary-subtle">
-                                    <span class="d-block text-body-secondary small mb-1">Bedspaces</span>
+                                    <span class="d-block text-body-secondary small mb-1 text-uppercase fw-semibold" style="font-size: 0.75rem;">Bedspaces</span>
                                     <strong class="text-body-emphasis fs-5 fw-bold">{{ boardingHouse.available_bedspaces }} / {{ boardingHouse.total_bedspaces }}</strong>
                                 </div>
                                 <div class="col-6 col-md-3 text-center border-start border-secondary-subtle">
-                                    <span class="d-block text-body-secondary small mb-1">Distance</span>
+                                    <span class="d-block text-body-secondary small mb-1 text-uppercase fw-semibold" style="font-size: 0.75rem;">Distance</span>
                                     <strong class="text-body-emphasis fs-5 fw-bold">{{ boardingHouse.estimated_distance_km }} km</strong>
                                 </div>
                             </div>
@@ -325,11 +326,11 @@ const submitReservation = () => {
                             </p>
                         </div>
 
-                        <!-- 📸 PHOTOS SECTION (Horizontal Swipe Slider) -->
+                        <!-- PHOTOS SECTION (Horizontal Swipe Slider) -->
                         <div class="ebm-card p-4 p-md-5 mb-4 border border-secondary-subtle rounded-4 shadow-sm bg-body transition-all">
                             <div class="d-flex align-items-center justify-content-between mb-3">
                                 <h2 class="h4 fw-bold mb-0 text-body-emphasis">Photos</h2>
-                                <span v-if="boardingHouse.photos && boardingHouse.photos.length" class="badge rounded-pill bg-body-tertiary text-body-secondary border border-secondary-subtle px-3 py-2 fw-medium">
+                                <span v-if="boardingHouse.photos && boardingHouse.photos.length" class="badge rounded-2 bg-body-tertiary text-body-secondary border border-secondary-subtle px-3 py-2 fw-medium">
                                     <i class="bi bi-images me-1 text-primary"></i> {{ boardingHouse.photos.length }} Photos
                                 </span>
                             </div>
@@ -339,7 +340,7 @@ const submitReservation = () => {
                                     <div 
                                         v-for="(photo, index) in boardingHouse.photos" 
                                         :key="photo.id" 
-                                        class="photo-slider-item flex-shrink-0 position-relative rounded-4 overflow-hidden shadow-sm"
+                                        class="photo-slider-item flex-shrink-0 position-relative rounded-3 overflow-hidden shadow-sm"
                                         @click="openLightbox(index)"
                                     >
                                         <img :src="photo.url" :alt="photo.alt_text || boardingHouse.name" class="photo-slider-img">
@@ -350,7 +351,7 @@ const submitReservation = () => {
                                             </span>
                                         </div>
 
-                                        <span v-if="photo.is_primary" class="badge bg-primary position-absolute top-0 start-0 m-3 shadow-sm rounded-pill px-3 py-1">Primary</span>
+                                        <span v-if="photo.is_primary" class="badge bg-primary position-absolute top-0 start-0 m-3 shadow-sm rounded-2 px-2.5 py-1">Primary</span>
                                     </div>
                                 </div>
 
@@ -363,8 +364,8 @@ const submitReservation = () => {
                                 </button>
                             </div>
 
-                            <div v-else class="empty-state text-center p-4 bg-body-tertiary rounded-4 border border-secondary-subtle">
-                                <div class="empty-state-icon fs-2 mb-2">🖼️</div>
+                            <div v-else class="empty-state text-center p-4 bg-body-tertiary rounded-3 border border-secondary-subtle">
+                                <i class="bi bi-images fs-2 mb-2 text-secondary opacity-50 d-block"></i>
                                 <h3 class="h6 fw-bold mb-1 text-body-emphasis">No photos uploaded yet</h3>
                                 <p class="text-body-secondary small mb-0">Photos will appear here once the boarding house owner uploads images.</p>
                             </div>
@@ -469,19 +470,21 @@ const submitReservation = () => {
                                 <button 
                                     v-if="!boardingHouse.is_full" 
                                     type="button" 
-                                    class="btn btn-ebm-primary w-100 rounded-pill py-3 fw-bold shadow transition-all fs-6" 
+                                    class="btn btn-ebm-primary w-100 rounded-3 py-3 fw-bold shadow-sm transition-all fs-6 d-inline-flex align-items-center justify-content-center gap-2" 
+                                    style="min-height: 48px;"
                                     data-bs-toggle="modal" 
                                     data-bs-target="#reservationModal"
                                 >
-                                    <i class="bi bi-calendar-check-fill me-2"></i> Reserve Now
+                                    <i class="bi bi-calendar-check"></i>
+                                    <span>Request Bedspace Reservation</span>
                                 </button>
-                                <button v-else type="button" class="btn btn-secondary w-100 rounded-pill py-3 fw-bold" disabled>
-                                    Reservation Unavailable (Full)
+                                <button v-else type="button" class="btn btn-secondary w-100 rounded-3 py-3 fw-bold" style="min-height: 48px;" disabled>
+                                    Reservation Unavailable (Fully Occupied)
                                 </button>
                             </div>
 
                             <p class="small text-body-secondary mt-3 mb-0 text-center" style="font-size: 0.8rem;">
-                                🔒 Fast & free guest reservation. No student account required.
+                                <i class="bi bi-shield-check text-success me-1"></i> Fast & free guest reservation. No student account required.
                             </p>
 
                         </div>
@@ -491,7 +494,7 @@ const submitReservation = () => {
             </div>
         </section>
 
-        <!-- 🖼️ THE FULLSCREEN LIGHTBOX MODAL -->
+        <!-- THE FULLSCREEN LIGHTBOX MODAL -->
         <div id="photoLightboxModal" class="modal fade" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-fullscreen">
                 <div class="modal-content bg-dark bg-opacity-75 border-0" style="backdrop-filter: blur(10px);">
@@ -516,71 +519,80 @@ const submitReservation = () => {
             </div>
         </div>
 
-        <!-- 📝 THE RESERVATION INPUT FORM MODAL -->
+        <!-- THE RESERVATION INPUT FORM MODAL -->
         <div id="reservationModal" class="modal fade" tabindex="-1" aria-labelledby="reservationModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-scrollable reservation-dialog">
-                <!-- Replaced basic modal-content with ebm-card for unified dark mode background and border -->
-                <div class="modal-content ebm-card reservation-modal-content">
+                <div class="modal-content ebm-card border border-secondary-subtle rounded-4 reservation-modal-content">
                     <form @submit.prevent="submitReservation">
-                        <div class="modal-header border-bottom border-secondary">
+                        <div class="modal-header border-bottom border-secondary-subtle">
                             <div class="pe-3">
-                                <span class="badge badge-soft-green mb-2">Guest Reservation</span>
-                                <h2 id="reservationModalLabel" class="modal-title h5 fw-bold">Reserve at {{ boardingHouse.name }}</h2>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-2 px-2.5 py-1 fw-semibold mb-2">Guest Reservation</span>
+                                <h2 id="reservationModalLabel" class="modal-title h5 fw-bold text-body-emphasis">Reserve at {{ boardingHouse.name }}</h2>
                             </div>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="cleanupModalBackdrop" />
                         </div>
 
-                        <div class="modal-body">
-                            <div class="alert alert-secondary border-secondary reservation-important-alert">
-                                <strong>Important:</strong> You can only have one active reservation for the same boarding house.
+                        <div class="modal-body p-4">
+                            <div class="alert alert-secondary border border-secondary-subtle rounded-3 reservation-important-alert mb-4">
+                                <i class="bi bi-info-circle-fill text-primary me-2"></i>
+                                <strong>System Notice:</strong> You can only hold one active reservation for this boarding house at a time.
                             </div>
 
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label for="full_name" class="form-label">Full Name <span class="text-danger">*</span></label>
-                                    <input id="full_name" v-model="reservationForm.full_name" type="text" class="form-control" :class="{ 'is-invalid': reservationForm.errors.full_name }" placeholder="Enter your full name">
+                                    <label for="full_name" class="form-label fw-semibold small text-body-secondary text-uppercase mb-2">
+                                        Full Name <span class="text-danger">*</span>
+                                    </label>
+                                    <input id="full_name" v-model="reservationForm.full_name" type="text" class="form-control rounded-3 border-secondary-subtle" :class="{ 'is-invalid': reservationForm.errors.full_name }" placeholder="e.g., Maria Santos">
                                     <div v-if="reservationForm.errors.full_name" class="invalid-feedback">{{ reservationForm.errors.full_name }}</div>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
-                                    <input id="email" v-model="reservationForm.email" type="email" class="form-control" :class="{ 'is-invalid': reservationForm.errors.email }" placeholder="your-gmail@email.com">
+                                    <label for="email" class="form-label fw-semibold small text-body-secondary text-uppercase mb-2">
+                                        Email Address <span class="text-danger">*</span>
+                                    </label>
+                                    <input id="email" v-model="reservationForm.email" type="email" class="form-control rounded-3 border-secondary-subtle" :class="{ 'is-invalid': reservationForm.errors.email }" placeholder="your.email@example.com">
                                     <div v-if="reservationForm.errors.email" class="invalid-feedback">{{ reservationForm.errors.email }}</div>
-                                    <div class="form-text ebm-muted">This email will be used for tracking notifications.</div>
+                                    <div class="form-text text-body-secondary small mt-1">Used to receive your unique tracking reference code.</div>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
-                                    <input id="phone" v-model="reservationForm.phone" type="text" class="form-control" :class="{ 'is-invalid': reservationForm.errors.phone }" placeholder="09XXXXXXXXX">
+                                    <label for="phone" class="form-label fw-semibold small text-body-secondary text-uppercase mb-2">
+                                        Phone Number <span class="text-danger">*</span>
+                                    </label>
+                                    <input id="phone" v-model="reservationForm.phone" type="text" class="form-control rounded-3 border-secondary-subtle" :class="{ 'is-invalid': reservationForm.errors.phone }" placeholder="09XXXXXXXXX">
                                     <div v-if="reservationForm.errors.phone" class="invalid-feedback">{{ reservationForm.errors.phone }}</div>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="preferred_move_in_date" class="form-label">Preferred Move-in Date <span class="text-danger">*</span></label>
-                                    <input id="preferred_move_in_date" v-model="reservationForm.preferred_move_in_date" type="date" class="form-control" :class="{ 'is-invalid': reservationForm.errors.preferred_move_in_date }">
+                                    <label for="preferred_move_in_date" class="form-label fw-semibold small text-body-secondary text-uppercase mb-2">
+                                        Preferred Move-in Date <span class="text-danger">*</span>
+                                    </label>
+                                    <input id="preferred_move_in_date" v-model="reservationForm.preferred_move_in_date" type="date" class="form-control rounded-3 border-secondary-subtle" :class="{ 'is-invalid': reservationForm.errors.preferred_move_in_date }">
                                     <div v-if="reservationForm.errors.preferred_move_in_date" class="invalid-feedback">{{ reservationForm.errors.preferred_move_in_date }}</div>
                                 </div>
 
                                 <div class="col-12">
-                                    <label for="message" class="form-label">Message to Owner</label>
-                                    <textarea id="message" v-model="reservationForm.message" class="form-control" :class="{ 'is-invalid': reservationForm.errors.message }" rows="3" placeholder="Optional message, question, or note"></textarea>
+                                    <label for="message" class="form-label fw-semibold small text-body-secondary text-uppercase mb-2">
+                                        Message to Landlord (Optional)
+                                    </label>
+                                    <textarea id="message" v-model="reservationForm.message" class="form-control rounded-3 border-secondary-subtle" :class="{ 'is-invalid': reservationForm.errors.message }" rows="3" placeholder="Share any specific requests, questions, or estimated arrival notes..."></textarea>
                                     <div v-if="reservationForm.errors.message" class="invalid-feedback">{{ reservationForm.errors.message }}</div>
                                 </div>
 
-                                <!-- 🛡️ Legal Protection & DPA Compliance Accordions -->
+                                <!-- Legal Protection & DPA Compliance Accordions -->
                                 <div class="col-12 mt-4">
                                     <div class="accordion custom-legal-accordion shadow-sm" id="legalAccordion">
                                         
                                         <!-- Privacy Notice -->
-                                        <!-- Changed borders to use var(--bs-border-color) seamlessly -->
                                         <div class="accordion-item border-bottom-0 rounded-top overflow-hidden">
                                             <h2 class="accordion-header">
                                                 <button class="accordion-button collapsed py-3 shadow-none fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePrivacy">
-                                                    <span class="me-2">🔒</span> Data Privacy Notice
+                                                    <i class="bi bi-shield-check text-success me-2"></i> Data Privacy Notice
                                                 </button>
                                             </h2>
                                             <div id="collapsePrivacy" class="accordion-collapse collapse" data-bs-parent="#legalAccordion">
-                                                <div class="accordion-body small ebm-muted pt-3 pb-4">
+                                                <div class="accordion-body small text-body-secondary pt-3 pb-4">
                                                     <p class="mb-3">By submitting this form, you consent to the collection and processing of your personal information in accordance with the <strong>Data Privacy Act of 2012 (RA 10173)</strong>.</p>
                                                     <ul class="mb-0 ps-3">
                                                         <li class="mb-2"><strong>Purpose of Collection:</strong> Your full name, email address, and phone number are collected exclusively to process your reservation request, facilitate direct communication with the landlord, and provide tracking updates.</li>
@@ -595,11 +607,11 @@ const submitReservation = () => {
                                         <div class="accordion-item rounded-bottom overflow-hidden">
                                             <h2 class="accordion-header">
                                                 <button class="accordion-button collapsed py-3 shadow-none fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTerms">
-                                                    <span class="me-2">⚖️</span> Platform Terms & Conditions
+                                                    <i class="bi bi-journal-text text-primary me-2"></i> Platform Terms & Conditions
                                                 </button>
                                             </h2>
                                             <div id="collapseTerms" class="accordion-collapse collapse" data-bs-parent="#legalAccordion">
-                                                <div class="accordion-body small ebm-muted pt-3 pb-4">
+                                                <div class="accordion-body small text-body-secondary pt-3 pb-4">
                                                     <ul class="mb-0 ps-3">
                                                         <li class="mb-2"><strong>Nature of Request:</strong> Submitting this form constitutes a <em>reservation request</em>, not a legally binding lease agreement. Slot allocation is strictly subject to the boarding house owner's final verification and approval.</li>
                                                         <li class="mb-2"><strong>Platform Disclaimer:</strong> E-BoardMate serves solely as an intermediary locator software. We do not manage properties, dictate rental prices, or hold liability for landlord-tenant disputes.</li>
@@ -613,11 +625,10 @@ const submitReservation = () => {
                                     </div>
                                 </div>
 
-                                <div class="col-12 mt-4 pt-4 border-top border-secondary">
+                                <div class="col-12 mt-4 pt-4 border-top border-secondary-subtle">
                                     <div class="form-check custom-checkbox">
                                         <input id="accepted_terms" v-model="reservationForm.accepted_terms" class="form-check-input shadow-none cursor-pointer" :class="{ 'is-invalid': reservationForm.errors.accepted_terms }" type="checkbox" style="width: 1.25em; height: 1.25em; margin-top: 0.15em;">
-                                        <!-- Removed text-dark to allow variable inheritance -->
-                                        <label class="form-check-label small fw-bold cursor-pointer user-select-none ps-2" for="accepted_terms">
+                                        <label class="form-check-label small fw-semibold cursor-pointer user-select-none ps-2 text-body" for="accepted_terms">
                                             I acknowledge that I have read and agree to the Data Privacy Notice and Platform Terms & Conditions above.
                                         </label>
                                         <div v-if="reservationForm.errors.accepted_terms" class="invalid-feedback d-block fw-medium mt-2">
@@ -629,13 +640,15 @@ const submitReservation = () => {
                             </div>
                         </div>
 
-                        <!-- Removed pure bg-light, relying on modal's dark mode background -->
-                        <div class="modal-footer border-top border-secondary">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="cleanupModalBackdrop" :disabled="reservationForm.processing">Cancel</button>
+                        <div class="modal-footer border-top border-secondary-subtle">
+                            <button type="button" class="btn btn-outline-secondary px-4 rounded-3 fw-semibold" data-bs-dismiss="modal" @click="cleanupModalBackdrop" :disabled="reservationForm.processing" style="min-height: 44px;">
+                                Cancel
+                            </button>
                             
-                            <button type="submit" class="btn btn-ebm-primary px-4" :disabled="reservationForm.processing">
-                                <span v-if="reservationForm.processing">Submitting...</span>
-                                <span v-else>Submit Reservation</span>
+                            <button type="submit" class="btn btn-ebm-primary px-4 rounded-3 fw-bold shadow-sm" :disabled="reservationForm.processing" style="min-height: 44px;">
+                                <span v-if="reservationForm.processing" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                <span v-if="reservationForm.processing">Submitting Request...</span>
+                                <span v-else>Confirm Reservation Request</span>
                             </button>
                         </div>
                     </form>

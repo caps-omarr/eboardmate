@@ -190,9 +190,9 @@ const formatPrice = (price) => {
             <!-- HEADER SECTION -->
             <header class="mb-4 d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
                 <div>
-                    <span class="badge bg-body text-body border border-secondary-subtle mb-2 px-3 py-2 rounded-pill shadow-sm">
+                    <p class="text-uppercase tracking-wider small fw-semibold text-success mb-1">
                         Executive Control Center
-                    </span>
+                    </p>
                     <h1 class="text-body-emphasis fw-bold mb-1 tracking-tight">
                         Overview and Analytics
                     </h1>
@@ -202,10 +202,10 @@ const formatPrice = (price) => {
                 </div>
 
                 <div class="d-flex align-items-center gap-2">
-                    <Link href="/admin/reports" class="btn btn-outline-secondary rounded-pill px-3 shadow-sm d-flex align-items-center gap-2">
+                    <Link href="/admin/reports" class="btn btn-outline-secondary rounded-3 px-3 py-2 shadow-sm d-flex align-items-center gap-2 fw-semibold" style="min-height: 44px;">
                         <i class="bi bi-file-earmark-bar-graph"></i> Universal Reports
                     </Link>
-                    <Link href="/admin/boarding-houses" class="btn btn-success rounded-pill px-3 shadow-sm d-flex align-items-center gap-2">
+                    <Link href="/admin/boarding-houses" class="btn btn-success rounded-3 px-3 py-2 shadow-sm d-flex align-items-center gap-2 fw-semibold" style="min-height: 44px;">
                         <i class="bi bi-houses-fill"></i> Manage Properties
                     </Link>
                 </div>
@@ -219,14 +219,14 @@ const formatPrice = (price) => {
                     <div class="ebm-card p-4 h-100 shadow-sm border border-secondary-subtle rounded-4 bg-body">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <span class="small text-body-secondary fw-bold text-uppercase tracking-tight">Boarding Houses</span>
-                            <div class="p-2 rounded-circle bg-primary bg-opacity-10 text-primary">
+                            <div class="p-2 rounded-3 bg-primary bg-opacity-10 text-primary">
                                 <i class="bi bi-buildings-fill fs-5"></i>
                             </div>
                         </div>
                         <div class="h2 fw-bold text-body-emphasis mb-1">{{ stats.boarding_houses }}</div>
                         <div class="d-flex align-items-center gap-2">
-                            <span class="badge badge-soft-success rounded-pill small">{{ stats.approved_listings }} Verified</span>
-                            <span v-if="stats.pending_listings > 0" class="badge badge-soft-warning rounded-pill small">{{ stats.pending_listings }} Pending</span>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-2 small px-2 py-1">{{ stats.approved_listings }} Verified</span>
+                            <span v-if="stats.pending_listings > 0" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-2 small px-2 py-1">{{ stats.pending_listings }} Pending</span>
                         </div>
                     </div>
                 </div>
@@ -236,7 +236,7 @@ const formatPrice = (price) => {
                     <div class="ebm-card p-4 h-100 shadow-sm border border-secondary-subtle rounded-4 bg-body">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <span class="small text-body-secondary fw-bold text-uppercase tracking-tight">Verification Rate</span>
-                            <div class="p-2 rounded-circle bg-success bg-opacity-10 text-success">
+                            <div class="p-2 rounded-3 bg-success bg-opacity-10 text-success">
                                 <i class="bi bi-patch-check-fill fs-5"></i>
                             </div>
                         </div>
@@ -252,7 +252,7 @@ const formatPrice = (price) => {
                     <div class="ebm-card p-4 h-100 shadow-sm border border-secondary-subtle rounded-4 bg-body">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <span class="small text-body-secondary fw-bold text-uppercase tracking-tight">Bed Occupancy Rate</span>
-                            <div class="p-2 rounded-circle bg-warning bg-opacity-10 text-warning">
+                            <div class="p-2 rounded-3 bg-warning bg-opacity-10 text-warning">
                                 <i class="bi bi-pie-chart-fill fs-5"></i>
                             </div>
                         </div>
@@ -268,14 +268,14 @@ const formatPrice = (price) => {
                     <div class="ebm-card p-4 h-100 shadow-sm border border-secondary-subtle rounded-4 bg-body">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <span class="small text-body-secondary fw-bold text-uppercase tracking-tight">Owner Accounts</span>
-                            <div class="p-2 rounded-circle bg-info bg-opacity-10 text-info">
+                            <div class="p-2 rounded-3 bg-info bg-opacity-10 text-info">
                                 <i class="bi bi-people-fill fs-5"></i>
                             </div>
                         </div>
                         <div class="h2 fw-bold text-body-emphasis mb-1">{{ stats.owners }}</div>
                         <div class="d-flex align-items-center gap-2">
-                            <span class="badge badge-soft-success rounded-pill small">{{ stats.active_owners }} Active</span>
-                            <span v-if="stats.inactive_owners > 0" class="badge badge-soft-secondary rounded-pill small">{{ stats.inactive_owners }} Inactive</span>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-2 small px-2 py-1">{{ stats.active_owners }} Active</span>
+                            <span v-if="stats.inactive_owners > 0" class="badge bg-secondary-subtle text-body-secondary border border-secondary-subtle rounded-2 small px-2 py-1">{{ stats.inactive_owners }} Inactive</span>
                         </div>
                     </div>
                 </div>

@@ -201,39 +201,42 @@ onBeforeUnmount(() => {
             >
                 <div class="row">
                     <div class="col-lg-8 col-xl-6">
+                        <p class="text-uppercase tracking-wider small fw-semibold text-success mb-2">
+                            Talibon Polytechnic College Housing Locator
+                        </p>
                         <h1
-                            class="display-4 fw-bold mb-4 text-body-emphasis tracking-tight transition-all"
+                            class="display-5 fw-bold mb-4 text-body-emphasis tracking-tight transition-all"
                         >
-                            Find trusted boarding houses near Talibon
-                            Polytechnic College faster, easier, and safer.
+                            Verified student accommodations near campus.
                         </h1>
 
                         <p
                             class="lead text-body-secondary mb-4 transition-all pe-lg-4"
                         >
-                            E-BoardMate helps students view verified boarding
-                            houses, check details, submit reservations, and
-                            track reservation status online without creating a
-                            student account.
+                            Browse verified boarding houses, inspect real walking distances, submit reservation requests, and check live status online—with zero account registration required.
                         </p>
 
-                        <!-- Personality-Driven Hero CTAs -->
+                        <!-- High-Affordance Hero CTAs -->
                         <div class="d-grid d-sm-flex gap-3 mb-5">
                             <Link
                                 href="/boarding-houses"
-                                class="btn btn-ebm-primary btn-lg px-4 fw-bold shadow transition-all rounded-pill d-inline-flex align-items-center justify-content-center gap-2"
+                                class="btn btn-ebm-primary btn-lg px-4 fw-bold shadow-sm transition-all rounded-3 d-inline-flex align-items-center justify-content-center gap-2"
+                                style="min-height: 48px;"
                             >
-                                <span>Find Accommodations</span>
+                                <i class="bi bi-search"></i>
+                                <span>Explore Accommodations</span>
                             </Link>
                             <Link
                                 href="/map"
-                                class="btn btn-outline-success btn-lg px-4 fw-bold shadow-sm transition-all rounded-pill d-inline-flex align-items-center justify-content-center gap-2"
+                                class="btn btn-outline-success btn-lg px-4 fw-bold shadow-sm transition-all rounded-3 d-inline-flex align-items-center justify-content-center gap-2"
+                                style="min-height: 48px;"
                             >
-                                <span>View Interactive Map</span>
+                                <i class="bi bi-geo-alt"></i>
+                                <span>Open Interactive Map</span>
                             </Link>
                         </div>
 
-                        <!-- Trust Badges -->
+                        <!-- Trust Badges (Uniform 100% Outlined Icons) -->
                         <div
                             class="row g-3 g-md-4 pt-4 border-top border-secondary-subtle transition-all"
                         >
@@ -241,18 +244,18 @@ onBeforeUnmount(() => {
                                 <div
                                     class="trust-badge-item d-flex align-items-center gap-2"
                                 >
-                                    <span class="fs-5 text-danger lh-1"
-                                        >❤️</span
-                                    >
+                                    <div class="p-2 rounded-2 bg-success-subtle text-success d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                        <i class="bi bi-patch-check fs-5"></i>
+                                    </div>
                                     <div>
                                         <span
                                             class="d-block fw-bold small text-body-emphasis lh-1 mb-1 transition-all"
-                                            >Verified & Safe</span
+                                            >Verified Listings</span
                                         >
                                         <span
                                             class="d-block small text-body-secondary text-nowrap transition-all"
                                             style="font-size: 0.75rem"
-                                            >Trusted owners</span
+                                            >Vetted local owners</span
                                         >
                                     </div>
                                 </div>
@@ -261,18 +264,18 @@ onBeforeUnmount(() => {
                                 <div
                                     class="trust-badge-item d-flex align-items-center gap-2"
                                 >
-                                    <span class="fs-5 text-warning lh-1"
-                                        >🏷️</span
-                                    >
+                                    <div class="p-2 rounded-2 bg-warning-subtle text-warning-emphasis d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                        <i class="bi bi-tag fs-5"></i>
+                                    </div>
                                     <div>
                                         <span
                                             class="d-block fw-bold small text-body-emphasis lh-1 mb-1 transition-all"
-                                            >Affordable Rates</span
+                                            >Student Rates</span
                                         >
                                         <span
                                             class="d-block small text-body-secondary text-nowrap transition-all"
                                             style="font-size: 0.75rem"
-                                            >Student-friendly</span
+                                            >Transparent pricing</span
                                         >
                                     </div>
                                 </div>
@@ -281,18 +284,18 @@ onBeforeUnmount(() => {
                                 <div
                                     class="trust-badge-item d-flex align-items-center gap-2"
                                 >
-                                    <span class="fs-5 text-success lh-1"
-                                        >🤝</span
-                                    >
+                                    <div class="p-2 rounded-2 bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                        <i class="bi bi-shield-lock fs-5"></i>
+                                    </div>
                                     <div>
                                         <span
                                             class="d-block fw-bold small text-body-emphasis lh-1 mb-1 transition-all"
-                                            >Community</span
+                                            >Guest Safe</span
                                         >
                                         <span
                                             class="d-block small text-body-secondary text-nowrap transition-all"
                                             style="font-size: 0.75rem"
-                                            >Support local</span
+                                            >DPA-compliant data</span
                                         >
                                     </div>
                                 </div>
@@ -308,52 +311,49 @@ onBeforeUnmount(() => {
             class="snap-section-tertiary bg-body-tertiary d-flex align-items-center py-5 min-vh-100 transition-all"
         >
             <div class="container py-5">
-                <!-- CENTERED ABOUT SECTION (BALANCED & HARMONIOUS) -->
+                <!-- ABOUT SECTION (LEFT-ALIGNED INSTITUTIONAL HEADER) -->
                 <div class="row justify-content-center text-center mb-5 pb-lg-2">
                     <div class="col-12 col-lg-8 mx-auto">
-                        <span
-                            class="badge rounded-pill border border-success-subtle bg-body text-success mb-3 px-3 py-2 transition-all shadow-sm fw-semibold"
-                        >
-                            About E-BoardMate • Student Guide
-                        </span>
+                        <p class="text-uppercase tracking-wider small fw-semibold text-success mb-2">
+                            How E-BoardMate Works
+                        </p>
 
                         <h2
-                            class="display-6 fw-bold mb-4 text-body-emphasis tracking-tight transition-all"
+                            class="display-6 fw-bold mb-3 text-body-emphasis tracking-tight transition-all"
                         >
-                            Built exclusively for TPC students.
+                            Securing student housing made simple.
                         </h2>
 
-                        <p class="fs-5 text-secondary transition-all mb-0 mx-auto" style="line-height: 1.7; max-width: 720px;">
-                            Finding a safe and affordable place to stay near campus shouldn't be stressful. E-BoardMate bridges the gap between Talibon Polytechnic College students and verified local landlords. We provide a seamless, map-based platform where you can secure your bedspace online—<strong class="text-body-emphasis"
-                                >completely free and with zero account registration required.</strong
-                            >
+                        <p class="fs-6 text-secondary transition-all mb-0 mx-auto" style="line-height: 1.7; max-width: 720px;">
+                            E-BoardMate connects Talibon Polytechnic College students with verified local landlords through an interactive walking-distance map. Reserve your bedspace directly with zero student account registration required.
                         </p>
                     </div>
                 </div>
 
-                <!-- 4-STEP SYSTEM FLOW CARDS (RESPONSIVE 4-COLUMN DESKTOP & SWIPE MOBILE) -->
+                <!-- 4-STEP SYSTEM FLOW CARDS (LEFT-ALIGNED SCANNABLE CARDS WITH CONCENTRIC RADII) -->
                 <div class="guide-scroll-container gap-3 py-2">
                     <!-- Step 1 -->
                     <div class="guide-card-wrapper">
                         <div
                             class="card h-100 border border-secondary-subtle bg-body shadow-sm rounded-4 guide-card-interactive transition-all"
                         >
-                            <div class="card-body p-4 text-center d-flex flex-column align-items-center justify-content-between">
+                            <div class="card-body p-4 text-start d-flex flex-column align-items-start justify-content-between">
                                 <div>
                                     <div
-                                        class="step-icon mb-4 mx-auto transition-all"
+                                        class="step-icon d-inline-flex align-items-center justify-content-center p-3 rounded-3 bg-success-subtle text-success border border-success-subtle mb-4 transition-all"
+                                        style="width: 48px; height: 48px;"
                                     >
-                                        🗺️
+                                        <i class="bi bi-map fs-5"></i>
                                     </div>
                                     <h3
-                                        class="h5 fw-bold mb-3 text-body-emphasis transition-all"
+                                        class="h6 fw-bold mb-2 text-body-emphasis transition-all"
                                     >
-                                        1. Explore Map & List
+                                        1. Explore Listings & Map
                                     </h3>
                                     <p
                                         class="small text-body-secondary mb-0 transition-all"
                                     >
-                                        Browse verified boarding house listings around TPC. View photo galleries, room rates, available bedspaces, and real-time walking distances to campus.
+                                        Browse verified boarding houses around TPC. Inspect photos, amenities, room rates, and real-time walking distances.
                                     </p>
                                 </div>
                             </div>
@@ -365,22 +365,23 @@ onBeforeUnmount(() => {
                         <div
                             class="card h-100 border border-secondary-subtle bg-body shadow-sm rounded-4 guide-card-interactive transition-all"
                         >
-                            <div class="card-body p-4 text-center d-flex flex-column align-items-center justify-content-between">
+                            <div class="card-body p-4 text-start d-flex flex-column align-items-start justify-content-between">
                                 <div>
                                     <div
-                                        class="step-icon mb-4 mx-auto transition-all"
+                                        class="step-icon d-inline-flex align-items-center justify-content-center p-3 rounded-3 bg-success-subtle text-success border border-success-subtle mb-4 transition-all"
+                                        style="width: 48px; height: 48px;"
                                     >
-                                        📝
+                                        <i class="bi bi-pencil-square fs-5"></i>
                                     </div>
                                     <h3
-                                        class="h5 fw-bold mb-3 text-body-emphasis transition-all"
+                                        class="h6 fw-bold mb-2 text-body-emphasis transition-all"
                                     >
-                                        2. Reserve (No Account)
+                                        2. Request Bedspace
                                     </h3>
                                     <p
                                         class="small text-body-secondary mb-0 transition-all"
                                     >
-                                        Found your spot? Fill out a 60-second guest request form with your name, phone, and email. No student passwords or account registration required!
+                                        Select your room and submit a simple guest request form with your contact details. No account creation needed.
                                     </p>
                                 </div>
                             </div>
@@ -392,22 +393,23 @@ onBeforeUnmount(() => {
                         <div
                             class="card h-100 border border-secondary-subtle bg-body shadow-sm rounded-4 guide-card-interactive transition-all"
                         >
-                            <div class="card-body p-4 text-center d-flex flex-column align-items-center justify-content-between">
+                            <div class="card-body p-4 text-start d-flex flex-column align-items-start justify-content-between">
                                 <div>
                                     <div
-                                        class="step-icon mb-4 mx-auto transition-all"
+                                        class="step-icon d-inline-flex align-items-center justify-content-center p-3 rounded-3 bg-success-subtle text-success border border-success-subtle mb-4 transition-all"
+                                        style="width: 48px; height: 48px;"
                                     >
-                                        ⏳
+                                        <i class="bi bi-clock-history fs-5"></i>
                                     </div>
                                     <h3
-                                        class="h5 fw-bold mb-3 text-body-emphasis transition-all"
+                                        class="h6 fw-bold mb-2 text-body-emphasis transition-all"
                                     >
-                                        3. Landlord Review
+                                        3. Landlord Verification
                                     </h3>
                                     <p
                                         class="small text-body-secondary mb-0 transition-all"
                                     >
-                                        The verified landlord receives your request instantly. You'll receive an automated email containing your unique <strong>EBM</strong> tracking code.
+                                        The property owner reviews your request and you receive an immediate automated email with your unique reference code.
                                     </p>
                                 </div>
                             </div>
@@ -419,22 +421,23 @@ onBeforeUnmount(() => {
                         <div
                             class="card h-100 border border-secondary-subtle bg-body shadow-sm rounded-4 guide-card-interactive transition-all"
                         >
-                            <div class="card-body p-4 text-center d-flex flex-column align-items-center justify-content-between">
+                            <div class="card-body p-4 text-start d-flex flex-column align-items-start justify-content-between">
                                 <div>
                                     <div
-                                        class="step-icon mb-4 mx-auto transition-all"
+                                        class="step-icon d-inline-flex align-items-center justify-content-center p-3 rounded-3 bg-success-subtle text-success border border-success-subtle mb-4 transition-all"
+                                        style="width: 48px; height: 48px;"
                                     >
-                                        🔍
+                                        <i class="bi bi-search fs-5"></i>
                                     </div>
                                     <h3
-                                        class="h5 fw-bold mb-3 text-body-emphasis transition-all"
+                                        class="h6 fw-bold mb-2 text-body-emphasis transition-all"
                                     >
-                                        4. Track Live Status
+                                        4. Live Status Tracking
                                     </h3>
                                     <p
                                         class="small text-body-secondary mb-0 transition-all"
                                     >
-                                        Enter your <strong>EBM</strong> tracking code on our Track Reservation page anytime to view live approval status and unlock contact info!
+                                        Check your approval status anytime on our Track Reservation page and view landlord contact details upon approval.
                                     </p>
                                 </div>
                             </div>

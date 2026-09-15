@@ -474,18 +474,18 @@ onBeforeUnmount(() => {
 
         <section class="map-page-wrapper bg-body transition-all position-relative">
             
-            <!-- 📌 CLEAN TOP BAR: BACK BUTTON & MAP STYLE SELECTOR -->
+            <!-- CLEAN TOP BAR: BACK BUTTON & MAP STYLE SELECTOR -->
             <div class="map-top-bar d-flex align-items-center justify-content-between px-3 py-2 bg-body border-bottom border-secondary-subtle z-3 position-relative">
-                <Link href="/boarding-houses" class="btn btn-sm border-secondary-subtle bg-body text-body-emphasis shadow-sm rounded-pill fw-semibold px-3 transition-all hover-bg-tertiary d-inline-flex align-items-center gap-1">
-                    <i class="bi bi-arrow-left text-success fs-6"></i> Back to Boarding Houses
+                <Link href="/boarding-houses" class="btn btn-sm border-secondary-subtle bg-body text-body-emphasis shadow-sm rounded-3 fw-semibold px-3 py-2 transition-all hover-bg-tertiary d-inline-flex align-items-center gap-1">
+                    <i class="bi bi-arrow-left text-success fs-6"></i> Back to Catalog
                 </Link>
 
                 <div class="d-flex align-items-center gap-2">
-                    <select @change="changeMapStyle" class="form-select form-select-sm shadow-sm border-secondary-subtle fw-medium map-style-selector rounded-pill px-3 transition-all" style="max-width: 180px;">
-                        <option value="mapbox://styles/mapbox/satellite-streets-v12">🛰️ Satellite 3D</option>
-                        <option value="mapbox://styles/mapbox/streets-v12">🗺️ Standard Map</option>
-                        <option value="mapbox://styles/mapbox/outdoors-v12">🏞️ Outdoors</option>
-                        <option value="mapbox://styles/mapbox/dark-v11">🌙 Dark Mode</option>
+                    <select @change="changeMapStyle" class="form-select form-select-sm shadow-sm border-secondary-subtle fw-medium map-style-selector rounded-3 px-3 py-1.5 transition-all" style="max-width: 190px;">
+                        <option value="mapbox://styles/mapbox/satellite-streets-v12">Satellite 3D</option>
+                        <option value="mapbox://styles/mapbox/streets-v12">Standard Map</option>
+                        <option value="mapbox://styles/mapbox/outdoors-v12">Outdoors</option>
+                        <option value="mapbox://styles/mapbox/dark-v11">Dark Mode</option>
                     </select>
                 </div>
             </div>
@@ -493,7 +493,7 @@ onBeforeUnmount(() => {
             <!-- MAP CONTAINER WRAPPER WITH ABSOLUTE SKELETON & OFFLINE OVERLAYS -->
             <div class="position-relative w-100 flex-grow-1 overflow-hidden">
 
-                <!-- 🚀 BOOTSTRAP 5 SKELETON OVERLAY (Pulsing placeholder prevents CLS) -->
+                <!-- BOOTSTRAP 5 SKELETON OVERLAY -->
                 <div 
                     v-if="!isMapLoaded && isOnline" 
                     class="map-skeleton-overlay placeholder-glow d-flex flex-column align-items-center justify-content-center p-4 text-center bg-body"
@@ -506,12 +506,12 @@ onBeforeUnmount(() => {
                     <span class="small text-body-secondary fw-semibold">
                         <i class="bi bi-geo-alt-fill text-danger me-1"></i> Rendering Talibon Satellite Map...
                     </span>
-                    <span v-if="networkType === '2g' || networkType === 'slow-2g'" class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill mt-2 px-3 py-1 small">
+                    <span v-if="networkType === '2g' || networkType === 'slow-2g'" class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-2 mt-2 px-3 py-1 small">
                         Slow Network Detected (Low Bandwidth Mode)
                     </span>
                 </div>
 
-                <!-- 🚀 OFFLINE NETWORK OVERLAY -->
+                <!-- OFFLINE NETWORK OVERLAY -->
                 <div 
                     v-if="!isOnline" 
                     class="map-offline-overlay d-flex flex-column align-items-center justify-content-center p-4 text-center bg-body"
@@ -523,7 +523,7 @@ onBeforeUnmount(() => {
                     <p class="text-body-secondary small mb-4" style="max-width: 320px;">
                         Unable to fetch satellite tiles. Please check your mobile data or WiFi connection.
                     </p>
-                    <button type="button" @click="initializeMap" class="btn btn-sm btn-success rounded-pill px-4 fw-bold shadow-sm">
+                    <button type="button" @click="initializeMap" class="btn btn-sm btn-success rounded-3 px-4 py-2 fw-bold shadow-sm">
                         <i class="bi bi-arrow-clockwise me-1"></i> Retry Connection
                     </button>
                 </div>
@@ -539,12 +539,14 @@ onBeforeUnmount(() => {
 
             <!-- BOTTOM SHEET / SIDE DRAWER CARD -->
             <Transition name="slide-up">
-                <div v-if="selectedLocation" class="map-bottom-sheet transition-all border border-secondary-subtle shadow">
+                <div v-if="selectedLocation" class="map-bottom-sheet transition-all border border-secondary-subtle shadow rounded-4">
                     <button @click="closeBottomSheet" class="btn-close shadow-none position-absolute top-0 end-0 m-3" title="Close panel"></button>
 
                     <div v-if="selectedLocation.type === 'tpc'" class="pt-2">
                         <div class="d-flex align-items-center gap-2 mb-2">
-                            <span class="fs-4">🏛️</span>
+                            <div class="p-2 rounded-2 bg-success-subtle text-success d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                <i class="bi bi-building fs-5"></i>
+                            </div>
                             <h3 class="h5 fw-bold mb-0 text-body-emphasis transition-all">Talibon Polytechnic College</h3>
                         </div>
                         <p class="text-body-secondary small mb-0 transition-all">Official TPC campus location used for real-time walking distance calculations.</p>
@@ -561,7 +563,7 @@ onBeforeUnmount(() => {
                             <div class="overflow-hidden pe-3">
                                 <div class="d-flex align-items-center gap-2 mb-1">
                                     <h3 class="h5 fw-bold mb-0 text-truncate text-body-emphasis transition-all">{{ selectedLocation.data.name }}</h3>
-                                    <span v-if="selectedLocation.data.is_verified" class="badge bg-success rounded-pill px-2 py-1"><small>Verified</small></span>
+                                    <span v-if="selectedLocation.data.is_verified" class="badge bg-success rounded-2 px-2 py-1"><small>Verified</small></span>
                                 </div>
                                 <p class="text-body-secondary small mb-0 text-truncate">Near TPC Campus, Talibon</p>
                             </div>
@@ -569,7 +571,9 @@ onBeforeUnmount(() => {
 
                         <!-- Walking Route Card -->
                         <div class="bg-body-tertiary border border-secondary-subtle rounded-3 p-3 mb-3 d-flex align-items-center gap-3 transition-all">
-                            <span class="fs-3 lh-1">🚶‍♂️</span>
+                            <div class="p-2 rounded-2 bg-success-subtle text-success d-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px;">
+                                <i class="bi bi-person-walking fs-5"></i>
+                            </div>
                             <div v-if="walkingRouteDetails.loading" class="text-body-secondary small transition-all">
                                 <span class="spinner-border spinner-border-sm text-primary me-1" role="status" aria-hidden="true"></span>
                                 Calculating walking route to TPC...
@@ -583,15 +587,15 @@ onBeforeUnmount(() => {
                         <div class="row g-2 mb-3">
                             <div class="col-6">
                                 <div class="bg-body-tertiary rounded-3 p-2 text-center border border-secondary-subtle transition-all">
-                                    <span class="d-block text-body-secondary small transition-all">Monthly Rent</span>
+                                    <span class="d-block text-body-secondary small transition-all text-uppercase fw-semibold" style="font-size: 0.72rem;">Monthly Rent</span>
                                     <strong class="text-body-emphasis fs-6 transition-all">₱{{ formatPrice(selectedLocation.data.rent_price) }}</strong>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="bg-body-tertiary rounded-3 p-2 text-center border border-secondary-subtle transition-all">
-                                    <span class="d-block text-body-secondary small transition-all">Status</span>
+                                    <span class="d-block text-body-secondary small transition-all text-uppercase fw-semibold" style="font-size: 0.72rem;">Status</span>
                                     <strong :class="selectedLocation.data.is_full ? 'text-danger' : 'text-success'" class="fs-6">
-                                        {{ selectedLocation.data.is_full ? 'Full' : 'Available' }}
+                                        {{ selectedLocation.data.is_full ? 'Fully Booked' : 'Available' }}
                                     </strong>
                                 </div>
                             </div>
@@ -601,8 +605,9 @@ onBeforeUnmount(() => {
                             <div class="small text-body-secondary transition-all">
                                 <strong class="text-body-emphasis">{{ selectedLocation.data.available_rooms || 0 }}</strong> Rooms available
                             </div>
-                            <Link :href="selectedLocation.data.detail_url || `/boarding-houses/${selectedLocation.data.slug}`" class="btn btn-ebm-primary px-4 rounded-pill fw-bold">
-                                View Details <i class="bi bi-arrow-right ms-1"></i>
+                            <Link :href="selectedLocation.data.detail_url || `/boarding-houses/${selectedLocation.data.slug}`" class="btn btn-ebm-primary px-4 rounded-3 fw-bold shadow-sm d-inline-flex align-items-center gap-1" style="min-height: 44px;">
+                                <span>View Details</span>
+                                <i class="bi bi-arrow-right"></i>
                             </Link>
                         </div>
                     </div>

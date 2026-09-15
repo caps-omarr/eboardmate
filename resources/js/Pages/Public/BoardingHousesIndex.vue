@@ -131,11 +131,11 @@ onUnmounted(() => {
                         </Link>
                     </div>
                     <div class="d-flex flex-column align-items-start">
-                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fw-bold mb-2">
-                            Verified Accommodations
-                        </span>
-                        <h1 class="fw-bold mb-1 text-body-emphasis" style="font-size: 1.75rem;">Explore Places</h1>
-                        <p class="text-body-secondary mb-0 small">Find the perfect boarding house near campus.</p>
+                        <p class="text-uppercase tracking-wider small fw-semibold text-success mb-1">
+                            Accommodation Directory
+                        </p>
+                        <h1 class="fw-bold mb-1 text-body-emphasis" style="font-size: 1.75rem;">Verified Boarding Houses</h1>
+                        <p class="text-body-secondary mb-0 small">Student housing and bedspaces within walking distance of Talibon Polytechnic College.</p>
                     </div>
                 </div>
                 
@@ -152,16 +152,16 @@ onUnmounted(() => {
                                                 <div class="placeholder bg-secondary bg-opacity-20 col-8 rounded py-2"></div>
                                                 <div class="placeholder bg-secondary bg-opacity-20 col-5 rounded py-1"></div>
                                                 <div class="d-flex gap-2 my-2">
-                                                    <div class="placeholder bg-secondary bg-opacity-20 col-4 rounded-pill py-2"></div>
-                                                    <div class="placeholder bg-secondary bg-opacity-20 col-4 rounded-pill py-2"></div>
+                                                    <div class="placeholder bg-secondary bg-opacity-20 col-4 rounded py-2"></div>
+                                                    <div class="placeholder bg-secondary bg-opacity-20 col-4 rounded py-2"></div>
                                                 </div>
-                                                <div class="placeholder bg-secondary bg-opacity-20 col-12 rounded-pill py-3 mt-auto"></div>
+                                                <div class="placeholder bg-secondary bg-opacity-20 col-12 rounded py-3 mt-auto"></div>
                                             </div>
                                         </div>
                                     </template>
 
                                     <!-- 🚀 LAZY MOUNTED PROPERTY CARD -->
-                                    <article class="native-property-card bg-body shadow-sm border-0 rounded-4 overflow-hidden position-relative h-100 d-flex flex-column">
+                                    <article class="native-property-card bg-body shadow-sm border border-secondary-subtle rounded-4 overflow-hidden position-relative h-100 d-flex flex-column">
                                         
                                         <!-- Image Header -->
                                         <div class="position-relative">
@@ -178,21 +178,21 @@ onUnmounted(() => {
                                                 </div>
                                             </Link>
 
-                                            <!-- Floating Badges Overlay -->
+                                            <!-- Concentric Tag Badges Overlay (Concentric 6px inner radius) -->
                                             <div class="position-absolute top-0 start-0 m-3 z-1 d-flex flex-wrap gap-2">
-                                                <span v-if="house.is_full" class="badge bg-danger shadow-sm rounded-pill px-3 py-2">Fully Booked</span>
-                                                <span v-else class="badge bg-body text-success fw-bold shadow-sm rounded-pill px-3 py-2 border border-secondary-subtle">
+                                                <span v-if="house.is_full" class="badge bg-danger shadow-sm rounded-2 px-2.5 py-1.5 fw-bold">Fully Booked</span>
+                                                <span v-else class="badge bg-body text-success fw-bold shadow-sm rounded-2 px-2.5 py-1.5 border border-secondary-subtle">
                                                     <i class="bi bi-circle-fill small me-1" style="font-size: 0.5rem;"></i> Available
                                                 </span>
 
                                                 <!-- Gender Restriction Badge -->
-                                                <span v-if="house.allowed_genders === 'Female Only'" class="badge rounded-pill px-3 py-2 d-flex align-items-center shadow-sm" style="background-color: rgba(0, 30, 40, 0.85); color: #0dcaf0; border: 1px solid #0dcaf0;">
+                                                <span v-if="house.allowed_genders === 'Female Only'" class="badge rounded-2 px-2.5 py-1.5 d-flex align-items-center shadow-sm" style="background-color: rgba(0, 30, 40, 0.85); color: #0dcaf0; border: 1px solid #0dcaf0;">
                                                     <i class="bi bi-person-heart me-1"></i> Female Only
                                                 </span>
-                                                <span v-else-if="house.allowed_genders === 'Male Only'" class="badge rounded-pill px-3 py-2 d-flex align-items-center shadow-sm" style="background-color: rgba(0, 20, 50, 0.85); color: #6ea8fe; border: 1px solid #6ea8fe;">
+                                                <span v-else-if="house.allowed_genders === 'Male Only'" class="badge rounded-2 px-2.5 py-1.5 d-flex align-items-center shadow-sm" style="background-color: rgba(0, 20, 50, 0.85); color: #6ea8fe; border: 1px solid #6ea8fe;">
                                                     <i class="bi bi-person-standing me-1"></i> Male Only
                                                 </span>
-                                                <span v-else class="badge rounded-pill px-3 py-2 d-flex align-items-center shadow-sm" style="background-color: rgba(40, 40, 40, 0.85); color: #f8f9fa; border: 1px solid #6c757d;">
+                                                <span v-else class="badge rounded-2 px-2.5 py-1.5 d-flex align-items-center shadow-sm" style="background-color: rgba(40, 40, 40, 0.85); color: #f8f9fa; border: 1px solid #6c757d;">
                                                     <i class="bi bi-people-fill me-1"></i> Any Gender
                                                 </span>
                                             </div>
@@ -207,7 +207,7 @@ onUnmounted(() => {
                                                     <h2 class="h5 fw-bold mb-0 text-truncate pb-1">{{ house.name }}</h2>
                                                 </Link>
                                                 <div class="text-end flex-shrink-0 mt-1">
-                                                    <span class="h6 fw-bold text-success lh-1 mb-0 d-block">₱{{ house.rent_price }}</span>
+                                                    <span class="h5 fw-bold text-success lh-1 mb-0 d-block">₱{{ house.rent_price }}</span>
                                                     <span class="small text-body-secondary" style="font-size: 0.65rem; text-transform: uppercase;">/ month</span>
                                                 </div>
                                             </div>
@@ -216,14 +216,14 @@ onUnmounted(() => {
                                                 <i class="bi bi-geo-alt-fill text-danger me-1 opacity-75"></i> {{ house.address }}
                                             </p>
                                             
-                                            <!-- Native Stats Pills -->
+                                            <!-- Native Stats Badges (Concentric 6px) -->
                                             <div class="d-flex align-items-center gap-2 mb-3 pb-1">
-                                                <div class="badge bg-body-tertiary text-body-emphasis border border-secondary-subtle rounded-pill px-2 py-1 fw-medium d-flex align-items-center gap-1 shadow-sm">
+                                                <div class="badge bg-body-tertiary text-body-emphasis border border-secondary-subtle rounded-2 px-2.5 py-1.5 fw-medium d-flex align-items-center gap-1 shadow-sm">
                                                     <i class="bi bi-door-open text-primary"></i>
                                                     <span :class="house.is_full ? 'text-danger' : ''">{{ house.available_rooms }} Rooms</span>
                                                 </div>
 
-                                                <div class="badge bg-body-tertiary text-body-emphasis border border-secondary-subtle rounded-pill px-2 py-1 fw-medium d-flex align-items-center gap-1 shadow-sm">
+                                                <div class="badge bg-body-tertiary text-body-emphasis border border-secondary-subtle rounded-2 px-2.5 py-1.5 fw-medium d-flex align-items-center gap-1 shadow-sm">
                                                     <i class="bi bi-person-walking text-primary"></i>
                                                     <span v-if="realRoutes[house.id] && !realRoutes[house.id].loading && !realRoutes[house.id].error">
                                                         {{ realRoutes[house.id].duration }} min
@@ -249,14 +249,14 @@ onUnmounted(() => {
                                                 </template>
                                             </div> 
                                             
-                                            <!-- Actions -->
+                                            <!-- Actions with 44px touch targets and clear verbs -->
                                             <div class="d-flex gap-2 mt-auto pt-3 border-top border-secondary-subtle">
-                                                <Link :href="`/boarding-houses/${house.slug}`" class="btn btn-native-primary rounded-pill fw-bold flex-grow-1 py-2 shadow-sm text-center">
-                                                    Reserve Now
+                                                <Link :href="`/boarding-houses/${house.slug}`" class="btn btn-native-primary rounded-3 fw-bold flex-grow-1 py-2 shadow-sm text-center d-inline-flex align-items-center justify-content-center" style="min-height: 44px;">
+                                                    View Details
                                                 </Link>
-                                                <Link :href="`/map?house_id=${house.id}`" class="btn btn-outline-secondary rounded-pill d-flex align-items-center justify-content-center px-3 py-2 shadow-sm fw-semibold text-nowrap" title="View on Interactive Map">
+                                                <Link :href="`/map?house_id=${house.id}`" class="btn btn-outline-secondary rounded-3 d-flex align-items-center justify-content-center px-3 py-2 shadow-sm fw-semibold text-nowrap" style="min-height: 44px;" title="View on Interactive Map">
                                                     <i class="bi bi-geo-alt-fill text-danger me-1"></i>
-                                                    <span>View Map</span>
+                                                    <span>Map</span>
                                                 </Link>
                                             </div>
                                         </div>

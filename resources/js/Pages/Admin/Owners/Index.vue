@@ -207,10 +207,10 @@ const cleanLabel = (label) => {
             <!-- HEADER SECTION -->
             <header class="mb-4 d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
                 <div>
-                    <span class="badge bg-body text-body border border-secondary-subtle mb-2 px-3 py-2 rounded-pill shadow-sm">
+                    <span class="text-uppercase small fw-bold text-secondary tracking-wider d-block mb-1">
                         Super Admin Portal
                     </span>
-                    <h1 class="text-body-emphasis fw-bold mb-1 tracking-tight">
+                    <h1 class="h3 text-body-emphasis fw-bold mb-1 tracking-tight">
                         Owner Account Management
                     </h1>
                     <p class="text-body-secondary mb-0">
@@ -225,12 +225,12 @@ const cleanLabel = (label) => {
                 <section class="col-lg-4" aria-label="Create Owner Form">
                     <div class="ebm-card border border-secondary-subtle shadow-sm p-4 bg-body-tertiary rounded-4 h-100">
                         <h2 class="h5 text-body-emphasis fw-bold mb-4 border-bottom border-secondary-subtle pb-2 d-flex align-items-center gap-2">
-                            <i class="bi bi-person-plus-fill text-success"></i> Create Owner Account
+                            <i class="bi bi-person-plus text-success"></i> Create Owner Account
                         </h2>
 
                         <form @submit.prevent="submitOwner">
                             <div class="mb-3">
-                                <label for="name" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">
+                                <label for="name" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">
                                     Full Name
                                 </label>
                                 <input
@@ -238,6 +238,7 @@ const cleanLabel = (label) => {
                                     v-model="createForm.name"
                                     type="text"
                                     class="form-control border-secondary-subtle bg-body shadow-sm rounded-3 py-2"
+                                    style="min-height: 44px;"
                                     :class="{ 'is-invalid': createForm.errors.name }"
                                     placeholder="e.g. Juan Dela Cruz"
                                     required
@@ -248,7 +249,7 @@ const cleanLabel = (label) => {
                             </div>
 
                             <div class="mb-3">
-                                <label for="email" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">
+                                <label for="email" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">
                                     Email Address
                                 </label>
                                 <input
@@ -256,6 +257,7 @@ const cleanLabel = (label) => {
                                     v-model="createForm.email"
                                     type="email"
                                     class="form-control border-secondary-subtle bg-body shadow-sm rounded-3 py-2"
+                                    style="min-height: 44px;"
                                     :class="{ 'is-invalid': createForm.errors.email }"
                                     placeholder="owner@example.com"
                                     required
@@ -266,7 +268,7 @@ const cleanLabel = (label) => {
                             </div>
 
                             <div class="mb-3">
-                                <label for="phone" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">
+                                <label for="phone" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">
                                     Contact Number (Optional)
                                 </label>
                                 <input
@@ -274,6 +276,7 @@ const cleanLabel = (label) => {
                                     v-model="createForm.phone"
                                     type="text"
                                     class="form-control border-secondary-subtle bg-body shadow-sm rounded-3 py-2"
+                                    style="min-height: 44px;"
                                     :class="{ 'is-invalid': createForm.errors.phone }"
                                     placeholder="09123456789"
                                 >
@@ -283,7 +286,7 @@ const cleanLabel = (label) => {
                             </div>
 
                             <div class="mb-3">
-                                <label for="password" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">
+                                <label for="password" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">
                                     Password
                                 </label>
                                 <input
@@ -291,6 +294,7 @@ const cleanLabel = (label) => {
                                     v-model="createForm.password"
                                     type="password"
                                     class="form-control border-secondary-subtle bg-body shadow-sm rounded-3 py-2"
+                                    style="min-height: 44px;"
                                     :class="{ 'is-invalid': createForm.errors.password }"
                                     placeholder="Minimum 8 characters"
                                     required
@@ -301,7 +305,7 @@ const cleanLabel = (label) => {
                             </div>
 
                             <div class="mb-4">
-                                <label for="password_confirmation" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight">
+                                <label for="password_confirmation" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">
                                     Confirm Password
                                 </label>
                                 <input
@@ -309,6 +313,7 @@ const cleanLabel = (label) => {
                                     v-model="createForm.password_confirmation"
                                     type="password"
                                     class="form-control border-secondary-subtle bg-body shadow-sm rounded-3 py-2"
+                                    style="min-height: 44px;"
                                     :class="{ 'is-invalid': createForm.errors.password_confirmation }"
                                     placeholder="Repeat password"
                                     required
@@ -320,12 +325,13 @@ const cleanLabel = (label) => {
 
                             <button
                                 type="submit"
-                                class="btn btn-success w-100 py-2 shadow-sm rounded-pill fw-semibold"
+                                class="btn btn-success w-100 py-2 shadow-sm rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-2"
+                                style="min-height: 44px;"
                                 :disabled="createForm.processing"
                             >
-                                <span v-if="createForm.processing" class="spinner-border spinner-border-sm me-2" role="status"></span>
-                                <i v-else class="bi bi-person-check-fill me-1"></i>
-                                Create Owner Account
+                                <span v-if="createForm.processing" class="spinner-border spinner-border-sm" role="status"></span>
+                                <i v-else class="bi bi-person-check"></i>
+                                <span>Register Owner Account</span>
                             </button>
                         </form>
                     </div>
@@ -354,7 +360,8 @@ const cleanLabel = (label) => {
                                 <input
                                     v-model="searchQuery"
                                     type="text"
-                                    class="form-control form-control-sm ps-5 pe-4 rounded-pill border-secondary-subtle bg-body shadow-sm"
+                                    class="form-control ps-5 pe-4 rounded-3 border-secondary-subtle bg-body shadow-sm"
+                                    style="min-height: 40px;"
                                     placeholder="Search owner, email, phone..."
                                     @input="handleSearch"
                                 >
@@ -412,66 +419,66 @@ const cleanLabel = (label) => {
                                             <td class="text-nowrap border-secondary-subtle" style="max-width: 220px;">
                                                 <template v-if="owner.boarding_house">
                                                     <div class="fw-bold text-body-emphasis text-truncate">{{ owner.boarding_house.name }}</div>
-                                                    <span class="badge badge-soft-primary rounded-pill small">{{ owner.boarding_house.status }}</span>
+                                                    <span class="badge badge-soft-primary rounded-2 px-2 py-0.5 small">{{ owner.boarding_house.status }}</span>
                                                 </template>
                                                 <span v-else class="small text-body-secondary fst-italic">No assigned listing</span>
                                             </td>
 
                                             <!-- Status -->
                                             <td class="text-nowrap border-secondary-subtle">
-                                                <span class="badge shadow-sm rounded-pill px-3 py-1 text-capitalize" :class="statusBadgeClass(owner.status)">
+                                                <span class="badge rounded-2 px-2.5 py-1 text-capitalize" :class="statusBadgeClass(owner.status)">
                                                     {{ owner.status }}
                                                 </span>
                                             </td>
 
                                             <!-- Action Controls -->
                                             <td class="border-secondary-subtle text-end pe-4">
-                                                <div class="d-flex justify-content-end align-items-center gap-1">
+                                                <div class="d-flex justify-content-end align-items-center gap-1.5">
                                                     
                                                     <!-- Edit Profile -->
                                                     <button
                                                         type="button"
-                                                        class="btn btn-sm btn-outline-secondary rounded-circle d-inline-flex align-items-center justify-content-center p-2"
+                                                        class="btn btn-sm btn-outline-secondary rounded-2 d-inline-flex align-items-center justify-content-center p-2"
                                                         title="Edit Profile"
-                                                        style="width: 32px; height: 32px;"
+                                                        style="width: 36px; height: 36px;"
                                                         @click="openEditModal(owner)"
                                                     >
-                                                        <i class="bi bi-pencil-fill" style="font-size: 0.75rem;"></i>
+                                                        <i class="bi bi-pencil" style="font-size: 0.85rem;"></i>
                                                     </button>
 
                                                     <!-- Reset Password -->
                                                     <button
                                                         type="button"
-                                                        class="btn btn-sm btn-outline-primary rounded-circle d-inline-flex align-items-center justify-content-center p-2"
+                                                        class="btn btn-sm btn-outline-primary rounded-2 d-inline-flex align-items-center justify-content-center p-2"
                                                         title="Reset Password"
-                                                        style="width: 32px; height: 32px;"
+                                                        style="width: 36px; height: 36px;"
                                                         @click="openResetPasswordModal(owner)"
                                                     >
-                                                        <i class="bi bi-key-fill" style="font-size: 0.8rem;"></i>
+                                                        <i class="bi bi-key" style="font-size: 0.95rem;"></i>
                                                     </button>
 
                                                     <!-- Toggle Status -->
                                                     <button
                                                         type="button"
-                                                        class="btn btn-sm rounded-circle d-inline-flex align-items-center justify-content-center p-2"
+                                                        class="btn btn-sm rounded-2 d-inline-flex align-items-center justify-content-center p-2"
                                                         :class="owner.status === 'active' ? 'btn-outline-warning' : 'btn-outline-success'"
                                                         :title="owner.status === 'active' ? 'Deactivate Account' : 'Activate Account'"
-                                                        style="width: 32px; height: 32px;"
+                                                        style="width: 36px; height: 36px;"
                                                         :disabled="statusForm.processing"
                                                         @click="toggleOwnerStatus(owner)"
                                                     >
-                                                        <i :class="owner.status === 'active' ? 'bi bi-pause-fill' : 'bi bi-play-fill'" style="font-size: 0.85rem;"></i>
+                                                        <i :class="owner.status === 'active' ? 'bi bi-pause-fill' : 'bi bi-play-fill'" style="font-size: 0.95rem;"></i>
                                                     </button>
 
                                                     <!-- Delete Owner -->
                                                     <button
                                                         type="button"
-                                                        class="btn btn-sm btn-outline-danger rounded-circle d-inline-flex align-items-center justify-content-center p-2"
+                                                        class="btn btn-sm btn-outline-danger rounded-2 d-inline-flex align-items-center justify-content-center p-2"
                                                         title="Delete Account"
-                                                        style="width: 32px; height: 32px;"
+                                                        style="width: 36px; height: 36px;"
                                                         @click="openDeleteModal(owner)"
                                                     >
-                                                        <i class="bi bi-trash-fill" style="font-size: 0.75rem;"></i>
+                                                        <i class="bi bi-trash" style="font-size: 0.85rem;"></i>
                                                     </button>
                                                 </div>
                                             </td>
@@ -492,14 +499,14 @@ const cleanLabel = (label) => {
                                         <Link 
                                             v-if="link.url" 
                                             :href="link.url" 
-                                            class="page-link border-secondary-subtle bg-body text-body shadow-sm" 
+                                            class="page-link border-secondary-subtle bg-body text-body shadow-sm rounded-2 mx-0.5" 
                                             preserve-scroll 
                                         >
                                             {{ cleanLabel(link.label) }}
                                         </Link>
                                         <span 
                                             v-else 
-                                            class="page-link border-secondary-subtle bg-body text-body opacity-50"
+                                            class="page-link border-secondary-subtle bg-body text-body opacity-50 rounded-2 mx-0.5"
                                         >
                                             {{ cleanLabel(link.label) }}
                                         </span>
@@ -511,17 +518,13 @@ const cleanLabel = (label) => {
                         <!-- EMPTY STATE -->
                         <div v-else class="d-flex flex-column align-items-center justify-content-center text-center p-5 h-100 bg-body">
                             <div class="mb-3">
-                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-secondary opacity-50">
-                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="9" cy="7" r="4"></circle>
-                                    <line x1="17" y1="8" x2="23" y2="8"></line>
-                                </svg>
+                                <i class="bi bi-person-x display-5 text-secondary opacity-50"></i>
                             </div>
                             <h3 class="h5 text-body-emphasis fw-bold mb-1">No owner accounts found</h3>
                             <p class="text-body-secondary mb-3 small">
                                 {{ searchQuery ? 'No owner accounts matched your search criteria.' : 'Create an owner account using the form on the left.' }}
                             </p>
-                            <button v-if="searchQuery" class="btn btn-sm btn-outline-secondary rounded-pill" @click="clearSearch">
+                            <button v-if="searchQuery" class="btn btn-sm btn-outline-secondary rounded-3 px-3 py-1.5" @click="clearSearch">
                                 Clear Search Filter
                             </button>
                         </div>
@@ -535,36 +538,39 @@ const cleanLabel = (label) => {
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content rounded-4 border-0 shadow">
                     <div class="modal-header border-bottom border-secondary-subtle p-4">
-                        <h2 id="editOwnerModalLabel" class="modal-title h5 fw-bold text-body-emphasis d-flex align-items-center gap-2">
-                            <i class="bi bi-pencil-square text-success"></i> Edit Owner Profile
-                        </h2>
+                        <div>
+                            <span class="text-uppercase small fw-bold text-secondary tracking-wider d-block mb-1">Account Record</span>
+                            <h2 id="editOwnerModalLabel" class="modal-title h5 fw-bold text-body-emphasis mb-0">
+                                Edit Owner Profile
+                            </h2>
+                        </div>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
                     <form @submit.prevent="submitEditOwner">
                         <div class="modal-body p-4">
                             <div class="mb-3">
-                                <label for="edit_name" class="form-label fw-bold small text-body-secondary text-uppercase">Full Name</label>
-                                <input id="edit_name" v-model="editForm.name" type="text" class="form-control rounded-3" :class="{ 'is-invalid': editForm.errors.name }" required>
+                                <label for="edit_name" class="form-label fw-bold small text-body-secondary text-uppercase mb-2">Full Name</label>
+                                <input id="edit_name" v-model="editForm.name" type="text" class="form-control rounded-3" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.name }" required>
                                 <div v-if="editForm.errors.name" class="invalid-feedback">{{ editForm.errors.name }}</div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="edit_email" class="form-label fw-bold small text-body-secondary text-uppercase">Email Address</label>
-                                <input id="edit_email" v-model="editForm.email" type="email" class="form-control rounded-3" :class="{ 'is-invalid': editForm.errors.email }" required>
+                                <label for="edit_email" class="form-label fw-bold small text-body-secondary text-uppercase mb-2">Email Address</label>
+                                <input id="edit_email" v-model="editForm.email" type="email" class="form-control rounded-3" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.email }" required>
                                 <div v-if="editForm.errors.email" class="invalid-feedback">{{ editForm.errors.email }}</div>
                             </div>
 
                             <div class="mb-2">
-                                <label for="edit_phone" class="form-label fw-bold small text-body-secondary text-uppercase">Contact Number</label>
-                                <input id="edit_phone" v-model="editForm.phone" type="text" class="form-control rounded-3" :class="{ 'is-invalid': editForm.errors.phone }" placeholder="09123456789">
+                                <label for="edit_phone" class="form-label fw-bold small text-body-secondary text-uppercase mb-2">Contact Number</label>
+                                <input id="edit_phone" v-model="editForm.phone" type="text" class="form-control rounded-3" style="min-height: 44px;" :class="{ 'is-invalid': editForm.errors.phone }" placeholder="09123456789">
                                 <div v-if="editForm.errors.phone" class="invalid-feedback">{{ editForm.errors.phone }}</div>
                             </div>
                         </div>
 
                         <div class="modal-footer border-top border-secondary-subtle p-3">
-                            <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-success rounded-pill px-4 fw-semibold" :disabled="editForm.processing">
+                            <button type="button" class="btn btn-light rounded-3 px-4" style="min-height: 44px;" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-success rounded-3 px-4 fw-semibold" style="min-height: 44px;" :disabled="editForm.processing">
                                 Save Changes
                             </button>
                         </div>
@@ -578,9 +584,12 @@ const cleanLabel = (label) => {
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content rounded-4 border-0 shadow">
                     <div class="modal-header border-bottom border-secondary-subtle p-4">
-                        <h2 id="resetPasswordModalLabel" class="modal-title h5 fw-bold text-body-emphasis d-flex align-items-center gap-2">
-                            <i class="bi bi-key-fill text-primary"></i> Reset Owner Password
-                        </h2>
+                        <div>
+                            <span class="text-uppercase small fw-bold text-secondary tracking-wider d-block mb-1">Credential Management</span>
+                            <h2 id="resetPasswordModalLabel" class="modal-title h5 fw-bold text-body-emphasis mb-0">
+                                Reset Owner Password
+                            </h2>
+                        </div>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
@@ -591,18 +600,19 @@ const cleanLabel = (label) => {
                             </p>
 
                             <div class="mb-3">
-                                <label for="reset_password" class="form-label fw-bold small text-body-secondary text-uppercase">New Password</label>
+                                <label for="reset_password" class="form-label fw-bold small text-body-secondary text-uppercase mb-2">New Password</label>
                                 <div class="input-group">
                                     <input
                                         id="reset_password"
                                         v-model="passwordForm.password"
                                         type="text"
                                         class="form-control rounded-start-3 font-monospace"
+                                        style="min-height: 44px;"
                                         :class="{ 'is-invalid': passwordForm.errors.password }"
                                         placeholder="Enter password or auto-generate"
                                     >
-                                    <button type="button" class="btn btn-outline-primary" @click="generateSecurePassword">
-                                        <i class="bi bi-magic me-1"></i> Generate 10-Char
+                                    <button type="button" class="btn btn-outline-primary rounded-end-3" style="min-height: 44px;" @click="generateSecurePassword">
+                                        <i class="bi bi-arrow-repeat me-1"></i> Generate
                                     </button>
                                 </div>
                                 <div v-if="passwordForm.errors.password" class="invalid-feedback d-block">{{ passwordForm.errors.password }}</div>
@@ -613,8 +623,8 @@ const cleanLabel = (label) => {
                         </div>
 
                         <div class="modal-footer border-top border-secondary-subtle p-3">
-                            <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary rounded-pill px-4 fw-semibold" :disabled="passwordForm.processing">
+                            <button type="button" class="btn btn-light rounded-3 px-4" style="min-height: 44px;" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary rounded-3 px-4 fw-semibold" style="min-height: 44px;" :disabled="passwordForm.processing">
                                 Confirm Password Reset
                             </button>
                         </div>
@@ -648,9 +658,9 @@ const cleanLabel = (label) => {
                     </div>
 
                     <div class="modal-footer border-top border-secondary-subtle p-3">
-                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-danger rounded-pill px-4 fw-semibold" :disabled="deleteForm.processing" @click="submitDeleteOwner">
-                            Delete Account
+                        <button type="button" class="btn btn-light rounded-3 px-4" style="min-height: 44px;" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger rounded-3 px-4 fw-semibold" style="min-height: 44px;" :disabled="deleteForm.processing" @click="submitDeleteOwner">
+                            Confirm Permanent Deletion
                         </button>
                     </div>
                 </div>

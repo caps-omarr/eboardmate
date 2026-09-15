@@ -140,9 +140,9 @@ const submitResponse = () => {
                 </button>
             </header>
 
-            <section v-if="!boardingHouse" class="mx-3 mx-md-0 ebm-card p-4 p-md-5 text-center shadow-sm rounded-4">
-                <div class="fs-1 mb-3">🏠</div>
-                <h2 class="h4 fw-bold mb-2">No assigned property</h2>
+            <section v-if="!boardingHouse" class="mx-3 mx-md-0 ebm-card p-4 p-md-5 text-center shadow-sm rounded-4 border border-secondary-subtle">
+                <i class="bi bi-house-door display-4 text-secondary opacity-50 mb-3 d-block"></i>
+                <h2 class="h4 fw-bold mb-2 text-body-emphasis">No assigned property</h2>
                 <p class="text-body-secondary mb-0">Your owner account does not have an assigned boarding house listing yet.</p>
             </section>
 
@@ -158,7 +158,7 @@ const submitResponse = () => {
                     </div>
                 </div>
 
-                <!-- NATIVE RESPONSIVE LIST VIEW (No Box Cards) -->
+                <!-- NATIVE RESPONSIVE LIST VIEW -->
                 <section class="px-3 px-md-0 mb-5">
                     
                     <div v-if="reservations.length" class="bg-body rounded-4 border border-secondary-subtle overflow-hidden shadow-sm">
@@ -173,7 +173,7 @@ const submitResponse = () => {
 
                         <div class="d-flex flex-column reservations-scroll-container">
                             
-                            <!-- 🚀 SKELETON LIST ITEMS -->
+                            <!-- SKELETON LIST ITEMS -->
                             <template v-if="isLoading">
                                 <div v-for="i in 4" :key="i" class="p-3 p-md-4 border-bottom border-secondary-subtle placeholder-glow">
                                     <div class="d-flex align-items-center gap-3">
@@ -222,9 +222,9 @@ const submitResponse = () => {
                                         </div>
                                     </div>
 
-                                    <!-- Col 3: Status Badge -->
+                                    <!-- Col 3: Status Badge (Concentric 6px) -->
                                     <div class="col-12 col-sm-6 col-lg-2">
-                                        <span class="badge rounded-pill px-3 py-2 shadow-sm d-inline-block text-center" :class="statusBadgeClass(res.status)">
+                                        <span class="badge rounded-2 px-2.5 py-1.5 shadow-sm d-inline-block text-center fw-semibold" :class="statusBadgeClass(res.status)">
                                             {{ res.status_label }}
                                         </span>
                                     </div>
@@ -233,10 +233,10 @@ const submitResponse = () => {
                                     <div class="col-12 col-sm-6 col-lg-4 text-sm-end mt-2 mt-sm-0">
                                         <div class="d-flex align-items-center justify-content-start justify-content-sm-end flex-wrap gap-2">
                                             <template v-if="res.can_respond">
-                                                <button class="btn btn-sm btn-native-primary rounded-pill px-3 py-1.5 fw-bold shadow-sm" @click="openResponseModal(res, 'approve')">Approve</button>
-                                                <button class="btn btn-sm btn-native-outline-danger rounded-pill px-3 py-1.5 fw-bold" @click="openResponseModal(res, 'reject')">Reject</button>
+                                                <button class="btn btn-sm btn-native-primary rounded-3 px-3 py-1.5 fw-bold shadow-sm" @click="openResponseModal(res, 'approve')">Approve Request</button>
+                                                <button class="btn btn-sm btn-outline-danger rounded-3 px-3 py-1.5 fw-bold" @click="openResponseModal(res, 'reject')">Decline Request</button>
                                             </template>
-                                            <button class="btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3 py-1.5 d-inline-flex align-items-center gap-1" @click="openArchiveModal(res)" title="Archive Reservation">
+                                            <button class="btn btn-sm btn-outline-secondary rounded-3 fw-semibold px-3 py-1.5 d-inline-flex align-items-center gap-1" @click="openArchiveModal(res)" title="Archive Reservation">
                                                 <i class="bi bi-archive"></i>
                                                 <span>Archive</span>
                                             </button>
@@ -260,7 +260,7 @@ const submitResponse = () => {
 
                     <!-- Empty State -->
                     <div v-else class="text-center p-5 bg-body rounded-4 shadow-sm border border-secondary-subtle">
-                        <div class="fs-1 mb-3 opacity-50">📭</div>
+                        <i class="bi bi-inbox display-4 text-secondary opacity-50 mb-3 d-block"></i>
                         <h3 class="h6 fw-bold mb-1">No reservations found</h3>
                         <p class="text-body-secondary small mb-0">There are no requests matching this status filter.</p>
                     </div>
@@ -302,7 +302,7 @@ const submitResponse = () => {
 
                         <div class="modal-footer bg-body-tertiary border-top border-secondary-subtle p-3">
                             <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-medium" data-bs-dismiss="modal" :disabled="responseForm.processing">Cancel</button>
-                            <button type="submit" class="btn rounded-pill fw-bold shadow-sm px-4" :class="actionType === 'approve' ? 'btn-success' : 'btn-danger'" :disabled="responseForm.processing">
+                            <button type="submit" class="btn rounded-3 fw-bold shadow-sm px-4 py-2" :class="actionType === 'approve' ? 'btn-success' : 'btn-danger'" :disabled="responseForm.processing" style="min-height: 44px;">
                                 <span v-if="responseForm.processing" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                                 {{ responseForm.processing ? 'Saving...' : 'Confirm ' + (actionType === 'approve' ? 'Approval' : 'Rejection') }}
                             </button>
@@ -315,7 +315,7 @@ const submitResponse = () => {
         <!-- ARCHIVE MODAL -->
         <div id="archiveModal" class="modal fade" tabindex="-1" aria-hidden="true">
              <div class="modal-dialog modal-dialog-centered modal-sm">
-                <div class="modal-content text-center p-4 shadow-lg border-0 bg-body rounded-4">
+                <div class="modal-content text-center p-4 shadow-lg border border-secondary-subtle bg-body rounded-4">
                     <div class="mb-3">
                         <i class="bi bi-archive text-secondary opacity-50" style="font-size: 3rem;"></i>
                     </div>
@@ -323,10 +323,10 @@ const submitResponse = () => {
                     <p class="text-body-secondary small mb-4">This reservation (<strong v-if="reservationToArchive" class="font-monospace text-body-emphasis">{{ reservationToArchive.reference_code }}</strong>) will be moved out of your active view.</p>
                     
                     <div class="d-flex justify-content-center gap-2">
-                        <button type="button" class="btn btn-outline-secondary rounded-pill px-3 fw-medium flex-grow-1" data-bs-dismiss="modal" :disabled="archiveForm.processing">Cancel</button>
-                        <button type="button" class="btn btn-secondary rounded-pill px-4 fw-bold shadow-sm flex-grow-1 d-flex align-items-center justify-content-center" @click="submitArchive" :disabled="archiveForm.processing">
+                        <button type="button" class="btn btn-outline-secondary rounded-3 px-3 fw-semibold flex-grow-1" data-bs-dismiss="modal" :disabled="archiveForm.processing" style="min-height: 44px;">Cancel</button>
+                        <button type="button" class="btn btn-secondary rounded-3 px-4 fw-bold shadow-sm flex-grow-1 d-flex align-items-center justify-content-center" @click="submitArchive" :disabled="archiveForm.processing" style="min-height: 44px;">
                             <span v-if="archiveForm.processing" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                            Archive
+                            <span>Archive</span>
                         </button>
                     </div>
                 </div>

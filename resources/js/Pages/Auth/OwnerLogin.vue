@@ -52,34 +52,34 @@ const submit = () => {
                         </Link>
                     </div>
 
-                    <div class="mb-3">
-                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fw-bold small">
-                            Landlord PWA Portal
+                    <div class="mb-2">
+                        <span class="text-uppercase small fw-bold text-secondary tracking-wider d-block mb-1">
+                            Landlord Portal
                         </span>
+                        <h1 class="h4 fw-bold text-body-emphasis mb-1">Owner Sign In</h1>
+                        <p class="text-body-secondary small mb-4">
+                            Sign in to manage your boarding house listing and student reservations.
+                        </p>
                     </div>
-
-                    <h1 class="h4 fw-bold text-body-emphasis mb-1">Owner Sign In</h1>
-                    <p class="text-body-secondary small mb-4">
-                        Sign in to manage your boarding house & student reservations.
-                    </p>
 
                     <!-- Login Form -->
                     <form @submit.prevent="submit" class="d-flex flex-column gap-3 text-start">
                         
                         <!-- Email Input -->
                         <div>
-                            <label for="email" class="form-label fw-bold small text-body-secondary text-uppercase ms-1 mb-1">
+                            <label for="email" class="form-label fw-bold small text-body-secondary text-uppercase mb-2">
                                 Email Address
                             </label>
                             <div class="input-group">
-                                <span class="input-group-text bg-body-tertiary border-secondary-subtle text-body-secondary rounded-start-4 ps-3">
-                                    <i class="bi bi-envelope-fill"></i>
+                                <span class="input-group-text bg-body-tertiary border-secondary-subtle text-body-secondary rounded-start-3 ps-3" style="min-height: 44px;">
+                                    <i class="bi bi-envelope"></i>
                                 </span>
                                 <input
                                     id="email"
                                     v-model="form.email"
                                     type="email"
-                                    class="form-control bg-body-tertiary border-secondary-subtle rounded-end-4 py-2"
+                                    class="form-control bg-body-tertiary border-secondary-subtle rounded-end-3 py-2"
+                                    style="min-height: 44px;"
                                     :class="{ 'is-invalid': form.errors.email }"
                                     placeholder="landlord@example.com"
                                     autocomplete="email"
@@ -87,25 +87,26 @@ const submit = () => {
                                     autofocus
                                 >
                             </div>
-                            <div v-if="form.errors.email" class="text-danger small fw-bold mt-1 ps-2">
+                            <div v-if="form.errors.email" class="text-danger small fw-bold mt-1 ps-1">
                                 {{ form.errors.email }}
                             </div>
                         </div>
 
                         <!-- Password Input with Show/Hide Toggle -->
                         <div>
-                            <label for="password" class="form-label fw-bold small text-body-secondary text-uppercase ms-1 mb-1">
+                            <label for="password" class="form-label fw-bold small text-body-secondary text-uppercase mb-2">
                                 Password
                             </label>
                             <div class="input-group">
-                                <span class="input-group-text bg-body-tertiary border-secondary-subtle text-body-secondary rounded-start-4 ps-3">
-                                    <i class="bi bi-lock-fill"></i>
+                                <span class="input-group-text bg-body-tertiary border-secondary-subtle text-body-secondary rounded-start-3 ps-3" style="min-height: 44px;">
+                                    <i class="bi bi-lock"></i>
                                 </span>
                                 <input
                                     id="password"
                                     v-model="form.password"
                                     :type="showPassword ? 'text' : 'password'"
                                     class="form-control bg-body-tertiary border-secondary-subtle py-2"
+                                    style="min-height: 44px;"
                                     :class="{ 'is-invalid': form.errors.password }"
                                     placeholder="••••••••"
                                     autocomplete="current-password"
@@ -113,14 +114,15 @@ const submit = () => {
                                 >
                                 <button 
                                     type="button" 
-                                    class="btn btn-outline-secondary border-secondary-subtle bg-body-tertiary rounded-end-4 px-3 text-body-secondary"
+                                    class="btn btn-outline-secondary border-secondary-subtle bg-body-tertiary rounded-end-3 px-3 text-body-secondary"
+                                    style="min-height: 44px;"
                                     @click="showPassword = !showPassword"
                                     :title="showPassword ? 'Hide Password' : 'Show Password'"
                                 >
-                                    <i :class="['bi', showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill']"></i>
+                                    <i :class="['bi', showPassword ? 'bi-eye-slash' : 'bi-eye']"></i>
                                 </button>
                             </div>
-                            <div v-if="form.errors.password" class="text-danger small fw-bold mt-1 ps-2">
+                            <div v-if="form.errors.password" class="text-danger small fw-bold mt-1 ps-1">
                                 {{ form.errors.password }}
                             </div>
                         </div>
@@ -143,12 +145,13 @@ const submit = () => {
                         <!-- Primary Submit CTA Button -->
                         <button
                             type="submit"
-                            class="btn btn-native-primary rounded-pill py-3 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 mt-2"
+                            class="btn btn-success rounded-3 py-2.5 fw-semibold shadow-sm d-flex align-items-center justify-content-center gap-2 mt-2"
+                            style="min-height: 48px;"
                             :disabled="form.processing"
                         >
                             <span v-if="form.processing" class="spinner-border spinner-border-sm"></span>
                             <span v-if="form.processing">Signing in...</span>
-                            <span v-else><i class="bi bi-box-arrow-in-right me-1"></i> Sign In to Portal</span>
+                            <span v-else><i class="bi bi-box-arrow-in-right me-1"></i> Sign In to Landlord Portal</span>
                         </button>
 
                     </form>

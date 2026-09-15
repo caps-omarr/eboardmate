@@ -419,10 +419,10 @@ const getInitials = (name) => {
                                 <div class="flex-grow-1">
                                     <label
                                         for="photo"
-                                        class="btn btn-sm btn-outline-secondary rounded-pill fw-medium px-4 py-2 mb-1 cursor-pointer position-relative z-2 d-inline-flex align-items-center gap-2"
-                                        style="min-height: 48px; touch-action: manipulation;"
+                                        class="btn btn-sm btn-outline-secondary rounded-3 fw-medium px-4 py-2 mb-1 cursor-pointer position-relative z-2 d-inline-flex align-items-center gap-2"
+                                        style="min-height: 44px; touch-action: manipulation;"
                                     >
-                                        <i class="bi bi-camera-fill text-success fs-5"></i> Select New Photo
+                                        <i class="bi bi-camera text-success fs-5"></i> Select New Photo
                                     </label>
                                     <input
                                         id="photo"
@@ -449,14 +449,15 @@ const getInitials = (name) => {
                             <div class="mb-3">
                                 <label
                                     for="name"
-                                    class="form-label fw-bold small text-body-secondary text-uppercase ms-1 mb-1"
+                                    class="form-label fw-bold small text-body-secondary text-uppercase mb-2"
                                     >Full Name</label
                                 >
                                 <input
                                     id="name"
                                     v-model="profileForm.name"
                                     type="text"
-                                    class="form-control bg-body-tertiary rounded-4 py-2"
+                                    class="form-control bg-body-tertiary rounded-3 border-secondary-subtle py-2"
+                                    style="min-height: 44px;"
                                     :class="{
                                         'is-invalid': profileForm.errors.name,
                                     }"
@@ -473,14 +474,15 @@ const getInitials = (name) => {
                             <div class="mb-4">
                                 <label
                                     for="email"
-                                    class="form-label fw-bold small text-body-secondary text-uppercase ms-1 mb-1"
-                                    >Email (Gmail)</label
+                                    class="form-label fw-bold small text-body-secondary text-uppercase mb-2"
+                                    >Email Address</label
                                 >
                                 <input
                                     id="email"
                                     v-model="profileForm.email"
                                     type="email"
-                                    class="form-control bg-body-tertiary rounded-4 py-2"
+                                    class="form-control bg-body-tertiary rounded-3 border-secondary-subtle py-2"
+                                    style="min-height: 44px;"
                                     :class="{
                                         'is-invalid': profileForm.errors.email,
                                     }"
@@ -497,16 +499,17 @@ const getInitials = (name) => {
                             <div class="d-flex justify-content-end">
                                 <button
                                     type="submit"
-                                    class="btn btn-native-primary rounded-pill px-4 fw-bold shadow-sm"
+                                    class="btn btn-success rounded-3 px-4 fw-semibold shadow-sm d-flex align-items-center justify-content-center gap-2"
+                                    style="min-height: 44px;"
                                     :disabled="profileForm.processing"
                                 >
                                     <span v-if="profileForm.processing"
                                         ><span
-                                            class="spinner-border spinner-border-sm me-2"
+                                            class="spinner-border spinner-border-sm"
                                         ></span
                                         >Saving...</span
                                     >
-                                    <span v-else>Save Profile</span>
+                                    <span v-else>Update Profile Information</span>
                                 </button>
                             </div>
                         </form>
@@ -526,14 +529,15 @@ const getInitials = (name) => {
                             <div class="mb-3">
                                 <label
                                     for="current_password"
-                                    class="form-label fw-bold small text-body-secondary text-uppercase ms-1 mb-1"
+                                    class="form-label fw-bold small text-body-secondary text-uppercase mb-2"
                                     >Current Password</label
                                 >
                                 <input
                                     id="current_password"
                                     v-model="passwordForm.current_password"
                                     type="password"
-                                    class="form-control bg-body-tertiary rounded-4 py-2"
+                                    class="form-control bg-body-tertiary rounded-3 border-secondary-subtle py-2"
+                                    style="min-height: 44px;"
                                     :class="{
                                         'is-invalid':
                                             passwordForm.errors
@@ -552,14 +556,15 @@ const getInitials = (name) => {
                             <div class="mb-3">
                                 <label
                                     for="password"
-                                    class="form-label fw-bold small text-body-secondary text-uppercase ms-1 mb-1"
+                                    class="form-label fw-bold small text-body-secondary text-uppercase mb-2"
                                     >New Password</label
                                 >
                                 <input
                                     id="password"
                                     v-model="passwordForm.password"
                                     type="password"
-                                    class="form-control bg-body-tertiary rounded-4 py-2"
+                                    class="form-control bg-body-tertiary rounded-3 border-secondary-subtle py-2"
+                                    style="min-height: 44px;"
                                     :class="{
                                         'is-invalid':
                                             passwordForm.errors.password,
@@ -577,14 +582,15 @@ const getInitials = (name) => {
                             <div class="mb-4">
                                 <label
                                     for="password_confirmation"
-                                    class="form-label fw-bold small text-body-secondary text-uppercase ms-1 mb-1"
+                                    class="form-label fw-bold small text-body-secondary text-uppercase mb-2"
                                     >Confirm Password</label
                                 >
                                 <input
                                     id="password_confirmation"
                                     v-model="passwordForm.password_confirmation"
                                     type="password"
-                                    class="form-control bg-body-tertiary rounded-4 py-2"
+                                    class="form-control bg-body-tertiary rounded-3 border-secondary-subtle py-2"
+                                    style="min-height: 44px;"
                                     :class="{
                                         'is-invalid':
                                             passwordForm.errors
@@ -609,16 +615,17 @@ const getInitials = (name) => {
                             <div class="d-flex justify-content-end">
                                 <button
                                     type="submit"
-                                    class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm"
+                                    class="btn btn-dark rounded-3 px-4 fw-semibold shadow-sm d-flex align-items-center justify-content-center gap-2"
+                                    style="min-height: 44px;"
                                     :disabled="passwordForm.processing"
                                 >
                                     <span v-if="passwordForm.processing"
                                         ><span
-                                            class="spinner-border spinner-border-sm me-2"
+                                            class="spinner-border spinner-border-sm"
                                         ></span
                                         >Saving...</span
                                     >
-                                    <span v-else>Update Password</span>
+                                    <span v-else>Update Account Password</span>
                                 </button>
                             </div>
                         </form>

@@ -154,13 +154,13 @@ const submitResponse = () => {
             </header>
 
             <!-- NO BOARDING HOUSE ASSIGNED -->
-            <section v-if="!boardingHouse" class="mx-3 mx-md-0 ebm-card p-4 p-md-5 text-center shadow-sm rounded-4">
-                <div class="fs-1 mb-3">🏠</div>
-                <h2 class="h4 fw-bold mb-2">No assigned boarding house</h2>
-                <p class="text-body-secondary mb-0">Contact the super admin to link your property.</p>
+            <section v-if="!boardingHouse" class="mx-3 mx-md-0 ebm-card p-4 p-md-5 text-center shadow-sm rounded-4 border border-secondary-subtle">
+                <i class="bi bi-house-door display-4 text-secondary opacity-50 mb-3 d-block"></i>
+                <h2 class="h4 fw-bold mb-2 text-body-emphasis">No assigned boarding house</h2>
+                <p class="text-body-secondary mb-0">Contact the super admin to link your property listing.</p>
             </section>
 
-            <!-- 🚀 SKELETON LOADING STATE -->
+            <!-- SKELETON LOADING STATE -->
             <div v-if="isLoading" class="px-3 px-md-0 placeholder-glow mb-4">
                 <div class="row g-3 mb-4">
                     <div v-for="i in 4" :key="i" class="col-12 col-sm-6 col-xl-3">
@@ -186,20 +186,20 @@ const submitResponse = () => {
             <!-- MAIN DASHBOARD CONTENT -->
             <template v-else-if="boardingHouse">
                 
-                <!-- 🚀 RESPONSIVE BOOTSTRAP 5 STATS GRID (Stacks vertically on small screens) -->
+                <!-- RESPONSIVE BOOTSTRAP 5 STATS GRID -->
                 <section class="row g-3 px-3 px-md-0 mb-4" aria-label="Dashboard Statistics">
                     
                     <!-- Total Reservations Card -->
                     <div class="col-12 col-sm-6 col-xl-3">
                         <div class="native-card card-highlight d-flex flex-column justify-content-between h-100 p-4 rounded-4">
                             <div>
-                                <strong class="fs-1 fw-bold lh-1 mb-1 d-block">{{ stats.total }}</strong>
-                                <span class="small opacity-75">Total Reservations</span>
+                                <span class="text-uppercase small fw-semibold opacity-75 d-block mb-1" style="font-size: 0.72rem; letter-spacing: 0.05em;">Total Reservations</span>
+                                <strong class="fs-1 fw-bold lh-1 mb-0 d-block">{{ stats.total }}</strong>
                             </div>
                             <div class="mt-3">
                                 <div class="d-flex justify-content-between small opacity-75 mb-1 font-monospace" style="font-size: 0.7rem;">
                                     <span>0%</span>
-                                    <span>{{ getPercentage(stats.approved, stats.total) }}% Apprv</span>
+                                    <span>{{ getPercentage(stats.approved, stats.total) }}% Approved</span>
                                 </div>
                                 <div class="native-progress bg-black bg-opacity-25 rounded-pill">
                                     <div class="native-progress-bar bg-white rounded-pill" :style="`width: ${getPercentage(stats.approved, stats.total)}%`"></div>
@@ -212,8 +212,8 @@ const submitResponse = () => {
                     <div class="col-12 col-sm-6 col-xl-3">
                         <div class="native-card bg-body shadow-sm d-flex flex-column justify-content-between h-100 p-4 rounded-4 border border-secondary-subtle">
                             <div>
-                                <strong class="fs-1 fw-bold lh-1 mb-1 text-body-emphasis d-block">{{ stats.pending }}</strong>
-                                <span class="small text-body-secondary">Pending Action</span>
+                                <span class="text-uppercase small fw-semibold text-body-secondary d-block mb-1" style="font-size: 0.72rem; letter-spacing: 0.05em;">Pending Action</span>
+                                <strong class="fs-1 fw-bold lh-1 mb-0 text-body-emphasis d-block">{{ stats.pending }}</strong>
                             </div>
                             <div class="mt-3">
                                 <div class="d-flex justify-content-between small text-body-secondary mb-1 font-monospace" style="font-size: 0.7rem;">
@@ -231,10 +231,10 @@ const submitResponse = () => {
                     <div class="col-12 col-sm-6 col-xl-3">
                         <div class="native-card bg-body shadow-sm d-flex flex-column justify-content-between h-100 p-4 rounded-4 border border-secondary-subtle">
                             <div>
-                                <strong class="fs-1 fw-bold lh-1 mb-1 text-body-emphasis d-block">
-                                    {{ boardingHouse.total_rooms - boardingHouse.available_rooms }}/{{ boardingHouse.total_rooms }}
+                                <span class="text-uppercase small fw-semibold text-body-secondary d-block mb-1" style="font-size: 0.72rem; letter-spacing: 0.05em;">Rooms Occupied</span>
+                                <strong class="fs-1 fw-bold lh-1 mb-0 text-body-emphasis d-block">
+                                    {{ boardingHouse.total_rooms - boardingHouse.available_rooms }} / {{ boardingHouse.total_rooms }}
                                 </strong>
-                                <span class="small text-body-secondary">Rooms Occupied</span>
                             </div>
                             <div class="mt-3">
                                 <div class="d-flex justify-content-between small text-body-secondary mb-1 font-monospace" style="font-size: 0.7rem;">
@@ -252,28 +252,29 @@ const submitResponse = () => {
                     <div class="col-12 col-sm-6 col-xl-3">
                         <div class="native-card bg-body shadow-sm d-flex flex-column justify-content-between h-100 p-4 rounded-4 border border-secondary-subtle">
                             <div>
-                                <strong class="fs-3 fw-bold lh-1 mb-1 text-success d-block">₱{{ formatPrice(boardingHouse.rent_price) }}</strong>
-                                <span class="small text-body-secondary">Monthly Rent</span>
+                                <span class="text-uppercase small fw-semibold text-body-secondary d-block mb-1" style="font-size: 0.72rem; letter-spacing: 0.05em;">Monthly Rent</span>
+                                <strong class="fs-2 fw-bold lh-1 mb-0 text-success d-block">₱{{ formatPrice(boardingHouse.rent_price) }}</strong>
                             </div>
                             <div class="mt-3">
                                 <div class="d-flex align-items-center gap-1">
-                                    <span v-if="boardingHouse.is_verified" class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1">Verified</span>
-                                    <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-2 py-1">{{ boardingHouse.status }}</span>
+                                    <span v-if="boardingHouse.is_verified" class="badge bg-success bg-opacity-10 text-success rounded-2 px-2 py-1 small">Verified</span>
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-2 px-2 py-1 small">{{ boardingHouse.status }}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- MOBILE-FIRST RESPONSIVE SCROLLABLE RESERVATION LIST -->
+                <!-- RESPONSIVE SCROLLABLE RESERVATION LIST -->
                 <section class="px-3 px-md-0 mb-5" aria-label="Latest Reservations">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div>
                             <h2 class="h5 fw-bold mb-0 text-body-emphasis">Recent Activity</h2>
                             <span class="small text-body-secondary">Latest guest reservation requests</span>
                         </div>
-                        <Link href="/owner/reservations" class="btn btn-sm btn-outline-success rounded-pill fw-semibold px-3">
-                            View All <i class="bi bi-arrow-right ms-1"></i>
+                        <Link href="/owner/reservations" class="btn btn-sm btn-outline-success rounded-3 fw-semibold px-3 py-1.5 d-inline-flex align-items-center gap-1">
+                            <span>View All</span>
+                            <i class="bi bi-arrow-right"></i>
                         </Link>
                     </div>
 
@@ -296,7 +297,7 @@ const submitResponse = () => {
                                         </div>
                                         <div class="d-flex align-items-center gap-2 flex-wrap">
                                             <span class="small text-body-secondary text-truncate">Move-in: <strong class="text-body-emphasis">{{ reservation.preferred_move_in_date }}</strong></span>
-                                            <span class="badge rounded-pill px-2 py-1" :class="statusBadgeClass(reservation.status)">
+                                            <span class="badge rounded-2 px-2 py-1" :class="statusBadgeClass(reservation.status)">
                                                 {{ reservation.status_label }}
                                             </span>
                                         </div>
@@ -305,11 +306,11 @@ const submitResponse = () => {
 
                                 <!-- Action Buttons -->
                                 <div v-if="reservation.can_respond" class="d-flex flex-wrap gap-2 mt-2 mt-sm-0 flex-shrink-0">
-                                    <button type="button" class="btn btn-sm btn-native-primary rounded-pill px-3 fw-bold shadow-sm" @click="openResponseModal(reservation, 'approve')">
-                                        Approve
+                                    <button type="button" class="btn btn-sm btn-native-primary rounded-3 px-3 py-1.5 fw-bold shadow-sm" @click="openResponseModal(reservation, 'approve')">
+                                        Approve Request
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-native-outline-danger rounded-pill px-3 fw-bold" @click="openResponseModal(reservation, 'reject')">
-                                        Reject
+                                    <button type="button" class="btn btn-sm btn-outline-danger rounded-3 px-3 py-1.5 fw-bold" @click="openResponseModal(reservation, 'reject')">
+                                        Decline Request
                                     </button>
                                 </div>
                             </div>
@@ -318,7 +319,7 @@ const submitResponse = () => {
                     </div>
 
                     <div v-else class="text-center p-5 bg-body rounded-4 shadow-sm border border-secondary-subtle">
-                        <div class="fs-1 mb-3 opacity-50">📋</div>
+                        <i class="bi bi-clipboard-x display-4 text-secondary opacity-50 mb-3 d-block"></i>
                         <h3 class="h6 fw-bold mb-1">No reservations yet</h3>
                         <p class="text-body-secondary small mb-0">Student requests will appear here.</p>
                     </div>
