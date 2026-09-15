@@ -79,11 +79,6 @@ const statusBadgeClass = computed(() => {
                                 <i class="bi bi-arrow-left fs-6"></i>
                                 <span>Back to Accommodations</span>
                             </Link>
-
-                            <span class="badge bg-body-tertiary border border-secondary-subtle text-secondary px-3 py-2 fw-semibold d-none d-sm-inline-flex align-items-center gap-1.5" style="border-radius: 8px;">
-                                <i class="bi bi-shield-check text-success"></i>
-                                <span>Zero-Registration Guest Lookup</span>
-                            </span>
                         </div>
 
                         <!-- Header & Context (Law 1: Human-Crafted Copy & Intentional Hierarchy) -->
