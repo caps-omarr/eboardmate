@@ -222,7 +222,7 @@ const cleanLabel = (label) => {
             <div class="row g-4">
                 
                 <!-- LEFT COLUMN: CREATE OWNER FORM -->
-                <section class="col-lg-4" aria-label="Create Owner Form">
+                <section class="col-12 col-xl-4 mb-4 mb-xl-0" aria-label="Create Owner Form">
                     <div class="ebm-card border border-secondary-subtle shadow-sm p-4 bg-body-tertiary rounded-4 h-100">
                         <h2 class="h5 text-body-emphasis fw-bold mb-4 border-bottom border-secondary-subtle pb-2 d-flex align-items-center gap-2">
                             <i class="bi bi-person-plus text-success"></i> Create Owner Account
@@ -269,7 +269,7 @@ const cleanLabel = (label) => {
 
                             <div class="mb-3">
                                 <label for="phone" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">
-                                    Contact Number (Optional)
+                                    Phone Number
                                 </label>
                                 <input
                                     id="phone"
@@ -289,17 +289,27 @@ const cleanLabel = (label) => {
                                 <label for="password" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">
                                     Password
                                 </label>
-                                <input
-                                    id="password"
-                                    v-model="createForm.password"
-                                    type="password"
-                                    class="form-control border-secondary-subtle bg-body shadow-sm rounded-3 py-2"
-                                    style="min-height: 44px;"
-                                    :class="{ 'is-invalid': createForm.errors.password }"
-                                    placeholder="Minimum 8 characters"
-                                    required
-                                >
-                                <div v-if="createForm.errors.password" class="invalid-feedback fw-bold">
+                                <div class="position-relative">
+                                    <input
+                                        id="password"
+                                        v-model="createForm.password"
+                                        :type="showCreatePassword ? 'text' : 'password'"
+                                        class="form-control border-secondary-subtle bg-body shadow-sm rounded-3 py-2 pe-5"
+                                        style="min-height: 44px;"
+                                        :class="{ 'is-invalid': createForm.errors.password }"
+                                        placeholder="Min. 8 characters"
+                                        required
+                                    >
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-link position-absolute top-50 end-0 translate-middle-y text-secondary text-decoration-none me-2 p-0"
+                                        style="z-index: 5;"
+                                        @click="showCreatePassword = !showCreatePassword"
+                                    >
+                                        <i :class="showCreatePassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                                    </button>
+                                </div>
+                                <div v-if="createForm.errors.password" class="invalid-feedback fw-bold d-block">
                                     {{ createForm.errors.password }}
                                 </div>
                             </div>
@@ -308,24 +318,30 @@ const cleanLabel = (label) => {
                                 <label for="password_confirmation" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">
                                     Confirm Password
                                 </label>
-                                <input
-                                    id="password_confirmation"
-                                    v-model="createForm.password_confirmation"
-                                    type="password"
-                                    class="form-control border-secondary-subtle bg-body shadow-sm rounded-3 py-2"
-                                    style="min-height: 44px;"
-                                    :class="{ 'is-invalid': createForm.errors.password_confirmation }"
-                                    placeholder="Repeat password"
-                                    required
-                                >
-                                <div v-if="createForm.errors.password_confirmation" class="invalid-feedback fw-bold">
-                                    {{ createForm.errors.password_confirmation }}
+                                <div class="position-relative">
+                                    <input
+                                        id="password_confirmation"
+                                        v-model="createForm.password_confirmation"
+                                        :type="showCreateConfirmPassword ? 'text' : 'password'"
+                                        class="form-control border-secondary-subtle bg-body shadow-sm rounded-3 py-2 pe-5"
+                                        style="min-height: 44px;"
+                                        placeholder="Repeat password"
+                                        required
+                                    >
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-link position-absolute top-50 end-0 translate-middle-y text-secondary text-decoration-none me-2 p-0"
+                                        style="z-index: 5;"
+                                        @click="showCreateConfirmPassword = !showCreateConfirmPassword"
+                                    >
+                                        <i :class="showCreateConfirmPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                                    </button>
                                 </div>
                             </div>
 
                             <button
                                 type="submit"
-                                class="btn btn-success w-100 py-2 shadow-sm rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-2"
+                                class="btn btn-success w-100 py-2 fw-semibold shadow-sm rounded-3 d-flex align-items-center justify-content-center gap-2"
                                 style="min-height: 44px;"
                                 :disabled="createForm.processing"
                             >
@@ -338,7 +354,7 @@ const cleanLabel = (label) => {
                 </section>
 
                 <!-- RIGHT COLUMN: OWNERS TABLE & LIST -->
-                <section class="col-lg-8" aria-label="Owner Accounts Data Table">
+                <section class="col-12 col-xl-8" aria-label="Owner Accounts Data Table">
                     <div class="ebm-card p-0 overflow-hidden shadow-sm border border-secondary-subtle rounded-4 h-100 d-flex flex-column bg-body">
                         
                         <!-- Table Header & Search -->
@@ -378,107 +394,125 @@ const cleanLabel = (label) => {
 
                         <div v-if="owners.data && owners.data.length" class="d-flex flex-column justify-content-between flex-grow-1 bg-body">
                             
-                            <div class="table-responsive custom-table-scroll">
-                                <table class="table table-hover align-middle mb-0">
+                            <div class="table-responsive custom-table-scroll overflow-x-hidden">
+                                <table class="table table-hover align-middle mb-0" style="table-layout: fixed; width: 100% !important;">
                                     <thead>
                                         <tr>
-                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase ps-4">Owner</th>
-                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Contact</th>
-                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Assigned Listing</th>
-                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Status</th>
-                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase text-end pe-4">Actions</th>
+                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase ps-3 ps-md-4 col-owner-main">Owner</th>
+                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase d-none d-md-table-cell col-owner-contact">Contact</th>
+                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase d-none d-md-table-cell col-owner-listing">Assigned Listing</th>
+                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase d-none d-md-table-cell col-owner-status">Status</th>
+                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase text-end pe-3 pe-md-4 col-owner-actions">Actions</th>
                                         </tr>
                                     </thead>
 
                                     <tbody v-if="isLoading" class="border-top-0 placeholder-glow">
                                         <tr v-for="i in 5" :key="i">
-                                            <td class="ps-4"><span class="placeholder col-8 py-2 rounded bg-secondary bg-opacity-25"></span></td>
-                                            <td><span class="placeholder col-10 py-2 rounded bg-secondary bg-opacity-25"></span></td>
-                                            <td><span class="placeholder col-8 py-2 rounded bg-secondary bg-opacity-25"></span></td>
-                                            <td><span class="placeholder col-6 py-2 rounded-pill bg-secondary bg-opacity-25"></span></td>
-                                            <td class="text-end pe-4"><span class="placeholder col-6 py-2 rounded-pill bg-secondary bg-opacity-25"></span></td>
+                                            <td class="ps-3 ps-md-4"><span class="placeholder col-8 py-2 rounded bg-secondary bg-opacity-25"></span></td>
+                                            <td class="d-none d-md-table-cell"><span class="placeholder col-10 py-2 rounded bg-secondary bg-opacity-25"></span></td>
+                                            <td class="d-none d-md-table-cell"><span class="placeholder col-8 py-2 rounded bg-secondary bg-opacity-25"></span></td>
+                                            <td class="d-none d-md-table-cell"><span class="placeholder col-6 py-2 rounded-pill bg-secondary bg-opacity-25"></span></td>
+                                            <td class="text-end pe-3 pe-md-4"><span class="placeholder col-6 py-2 rounded-pill bg-secondary bg-opacity-25"></span></td>
                                         </tr>
                                     </tbody>
 
                                     <tbody v-else class="border-top-0">
                                         <tr v-for="owner in owners.data" :key="owner.id">
                                             
-                                            <!-- Owner Name & ID -->
-                                            <td class="text-nowrap ps-4 border-secondary-subtle">
-                                                <div class="fw-bold text-body-emphasis">{{ owner.name }}</div>
-                                                <div class="small text-body-secondary">Registered: {{ owner.created_at }}</div>
+                                            <!-- Owner Name, ID & Mobile Nested Secondary Stack -->
+                                            <td class="ps-3 ps-md-4 border-secondary-subtle" style="overflow: hidden;">
+                                                <div class="fw-bold text-body-emphasis text-truncate" :title="owner.name">{{ owner.name }}</div>
+                                                <div class="small text-body-secondary d-none d-md-block text-truncate">Registered: {{ owner.created_at }}</div>
+
+                                                <!-- Mobile Nested Secondary Stack (d-md-none, 0.75rem) -->
+                                                <div class="d-md-none mt-1" style="font-size: 0.75rem; line-height: 1.4;">
+                                                    <div class="text-body-emphasis fw-medium text-truncate" :title="owner.email">
+                                                        <i class="bi bi-envelope me-1"></i>{{ owner.email }}
+                                                    </div>
+                                                    <div class="text-body-secondary text-truncate" v-if="owner.phone">
+                                                        <i class="bi bi-telephone me-1"></i>{{ owner.phone }}
+                                                    </div>
+                                                    <div class="text-body-secondary text-truncate" v-if="owner.boarding_house">
+                                                        <i class="bi bi-house me-1"></i>{{ owner.boarding_house.name }}
+                                                    </div>
+                                                    <div class="mt-1 d-flex align-items-center gap-1">
+                                                        <span class="badge rounded-2 px-2 py-0.5 text-capitalize text-nowrap" :class="statusBadgeClass(owner.status)">
+                                                            {{ owner.status }}
+                                                        </span>
+                                                    </div>
+                                                </div>
                                             </td>
 
-                                            <!-- Contact Details -->
-                                            <td class="text-nowrap border-secondary-subtle">
-                                                <div class="text-body-emphasis fw-medium">{{ owner.email }}</div>
-                                                <div class="small text-body-secondary">{{ owner.phone || 'No phone' }}</div>
+                                            <!-- Contact Details (Desktop) -->
+                                            <td class="border-secondary-subtle d-none d-md-table-cell" style="overflow: hidden;">
+                                                <div class="text-body-emphasis fw-medium text-truncate" :title="owner.email">{{ owner.email }}</div>
+                                                <div class="small text-body-secondary text-truncate">{{ owner.phone || 'No phone' }}</div>
                                             </td>
 
-                                            <!-- Assigned Listing -->
-                                            <td class="text-nowrap border-secondary-subtle" style="max-width: 220px;">
+                                            <!-- Assigned Listing (Desktop) -->
+                                            <td class="border-secondary-subtle d-none d-md-table-cell" style="overflow: hidden;">
                                                 <template v-if="owner.boarding_house">
-                                                    <div class="fw-bold text-body-emphasis text-truncate">{{ owner.boarding_house.name }}</div>
+                                                    <div class="fw-bold text-body-emphasis text-truncate" :title="owner.boarding_house.name">{{ owner.boarding_house.name }}</div>
                                                     <span class="badge badge-soft-primary rounded-2 px-2 py-0.5 small">{{ owner.boarding_house.status }}</span>
                                                 </template>
                                                 <span v-else class="small text-body-secondary fst-italic">No assigned listing</span>
                                             </td>
 
-                                            <!-- Status -->
-                                            <td class="text-nowrap border-secondary-subtle">
-                                                <span class="badge rounded-2 px-2.5 py-1 text-capitalize" :class="statusBadgeClass(owner.status)">
+                                            <!-- Status (Desktop) -->
+                                            <td class="border-secondary-subtle d-none d-md-table-cell text-nowrap" style="overflow: hidden;">
+                                                <span class="badge rounded-2 px-2.5 py-1 text-capitalize text-nowrap" :class="statusBadgeClass(owner.status)">
                                                     {{ owner.status }}
                                                 </span>
                                             </td>
 
-                                            <!-- Action Controls -->
-                                            <td class="border-secondary-subtle text-end pe-4">
-                                                <div class="d-flex justify-content-end align-items-center gap-1.5">
+                                            <!-- Action Controls (Both Mobile & Desktop) -->
+                                            <td class="border-secondary-subtle text-end pe-3 pe-md-4" style="overflow: hidden;">
+                                                <div class="d-flex justify-content-end align-items-center gap-1 flex-wrap flex-md-nowrap">
                                                     
                                                     <!-- Edit Profile -->
                                                     <button
                                                         type="button"
-                                                        class="btn btn-sm btn-outline-secondary rounded-2 d-inline-flex align-items-center justify-content-center p-2"
+                                                        class="btn btn-sm btn-outline-secondary rounded-2 d-inline-flex align-items-center justify-content-center p-1.5"
                                                         title="Edit Profile"
-                                                        style="width: 36px; height: 36px;"
+                                                        style="width: 32px; height: 32px;"
                                                         @click="openEditModal(owner)"
                                                     >
-                                                        <i class="bi bi-pencil" style="font-size: 0.85rem;"></i>
+                                                        <i class="bi bi-pencil" style="font-size: 0.8rem;"></i>
                                                     </button>
 
                                                     <!-- Reset Password -->
                                                     <button
                                                         type="button"
-                                                        class="btn btn-sm btn-outline-primary rounded-2 d-inline-flex align-items-center justify-content-center p-2"
+                                                        class="btn btn-sm btn-outline-primary rounded-2 d-inline-flex align-items-center justify-content-center p-1.5"
                                                         title="Reset Password"
-                                                        style="width: 36px; height: 36px;"
+                                                        style="width: 32px; height: 32px;"
                                                         @click="openResetPasswordModal(owner)"
                                                     >
-                                                        <i class="bi bi-key" style="font-size: 0.95rem;"></i>
+                                                        <i class="bi bi-key" style="font-size: 0.9rem;"></i>
                                                     </button>
 
                                                     <!-- Toggle Status -->
                                                     <button
                                                         type="button"
-                                                        class="btn btn-sm rounded-2 d-inline-flex align-items-center justify-content-center p-2"
+                                                        class="btn btn-sm rounded-2 d-inline-flex align-items-center justify-content-center p-1.5"
                                                         :class="owner.status === 'active' ? 'btn-outline-warning' : 'btn-outline-success'"
                                                         :title="owner.status === 'active' ? 'Deactivate Account' : 'Activate Account'"
-                                                        style="width: 36px; height: 36px;"
+                                                        style="width: 32px; height: 32px;"
                                                         :disabled="statusForm.processing"
                                                         @click="toggleOwnerStatus(owner)"
                                                     >
-                                                        <i :class="owner.status === 'active' ? 'bi bi-pause-fill' : 'bi bi-play-fill'" style="font-size: 0.95rem;"></i>
+                                                        <i :class="owner.status === 'active' ? 'bi bi-pause-fill' : 'bi bi-play-fill'" style="font-size: 0.9rem;"></i>
                                                     </button>
 
                                                     <!-- Delete Owner -->
                                                     <button
                                                         type="button"
-                                                        class="btn btn-sm btn-outline-danger rounded-2 d-inline-flex align-items-center justify-content-center p-2"
+                                                        class="btn btn-sm btn-outline-danger rounded-2 d-inline-flex align-items-center justify-content-center p-1.5"
                                                         title="Delete Account"
-                                                        style="width: 36px; height: 36px;"
+                                                        style="width: 32px; height: 32px;"
                                                         @click="openDeleteModal(owner)"
                                                     >
-                                                        <i class="bi bi-trash" style="font-size: 0.85rem;"></i>
+                                                        <i class="bi bi-trash" style="font-size: 0.8rem;"></i>
                                                     </button>
                                                 </div>
                                             </td>
@@ -720,5 +754,31 @@ const cleanLabel = (label) => {
     background-color: rgba(13, 110, 253, 0.15);
     color: #0d6efd;
     border: 1px solid rgba(13, 110, 253, 0.25);
+}
+
+/* 📱 2-Column Responsive Table Architecture (Zero Cards, 100% Viewport Fit) */
+.col-owner-main {
+    width: 60%;
+}
+.col-owner-actions {
+    width: 40%;
+}
+
+@media (min-width: 768px) {
+    .col-owner-main {
+        width: 28%;
+    }
+    .col-owner-contact {
+        width: 24%;
+    }
+    .col-owner-listing {
+        width: 22%;
+    }
+    .col-owner-status {
+        width: 12%;
+    }
+    .col-owner-actions {
+        width: 14%;
+    }
 }
 </style>

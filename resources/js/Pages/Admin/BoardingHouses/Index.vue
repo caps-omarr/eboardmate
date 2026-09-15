@@ -327,26 +327,33 @@ const houseLinks = computed(() => {
             <div class="row g-4">
                 
                 <!-- LEFT COLUMN: CREATE LISTING FORM -->
-                <section class="col-lg-4" aria-label="Create Boarding House Form">
-                    <div class="ebm-card border border-secondary-subtle shadow-sm p-4 bg-body-tertiary rounded-4 h-100">
-                        <h2 class="h5 text-body-emphasis fw-bold mb-4 border-bottom border-secondary-subtle pb-2 d-flex align-items-center gap-2">
-                            <i class="bi bi-house-add text-success"></i> New Property Listing
-                        </h2>
+                <section class="col-12 col-xl-4 mb-4 mb-xl-0" aria-label="Create Boarding House Form">
+                    <div class="ebm-card p-4 shadow-sm border border-secondary-subtle rounded-4 h-100 bg-body">
+                        <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom border-secondary-subtle">
+                            <i class="bi bi-house-add fs-5 text-success"></i>
+                            <h2 class="h5 text-body-emphasis fw-bold mb-0">
+                                Register Property Listing
+                            </h2>
+                        </div>
+                        <p class="text-body-secondary small mb-4">
+                            New listings require verified GPS coordinates before displaying on the student map.
+                        </p>
 
                         <form @submit.prevent="submitListing">
+                            <!-- Owner Selection -->
                             <div class="mb-3">
-                                <label for="owner_id" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Assign Owner</label>
-                                <select id="owner_id" v-model="listingForm.owner_id" class="form-select border-secondary-subtle bg-body shadow-sm rounded-3 py-2" style="min-height: 44px;" :class="{ 'is-invalid': listingForm.errors.owner_id }">
-                                    <option value="">No owner assigned</option>
+                                <label for="owner_id" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Assign Property Owner</label>
+                                <select id="owner_id" v-model="listingForm.owner_id" class="form-select border-secondary-subtle bg-body shadow-sm rounded-3 py-2" style="min-height: 44px;" :class="{ 'is-invalid': listingForm.errors.owner_id }" required>
+                                    <option value="" disabled>Select registered owner...</option>
                                     <option v-for="owner in owners" :key="owner.id" :value="owner.id">
-                                        {{ owner.name }} - {{ owner.email }}
+                                        {{ owner.name }} ({{ owner.email }})
                                     </option>
                                 </select>
                                 <div v-if="listingForm.errors.owner_id" class="invalid-feedback">{{ listingForm.errors.owner_id }}</div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="name" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Name</label>
+                                <label for="name" class="form-label text-body-emphasis fw-medium small text-uppercase tracking-tight mb-2">Boarding House Name</label>
                                 <input id="name" v-model="listingForm.name" type="text" class="form-control border-secondary-subtle bg-body shadow-sm rounded-3 py-2" style="min-height: 44px;" :class="{ 'is-invalid': listingForm.errors.name }" placeholder="e.g. Sunrise Boarding House" required>
                                 <div v-if="listingForm.errors.name" class="invalid-feedback">{{ listingForm.errors.name }}</div>
                             </div>
@@ -408,7 +415,7 @@ const houseLinks = computed(() => {
                 </section>
 
                 <!-- RIGHT COLUMN: DATA TABLE -->
-                <section class="col-lg-8" aria-label="Boarding Houses Data Table">
+                <section class="col-12 col-xl-8" aria-label="Boarding Houses Data Table">
                     <div class="ebm-card p-0 overflow-hidden shadow-sm border border-secondary-subtle rounded-4 h-100 d-flex flex-column bg-body">
                         
                         <!-- Table Header & Search -->
@@ -448,88 +455,113 @@ const houseLinks = computed(() => {
 
                         <!-- Data Table -->
                         <div v-if="houseList.length" class="d-flex flex-column justify-content-between flex-grow-1 bg-body">
-                            <div class="table-responsive custom-table-scroll">
-                                <table class="table table-hover align-middle mb-0">
+                            <div class="table-responsive custom-table-scroll overflow-x-hidden">
+                                <table class="table table-hover align-middle mb-0" style="table-layout: fixed; width: 100% !important;">
                                     <thead>
                                         <tr>
-                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase ps-4">Property</th>
-                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Owner</th>
-                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Rent & Slots</th>
-                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Status</th>
-                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase text-end pe-4">Actions</th>
+                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase ps-3 ps-md-4 col-bh-property">Property</th>
+                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase d-none d-md-table-cell col-bh-owner">Owner</th>
+                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase d-none d-md-table-cell col-bh-rent">Rent & Slots</th>
+                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase d-none d-md-table-cell col-bh-status">Status</th>
+                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase text-end pe-3 pe-md-4 col-bh-actions">Actions</th>
                                         </tr>
                                     </thead>
 
                                     <tbody class="border-top-0">
                                         <tr v-for="boardingHouse in houseList" :key="boardingHouse.id">
                                             
-                                            <!-- Name & Coordinates -->
-                                            <td class="text-nowrap ps-4 border-secondary-subtle">
-                                                <div class="fw-bold text-body-emphasis">{{ boardingHouse.name }}</div>
-                                                <div class="small text-body-secondary mt-1">
-                                                    <template v-if="boardingHouse.latitude && boardingHouse.longitude">
-                                                        <span class="font-monospace"><i class="bi bi-geo-alt-fill text-primary"></i> {{ boardingHouse.latitude }}, {{ boardingHouse.longitude }}</span>
-                                                    </template>
-                                                    <span v-else class="text-danger fw-bold"><i class="bi bi-geo-alt-fill"></i> Missing Coords</span>
+                                            <!-- Name, Coordinates & Mobile Nested Secondary Stack -->
+                                            <td class="ps-3 ps-md-4 border-secondary-subtle" style="overflow: hidden;">
+                                                <div class="fw-bold text-body-emphasis text-truncate" :title="boardingHouse.name">
+                                                    {{ boardingHouse.name }}
                                                 </div>
-                                                <div class="small text-body-secondary">{{ boardingHouse.address || 'No address' }}</div>
+
+                                                <!-- Desktop Details -->
+                                                <div class="d-none d-md-block">
+                                                    <div class="small text-body-secondary mt-0.5 text-truncate">
+                                                        <template v-if="boardingHouse.latitude && boardingHouse.longitude">
+                                                            <span class="font-monospace"><i class="bi bi-geo-alt-fill text-primary"></i> {{ boardingHouse.latitude }}, {{ boardingHouse.longitude }}</span>
+                                                        </template>
+                                                        <span v-else class="text-danger fw-bold"><i class="bi bi-geo-alt-fill"></i> Missing Coords</span>
+                                                    </div>
+                                                    <div class="small text-body-secondary text-truncate" :title="boardingHouse.address">{{ boardingHouse.address || 'No address' }}</div>
+                                                </div>
+
+                                                <!-- Mobile Nested Secondary Stack (d-md-none, 0.75rem) -->
+                                                <div class="d-md-none mt-1" style="font-size: 0.75rem; line-height: 1.4;">
+                                                    <div class="fw-bold text-success">₱{{ formatPrice(boardingHouse.rent_price) }}/mo</div>
+                                                    <div class="text-body-secondary text-truncate" :title="boardingHouse.owner_name">
+                                                        <i class="bi bi-person me-1"></i>{{ boardingHouse.owner_name }}
+                                                    </div>
+                                                    <div class="text-body-secondary text-truncate" :title="boardingHouse.address">
+                                                        <i class="bi bi-geo-alt me-1"></i>{{ boardingHouse.address || 'Talibon, Bohol' }}
+                                                    </div>
+                                                    <div class="mt-1 d-flex align-items-center gap-1">
+                                                        <span class="badge rounded-2 px-2 py-0.5 text-capitalize text-nowrap" :class="statusBadgeClass(boardingHouse.status)">
+                                                            {{ boardingHouse.status }}
+                                                        </span>
+                                                        <span v-if="boardingHouse.is_verified" class="badge badge-soft-success rounded-2 px-1.5 py-0.5 fw-semibold" style="font-size: 0.7rem;">
+                                                            <i class="bi bi-patch-check-fill"></i> Verified
+                                                        </span>
+                                                    </div>
+                                                </div>
                                             </td>
 
-                                            <!-- Owner -->
-                                            <td class="text-nowrap border-secondary-subtle">
-                                                <div class="fw-medium text-body-emphasis">{{ boardingHouse.owner_name }}</div>
-                                                <div class="small text-body-secondary">{{ boardingHouse.owner_email || 'No email' }}</div>
+                                            <!-- Owner (Desktop) -->
+                                            <td class="border-secondary-subtle d-none d-md-table-cell" style="overflow: hidden;">
+                                                <div class="fw-medium text-body-emphasis text-truncate" :title="boardingHouse.owner_name">{{ boardingHouse.owner_name }}</div>
+                                                <div class="small text-body-secondary text-truncate" :title="boardingHouse.owner_email">{{ boardingHouse.owner_email || 'No email' }}</div>
                                             </td>
 
-                                            <!-- Rent & Slots -->
-                                            <td class="text-nowrap border-secondary-subtle">
-                                                <div class="text-body-emphasis fw-bold mb-1 text-success">₱{{ formatPrice(boardingHouse.rent_price) }}/mo</div>
-                                                <div class="small text-body-secondary">Rms: <span class="fw-medium text-body-emphasis">{{ boardingHouse.available_rooms }}/{{ boardingHouse.total_rooms }}</span> | Beds: <span class="fw-medium text-body-emphasis">{{ boardingHouse.available_bedspaces }}/{{ boardingHouse.total_bedspaces }}</span></div>
+                                            <!-- Rent & Slots (Desktop) -->
+                                            <td class="border-secondary-subtle d-none d-md-table-cell" style="overflow: hidden;">
+                                                <div class="text-body-emphasis fw-bold mb-0.5 text-success text-truncate">₱{{ formatPrice(boardingHouse.rent_price) }}/mo</div>
+                                                <div class="small text-body-secondary text-truncate">Rms: <span class="fw-medium text-body-emphasis">{{ boardingHouse.available_rooms }}/{{ boardingHouse.total_rooms }}</span> | Beds: <span class="fw-medium text-body-emphasis">{{ boardingHouse.available_bedspaces }}/{{ boardingHouse.total_bedspaces }}</span></div>
                                             </td>
 
-                                            <!-- Status -->
-                                            <td class="text-nowrap border-secondary-subtle">
-                                                <span class="badge rounded-2 px-2.5 py-1 text-capitalize" :class="statusBadgeClass(boardingHouse.status)">
+                                            <!-- Status (Desktop) -->
+                                            <td class="border-secondary-subtle d-none d-md-table-cell text-nowrap" style="overflow: hidden;">
+                                                <span class="badge rounded-2 px-2.5 py-1 text-capitalize text-nowrap" :class="statusBadgeClass(boardingHouse.status)">
                                                     {{ boardingHouse.status }}
                                                 </span>
-                                                <div v-if="boardingHouse.is_verified" class="small text-success mt-1 fw-bold tracking-tight">
+                                                <div v-if="boardingHouse.is_verified" class="small text-success mt-1 fw-bold tracking-tight text-nowrap">
                                                     <i class="bi bi-patch-check-fill"></i> Verified
                                                 </div>
-                                                <div v-else class="small text-body-secondary mt-1">Not verified</div>
+                                                <div v-else class="small text-body-secondary mt-1 text-nowrap">Not verified</div>
                                             </td>
 
-                                            <!-- Actions -->
-                                            <td class="border-secondary-subtle text-end pe-4">
-                                                <div class="d-flex justify-content-end align-items-center gap-1.5">
+                                            <!-- Actions (Both Mobile & Desktop, Right-Aligned) -->
+                                            <td class="border-secondary-subtle text-end pe-3 pe-md-4" style="overflow: hidden;">
+                                                <div class="d-flex justify-content-end align-items-center gap-1 flex-wrap flex-md-nowrap">
                                                     
                                                     <!-- Edit Button -->
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-2 d-inline-flex align-items-center justify-content-center p-2" title="Edit Listing Details" style="width: 36px; height: 36px;" @click="openEditModal(boardingHouse)">
-                                                        <i class="bi bi-pencil" style="font-size: 0.85rem;"></i>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-2 d-inline-flex align-items-center justify-content-center p-1.5" title="Edit Listing Details" style="width: 32px; height: 32px;" @click="openEditModal(boardingHouse)">
+                                                        <i class="bi bi-pencil" style="font-size: 0.8rem;"></i>
                                                     </button>
 
                                                     <!-- Approve -->
-                                                    <button v-if="boardingHouse.status === 'pending' || boardingHouse.status === 'rejected'" type="button" class="btn btn-sm btn-outline-success rounded-2 d-inline-flex align-items-center justify-content-center p-2" title="Approve & Verify" style="width: 36px; height: 36px;" @click="openActionModal(boardingHouse, 'approve')">
-                                                        <i class="bi bi-check-lg" style="font-size: 0.95rem;"></i>
+                                                    <button v-if="boardingHouse.status === 'pending' || boardingHouse.status === 'rejected'" type="button" class="btn btn-sm btn-outline-success rounded-2 d-inline-flex align-items-center justify-content-center p-1.5" title="Approve & Verify" style="width: 32px; height: 32px;" @click="openActionModal(boardingHouse, 'approve')">
+                                                        <i class="bi bi-check-lg" style="font-size: 0.9rem;"></i>
                                                     </button>
 
                                                     <!-- Reject -->
-                                                    <button v-if="boardingHouse.status === 'pending' || boardingHouse.status === 'approved'" type="button" class="btn btn-sm btn-outline-warning rounded-2 d-inline-flex align-items-center justify-content-center p-2" title="Reject Listing" style="width: 36px; height: 36px;" @click="openActionModal(boardingHouse, 'reject')">
-                                                        <i class="bi bi-x-lg" style="font-size: 0.85rem;"></i>
+                                                    <button v-if="boardingHouse.status === 'pending' || boardingHouse.status === 'approved'" type="button" class="btn btn-sm btn-outline-warning rounded-2 d-inline-flex align-items-center justify-content-center p-1.5" title="Reject Listing" style="width: 32px; height: 32px;" @click="openActionModal(boardingHouse, 'reject')">
+                                                        <i class="bi bi-x-lg" style="font-size: 0.8rem;"></i>
                                                     </button>
 
                                                     <!-- Deactivate -->
-                                                    <button v-if="boardingHouse.status === 'approved'" type="button" class="btn btn-sm btn-outline-secondary rounded-2 d-inline-flex align-items-center justify-content-center p-2" title="Deactivate Listing" style="width: 36px; height: 36px;" @click="openActionModal(boardingHouse, 'deactivate')">
-                                                        <i class="bi bi-eye-slash" style="font-size: 0.85rem;"></i>
+                                                    <button v-if="boardingHouse.status === 'approved'" type="button" class="btn btn-sm btn-outline-secondary rounded-2 d-inline-flex align-items-center justify-content-center p-1.5" title="Deactivate Listing" style="width: 32px; height: 32px;" @click="openActionModal(boardingHouse, 'deactivate')">
+                                                        <i class="bi bi-eye-slash" style="font-size: 0.8rem;"></i>
                                                     </button>
 
                                                     <!-- Reactivate -->
-                                                    <button v-if="boardingHouse.status === 'deactivated'" type="button" class="btn btn-sm btn-outline-success rounded-2 d-inline-flex align-items-center justify-content-center p-2" title="Reactivate Listing" style="width: 36px; height: 36px;" @click="openActionModal(boardingHouse, 'reactivate')">
-                                                        <i class="bi bi-arrow-repeat" style="font-size: 0.95rem;"></i>
+                                                    <button v-if="boardingHouse.status === 'deactivated'" type="button" class="btn btn-sm btn-outline-success rounded-2 d-inline-flex align-items-center justify-content-center p-1.5" title="Reactivate Listing" style="width: 32px; height: 32px;" @click="openActionModal(boardingHouse, 'reactivate')">
+                                                        <i class="bi bi-arrow-repeat" style="font-size: 0.9rem;"></i>
                                                     </button>
 
                                                     <!-- Two-Step Delete -->
-                                                    <button type="button" class="btn btn-sm btn-outline-danger rounded-2 d-inline-flex align-items-center justify-content-center p-2" title="Delete Listing Permanently" style="width: 36px; height: 36px;" @click="openDeleteModal(boardingHouse)">
-                                                        <i class="bi bi-trash" style="font-size: 0.85rem;"></i>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger rounded-2 d-inline-flex align-items-center justify-content-center p-1.5" title="Delete Listing Permanently" style="width: 32px; height: 32px;" @click="openDeleteModal(boardingHouse)">
+                                                        <i class="bi bi-trash" style="font-size: 0.8rem;"></i>
                                                     </button>
                                                 </div>
                                             </td>
@@ -847,5 +879,31 @@ const houseLinks = computed(() => {
     background-color: rgba(13, 110, 253, 0.15);
     color: #0d6efd;
     border: 1px solid rgba(13, 110, 253, 0.25);
+}
+
+/* 📱 2-Column Responsive Table Architecture (Zero Cards, 100% Viewport Fit) */
+.col-bh-property {
+    width: 60%;
+}
+.col-bh-actions {
+    width: 40%;
+}
+
+@media (min-width: 768px) {
+    .col-bh-property {
+        width: 28%;
+    }
+    .col-bh-owner {
+        width: 22%;
+    }
+    .col-bh-rent {
+        width: 20%;
+    }
+    .col-bh-status {
+        width: 14%;
+    }
+    .col-bh-actions {
+        width: 16%;
+    }
 }
 </style>

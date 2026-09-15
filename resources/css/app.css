@@ -315,6 +315,16 @@ a:hover {
     }
 }
 
+/* 📱 Responsive Admin Table Architecture (Zero Cards, 100% Viewport Fit) */
+.table-responsive.overflow-x-hidden {
+    overflow-x: hidden !important;
+}
+
+.table-responsive.overflow-x-hidden table {
+    table-layout: fixed !important;
+    width: 100% !important;
+}
+
 /* Shared UI */
 .bg-ebm {
     background-color: var(--ebm-bg);

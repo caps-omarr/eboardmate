@@ -329,55 +329,78 @@ const formatPrice = (price) => {
                             </Link>
                         </div>
 
-                        <div v-if="latestBoardingHouses.length" class="table-responsive custom-table-scroll flex-grow-1 bg-body">
-                            <table class="table table-hover align-middle mb-0">
+                        <div v-if="latestBoardingHouses.length" class="table-responsive custom-table-scroll overflow-x-hidden flex-grow-1 bg-body">
+                            <table class="table table-hover align-middle mb-0" style="table-layout: fixed; width: 100% !important;">
                                 <thead>
                                     <tr>
-                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase ps-4">Property</th>
-                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Owner</th>
-                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Rent</th>
-                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase">Status</th>
-                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase text-end pe-4">Actions</th>
+                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase ps-3 ps-md-4 col-dash-prop">Property</th>
+                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase d-none d-md-table-cell col-dash-owner">Owner</th>
+                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase d-none d-md-table-cell col-dash-rent">Rent</th>
+                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase d-none d-md-table-cell col-dash-status">Status</th>
+                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase text-end pe-3 pe-md-4 col-dash-actions">Actions</th>
                                     </tr>
                                 </thead>
 
                                 <tbody class="border-top-0">
                                     <tr v-for="boardingHouse in latestBoardingHouses" :key="boardingHouse.id">
-                                        <td class="text-nowrap ps-4">
-                                            <div class="fw-bold text-body-emphasis">{{ boardingHouse.name }}</div>
-                                            <div class="small text-body-secondary">{{ boardingHouse.created_at }}</div>
+                                        <!-- Primary Property Column with Mobile Nested Info -->
+                                        <td class="ps-3 ps-md-4 border-secondary-subtle" style="overflow: hidden;">
+                                            <div class="fw-bold text-body-emphasis text-truncate" :title="boardingHouse.name">{{ boardingHouse.name }}</div>
+                                            <div class="small text-body-secondary d-none d-md-block text-truncate">{{ boardingHouse.created_at }}</div>
+
+                                            <!-- Mobile Nested Secondary Stack (d-md-none, 0.75rem) -->
+                                            <div class="d-md-none mt-1" style="font-size: 0.75rem; line-height: 1.4;">
+                                                <div class="fw-bold text-success">₱{{ formatPrice(boardingHouse.rent_price) }}/mo</div>
+                                                <div class="text-body-secondary text-truncate" :title="boardingHouse.owner_name">
+                                                    <i class="bi bi-person me-1"></i>{{ boardingHouse.owner_name }}
+                                                </div>
+                                                <div class="mt-1 d-flex align-items-center gap-1">
+                                                    <span class="badge rounded-pill px-2 py-0.5 text-capitalize text-nowrap" :class="listingStatusBadgeClass(boardingHouse.status)">
+                                                        {{ boardingHouse.status }}
+                                                    </span>
+                                                    <span v-if="boardingHouse.is_verified" class="text-success fw-bold" style="font-size: 0.7rem;">
+                                                        <i class="bi bi-check-circle-fill"></i> Verified
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </td>
 
-                                        <td class="text-nowrap">
-                                            <div class="fw-medium text-body-emphasis">{{ boardingHouse.owner_name }}</div>
-                                            <div class="small text-body-secondary">{{ boardingHouse.owner_email || 'No email' }}</div>
+                                        <!-- Owner (Desktop) -->
+                                        <td class="border-secondary-subtle d-none d-md-table-cell" style="overflow: hidden;">
+                                            <div class="fw-medium text-body-emphasis text-truncate" :title="boardingHouse.owner_name">{{ boardingHouse.owner_name }}</div>
+                                            <div class="small text-body-secondary text-truncate" :title="boardingHouse.owner_email">{{ boardingHouse.owner_email || 'No email' }}</div>
                                         </td>
 
-                                        <td class="text-nowrap fw-medium text-body-emphasis">
+                                        <!-- Rent (Desktop) -->
+                                        <td class="border-secondary-subtle d-none d-md-table-cell fw-medium text-body-emphasis text-truncate" style="overflow: hidden;">
                                             ₱{{ formatPrice(boardingHouse.rent_price) }}/mo
                                         </td>
 
-                                        <td class="text-nowrap">
-                                            <span class="badge shadow-sm rounded-pill px-3 py-1 text-capitalize" :class="listingStatusBadgeClass(boardingHouse.status)">
+                                        <!-- Status (Desktop) -->
+                                        <td class="border-secondary-subtle d-none d-md-table-cell text-nowrap" style="overflow: hidden;">
+                                            <span class="badge shadow-sm rounded-pill px-3 py-1 text-capitalize text-nowrap" :class="listingStatusBadgeClass(boardingHouse.status)">
                                                 {{ boardingHouse.status }}
                                             </span>
-                                            <div v-if="boardingHouse.is_verified" class="small text-success mt-1 fw-bold tracking-tight">
+                                            <div v-if="boardingHouse.is_verified" class="small text-success mt-1 fw-bold tracking-tight text-nowrap">
                                                 <i class="bi bi-check-circle-fill"></i> Verified
                                             </div>
                                         </td>
 
-                                        <td class="text-nowrap text-end pe-4">
-                                            <div class="d-flex gap-1 justify-content-end">
+                                        <!-- Actions (Right-Aligned, Text-Nowrap) -->
+                                        <td class="border-secondary-subtle text-end pe-3 pe-md-4" style="overflow: hidden;">
+                                            <div class="d-flex gap-1 justify-content-end align-items-center flex-wrap flex-md-nowrap">
                                                 <button 
                                                     v-if="boardingHouse.status === 'pending'" 
-                                                    class="btn btn-sm btn-success rounded-pill px-3 shadow-sm fw-medium"
+                                                    class="btn btn-sm btn-success rounded-pill px-2 px-md-3 py-1 shadow-sm fw-medium text-nowrap"
+                                                    style="font-size: 0.78rem;"
                                                     @click="approveBoardingHouse(boardingHouse.id)" 
                                                 >
                                                     Approve
                                                 </button>
                                                 <button 
                                                     v-if="boardingHouse.status === 'pending'" 
-                                                    class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-medium"
+                                                    class="btn btn-sm btn-outline-danger rounded-pill px-2 px-md-3 py-1 fw-medium text-nowrap"
+                                                    style="font-size: 0.78rem;"
                                                     @click="rejectBoardingHouse(boardingHouse.id)" 
                                                 >
                                                     Reject
@@ -385,7 +408,7 @@ const formatPrice = (price) => {
                                                 <Link 
                                                     :href="`/admin/boarding-houses`" 
                                                     class="btn btn-sm btn-outline-secondary rounded-circle d-inline-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px;"
+                                                    style="width: 32px; height: 32px; min-width: 32px;"
                                                     title="Inspect"
                                                 >
                                                     <i class="bi bi-arrow-right"></i>
@@ -510,5 +533,31 @@ const formatPrice = (price) => {
     background-color: rgba(108, 117, 125, 0.15);
     color: #6c757d;
     border: 1px solid rgba(108, 117, 125, 0.25);
+}
+
+/* 📱 2-Column Responsive Table Architecture (Zero Cards, 100% Viewport Fit) */
+.col-dash-prop {
+    width: 58%;
+}
+.col-dash-actions {
+    width: 42%;
+}
+
+@media (min-width: 768px) {
+    .col-dash-prop {
+        width: 32%;
+    }
+    .col-dash-owner {
+        width: 24%;
+    }
+    .col-dash-rent {
+        width: 16%;
+    }
+    .col-dash-status {
+        width: 12%;
+    }
+    .col-dash-actions {
+        width: 16%;
+    }
 }
 </style>
