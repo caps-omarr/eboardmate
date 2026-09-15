@@ -402,7 +402,7 @@ const cleanLabel = (label) => {
                                             <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase d-none d-md-table-cell col-owner-contact">Contact</th>
                                             <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase d-none d-md-table-cell col-owner-listing">Assigned Listing</th>
                                             <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase d-none d-md-table-cell col-owner-status">Status</th>
-                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase text-end pe-3 pe-md-4 col-owner-actions">Actions</th>
+                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase text-end pe-2 pe-md-3 col-owner-actions">Actions</th>
                                         </tr>
                                     </thead>
 
@@ -412,7 +412,7 @@ const cleanLabel = (label) => {
                                             <td class="d-none d-md-table-cell"><span class="placeholder col-10 py-2 rounded bg-secondary bg-opacity-25"></span></td>
                                             <td class="d-none d-md-table-cell"><span class="placeholder col-8 py-2 rounded bg-secondary bg-opacity-25"></span></td>
                                             <td class="d-none d-md-table-cell"><span class="placeholder col-6 py-2 rounded-pill bg-secondary bg-opacity-25"></span></td>
-                                            <td class="text-end pe-3 pe-md-4"><span class="placeholder col-6 py-2 rounded-pill bg-secondary bg-opacity-25"></span></td>
+                                            <td class="text-end pe-2 pe-md-3"><span class="placeholder col-6 py-2 rounded-pill bg-secondary bg-opacity-25"></span></td>
                                         </tr>
                                     </tbody>
 
@@ -465,54 +465,54 @@ const cleanLabel = (label) => {
                                                 </span>
                                             </td>
 
-                                            <!-- Action Controls (Both Mobile & Desktop) -->
-                                            <td class="border-secondary-subtle text-end pe-3 pe-md-4" style="overflow: hidden;">
-                                                <div class="d-flex justify-content-end align-items-center gap-1 flex-wrap flex-md-nowrap">
+                                            <!-- Action Controls (Both Mobile & Desktop, Compact & Crisp) -->
+                                            <td class="border-secondary-subtle text-end pe-2 pe-md-3 text-nowrap">
+                                                <div class="d-flex justify-content-end align-items-center gap-1 flex-nowrap">
                                                     
                                                     <!-- Edit Profile -->
                                                     <button
                                                         type="button"
-                                                        class="btn btn-sm btn-outline-secondary rounded-2 d-inline-flex align-items-center justify-content-center p-1.5"
+                                                        class="btn btn-sm btn-outline-secondary rounded-2 d-inline-flex align-items-center justify-content-center p-0"
                                                         title="Edit Profile"
-                                                        style="width: 32px; height: 32px;"
+                                                        style="width: 28px; height: 28px; min-width: 28px;"
                                                         @click="openEditModal(owner)"
                                                     >
-                                                        <i class="bi bi-pencil" style="font-size: 0.8rem;"></i>
+                                                        <i class="bi bi-pencil" style="font-size: 0.75rem;"></i>
                                                     </button>
 
                                                     <!-- Reset Password -->
                                                     <button
                                                         type="button"
-                                                        class="btn btn-sm btn-outline-primary rounded-2 d-inline-flex align-items-center justify-content-center p-1.5"
+                                                        class="btn btn-sm btn-outline-primary rounded-2 d-inline-flex align-items-center justify-content-center p-0"
                                                         title="Reset Password"
-                                                        style="width: 32px; height: 32px;"
+                                                        style="width: 28px; height: 28px; min-width: 28px;"
                                                         @click="openResetPasswordModal(owner)"
                                                     >
-                                                        <i class="bi bi-key" style="font-size: 0.9rem;"></i>
+                                                        <i class="bi bi-key" style="font-size: 0.85rem;"></i>
                                                     </button>
 
                                                     <!-- Toggle Status -->
                                                     <button
                                                         type="button"
-                                                        class="btn btn-sm rounded-2 d-inline-flex align-items-center justify-content-center p-1.5"
+                                                        class="btn btn-sm rounded-2 d-inline-flex align-items-center justify-content-center p-0"
                                                         :class="owner.status === 'active' ? 'btn-outline-warning' : 'btn-outline-success'"
                                                         :title="owner.status === 'active' ? 'Deactivate Account' : 'Activate Account'"
-                                                        style="width: 32px; height: 32px;"
+                                                        style="width: 28px; height: 28px; min-width: 28px;"
                                                         :disabled="statusForm.processing"
                                                         @click="toggleOwnerStatus(owner)"
                                                     >
-                                                        <i :class="owner.status === 'active' ? 'bi bi-pause-fill' : 'bi bi-play-fill'" style="font-size: 0.9rem;"></i>
+                                                        <i :class="owner.status === 'active' ? 'bi bi-pause-fill' : 'bi bi-play-fill'" style="font-size: 0.85rem;"></i>
                                                     </button>
 
                                                     <!-- Delete Owner -->
                                                     <button
                                                         type="button"
-                                                        class="btn btn-sm btn-outline-danger rounded-2 d-inline-flex align-items-center justify-content-center p-1.5"
+                                                        class="btn btn-sm btn-outline-danger rounded-2 d-inline-flex align-items-center justify-content-center p-0"
                                                         title="Delete Account"
-                                                        style="width: 32px; height: 32px;"
+                                                        style="width: 28px; height: 28px; min-width: 28px;"
                                                         @click="openDeleteModal(owner)"
                                                     >
-                                                        <i class="bi bi-trash" style="font-size: 0.8rem;"></i>
+                                                        <i class="bi bi-trash" style="font-size: 0.75rem;"></i>
                                                     </button>
                                                 </div>
                                             </td>
@@ -758,10 +758,11 @@ const cleanLabel = (label) => {
 
 /* 📱 2-Column Responsive Table Architecture (Zero Cards, 100% Viewport Fit) */
 .col-owner-main {
-    width: 60%;
+    width: 62%;
 }
 .col-owner-actions {
-    width: 40%;
+    width: 38%;
+    min-width: 124px;
 }
 
 @media (min-width: 768px) {
@@ -769,16 +770,17 @@ const cleanLabel = (label) => {
         width: 28%;
     }
     .col-owner-contact {
-        width: 24%;
+        width: 22%;
     }
     .col-owner-listing {
-        width: 22%;
+        width: 20%;
     }
     .col-owner-status {
         width: 12%;
     }
     .col-owner-actions {
-        width: 14%;
+        width: 18%;
+        min-width: 135px;
     }
 }
 </style>

@@ -463,7 +463,7 @@ const houseLinks = computed(() => {
                                             <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase d-none d-md-table-cell col-bh-owner">Owner</th>
                                             <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase d-none d-md-table-cell col-bh-rent">Rent & Slots</th>
                                             <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase d-none d-md-table-cell col-bh-status">Status</th>
-                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase text-end pe-3 pe-md-4 col-bh-actions">Actions</th>
+                                            <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase text-end pe-2 pe-md-3 col-bh-actions">Actions</th>
                                         </tr>
                                     </thead>
 
@@ -530,38 +530,38 @@ const houseLinks = computed(() => {
                                                 <div v-else class="small text-body-secondary mt-1 text-nowrap">Not verified</div>
                                             </td>
 
-                                            <!-- Actions (Both Mobile & Desktop, Right-Aligned) -->
-                                            <td class="border-secondary-subtle text-end pe-3 pe-md-4" style="overflow: hidden;">
-                                                <div class="d-flex justify-content-end align-items-center gap-1 flex-wrap flex-md-nowrap">
+                                            <!-- Actions (Both Mobile & Desktop, Right-Aligned, Compact & Crisp) -->
+                                            <td class="border-secondary-subtle text-end pe-2 pe-md-3 text-nowrap">
+                                                <div class="d-flex justify-content-end align-items-center gap-1 flex-nowrap">
                                                     
                                                     <!-- Edit Button -->
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-2 d-inline-flex align-items-center justify-content-center p-1.5" title="Edit Listing Details" style="width: 32px; height: 32px;" @click="openEditModal(boardingHouse)">
-                                                        <i class="bi bi-pencil" style="font-size: 0.8rem;"></i>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-2 d-inline-flex align-items-center justify-content-center p-0" title="Edit Listing Details" style="width: 28px; height: 28px; min-width: 28px;" @click="openEditModal(boardingHouse)">
+                                                        <i class="bi bi-pencil" style="font-size: 0.75rem;"></i>
                                                     </button>
 
                                                     <!-- Approve -->
-                                                    <button v-if="boardingHouse.status === 'pending' || boardingHouse.status === 'rejected'" type="button" class="btn btn-sm btn-outline-success rounded-2 d-inline-flex align-items-center justify-content-center p-1.5" title="Approve & Verify" style="width: 32px; height: 32px;" @click="openActionModal(boardingHouse, 'approve')">
-                                                        <i class="bi bi-check-lg" style="font-size: 0.9rem;"></i>
+                                                    <button v-if="boardingHouse.status === 'pending' || boardingHouse.status === 'rejected'" type="button" class="btn btn-sm btn-outline-success rounded-2 d-inline-flex align-items-center justify-content-center p-0" title="Approve & Verify" style="width: 28px; height: 28px; min-width: 28px;" @click="openActionModal(boardingHouse, 'approve')">
+                                                        <i class="bi bi-check-lg" style="font-size: 0.85rem;"></i>
                                                     </button>
 
                                                     <!-- Reject -->
-                                                    <button v-if="boardingHouse.status === 'pending' || boardingHouse.status === 'approved'" type="button" class="btn btn-sm btn-outline-warning rounded-2 d-inline-flex align-items-center justify-content-center p-1.5" title="Reject Listing" style="width: 32px; height: 32px;" @click="openActionModal(boardingHouse, 'reject')">
-                                                        <i class="bi bi-x-lg" style="font-size: 0.8rem;"></i>
+                                                    <button v-if="boardingHouse.status === 'pending' || boardingHouse.status === 'approved'" type="button" class="btn btn-sm btn-outline-warning rounded-2 d-inline-flex align-items-center justify-content-center p-0" title="Reject Listing" style="width: 28px; height: 28px; min-width: 28px;" @click="openActionModal(boardingHouse, 'reject')">
+                                                        <i class="bi bi-x-lg" style="font-size: 0.75rem;"></i>
                                                     </button>
 
                                                     <!-- Deactivate -->
-                                                    <button v-if="boardingHouse.status === 'approved'" type="button" class="btn btn-sm btn-outline-secondary rounded-2 d-inline-flex align-items-center justify-content-center p-1.5" title="Deactivate Listing" style="width: 32px; height: 32px;" @click="openActionModal(boardingHouse, 'deactivate')">
-                                                        <i class="bi bi-eye-slash" style="font-size: 0.8rem;"></i>
+                                                    <button v-if="boardingHouse.status === 'approved'" type="button" class="btn btn-sm btn-outline-secondary rounded-2 d-inline-flex align-items-center justify-content-center p-0" title="Deactivate Listing" style="width: 28px; height: 28px; min-width: 28px;" @click="openActionModal(boardingHouse, 'deactivate')">
+                                                        <i class="bi bi-eye-slash" style="font-size: 0.75rem;"></i>
                                                     </button>
 
                                                     <!-- Reactivate -->
-                                                    <button v-if="boardingHouse.status === 'deactivated'" type="button" class="btn btn-sm btn-outline-success rounded-2 d-inline-flex align-items-center justify-content-center p-1.5" title="Reactivate Listing" style="width: 32px; height: 32px;" @click="openActionModal(boardingHouse, 'reactivate')">
-                                                        <i class="bi bi-arrow-repeat" style="font-size: 0.9rem;"></i>
+                                                    <button v-if="boardingHouse.status === 'deactivated'" type="button" class="btn btn-sm btn-outline-success rounded-2 d-inline-flex align-items-center justify-content-center p-0" title="Reactivate Listing" style="width: 28px; height: 28px; min-width: 28px;" @click="openActionModal(boardingHouse, 'reactivate')">
+                                                        <i class="bi bi-arrow-repeat" style="font-size: 0.85rem;"></i>
                                                     </button>
 
                                                     <!-- Two-Step Delete -->
-                                                    <button type="button" class="btn btn-sm btn-outline-danger rounded-2 d-inline-flex align-items-center justify-content-center p-1.5" title="Delete Listing Permanently" style="width: 32px; height: 32px;" @click="openDeleteModal(boardingHouse)">
-                                                        <i class="bi bi-trash" style="font-size: 0.8rem;"></i>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger rounded-2 d-inline-flex align-items-center justify-content-center p-0" title="Delete Listing Permanently" style="width: 28px; height: 28px; min-width: 28px;" @click="openDeleteModal(boardingHouse)">
+                                                        <i class="bi bi-trash" style="font-size: 0.75rem;"></i>
                                                     </button>
                                                 </div>
                                             </td>
@@ -883,10 +883,11 @@ const houseLinks = computed(() => {
 
 /* 📱 2-Column Responsive Table Architecture (Zero Cards, 100% Viewport Fit) */
 .col-bh-property {
-    width: 60%;
+    width: 62%;
 }
 .col-bh-actions {
-    width: 40%;
+    width: 38%;
+    min-width: 124px;
 }
 
 @media (min-width: 768px) {
@@ -894,16 +895,17 @@ const houseLinks = computed(() => {
         width: 28%;
     }
     .col-bh-owner {
-        width: 22%;
+        width: 20%;
     }
     .col-bh-rent {
-        width: 20%;
+        width: 18%;
     }
     .col-bh-status {
         width: 14%;
     }
     .col-bh-actions {
-        width: 16%;
+        width: 20%;
+        min-width: 135px;
     }
 }
 </style>

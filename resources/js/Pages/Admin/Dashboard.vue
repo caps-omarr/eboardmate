@@ -337,7 +337,7 @@ const formatPrice = (price) => {
                                         <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase d-none d-md-table-cell col-dash-owner">Owner</th>
                                         <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase d-none d-md-table-cell col-dash-rent">Rent</th>
                                         <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase d-none d-md-table-cell col-dash-status">Status</th>
-                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase text-end pe-3 pe-md-4 col-dash-actions">Actions</th>
+                                        <th scope="col" class="sticky-header text-nowrap bg-body-tertiary text-body-secondary fw-bold small text-uppercase text-end pe-2 pe-md-3 col-dash-actions">Actions</th>
                                     </tr>
                                 </thead>
 
@@ -386,32 +386,41 @@ const formatPrice = (price) => {
                                             </div>
                                         </td>
 
-                                        <!-- Actions (Right-Aligned, Text-Nowrap) -->
-                                        <td class="border-secondary-subtle text-end pe-3 pe-md-4" style="overflow: hidden;">
-                                            <div class="d-flex gap-1 justify-content-end align-items-center flex-wrap flex-md-nowrap">
+                                        <!-- Actions (Right-Aligned, Text-Nowrap, Compact & Crisp) -->
+                                        <td class="border-secondary-subtle text-end pe-2 pe-md-3 text-nowrap">
+                                            <div class="d-flex gap-1 justify-content-end align-items-center flex-nowrap">
+                                                <!-- Approve -->
                                                 <button 
                                                     v-if="boardingHouse.status === 'pending'" 
-                                                    class="btn btn-sm btn-success rounded-pill px-2 px-md-3 py-1 shadow-sm fw-medium text-nowrap"
-                                                    style="font-size: 0.78rem;"
+                                                    type="button"
+                                                    class="btn btn-sm btn-outline-success rounded-2 d-inline-flex align-items-center justify-content-center p-0"
+                                                    style="width: 28px; height: 28px; min-width: 28px;"
+                                                    title="Approve Listing"
                                                     @click="approveBoardingHouse(boardingHouse.id)" 
                                                 >
-                                                    Approve
+                                                    <i class="bi bi-check-lg" style="font-size: 0.9rem;"></i>
                                                 </button>
+
+                                                <!-- Reject -->
                                                 <button 
                                                     v-if="boardingHouse.status === 'pending'" 
-                                                    class="btn btn-sm btn-outline-danger rounded-pill px-2 px-md-3 py-1 fw-medium text-nowrap"
-                                                    style="font-size: 0.78rem;"
+                                                    type="button"
+                                                    class="btn btn-sm btn-outline-danger rounded-2 d-inline-flex align-items-center justify-content-center p-0"
+                                                    style="width: 28px; height: 28px; min-width: 28px;"
+                                                    title="Reject Listing"
                                                     @click="rejectBoardingHouse(boardingHouse.id)" 
                                                 >
-                                                    Reject
+                                                    <i class="bi bi-x-lg" style="font-size: 0.75rem;"></i>
                                                 </button>
+
+                                                <!-- Inspect -->
                                                 <Link 
                                                     :href="`/admin/boarding-houses`" 
-                                                    class="btn btn-sm btn-outline-secondary rounded-circle d-inline-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; min-width: 32px;"
-                                                    title="Inspect"
+                                                    class="btn btn-sm btn-outline-secondary rounded-2 d-inline-flex align-items-center justify-content-center p-0"
+                                                    style="width: 28px; height: 28px; min-width: 28px;"
+                                                    title="Inspect Listing"
                                                 >
-                                                    <i class="bi bi-arrow-right"></i>
+                                                    <i class="bi bi-arrow-right" style="font-size: 0.8rem;"></i>
                                                 </Link>
                                             </div>
                                         </td>
@@ -537,10 +546,11 @@ const formatPrice = (price) => {
 
 /* 📱 2-Column Responsive Table Architecture (Zero Cards, 100% Viewport Fit) */
 .col-dash-prop {
-    width: 58%;
+    width: 65%;
 }
 .col-dash-actions {
-    width: 42%;
+    width: 35%;
+    min-width: 100px;
 }
 
 @media (min-width: 768px) {
@@ -548,16 +558,17 @@ const formatPrice = (price) => {
         width: 32%;
     }
     .col-dash-owner {
-        width: 24%;
+        width: 22%;
     }
     .col-dash-rent {
-        width: 16%;
+        width: 18%;
     }
     .col-dash-status {
         width: 12%;
     }
     .col-dash-actions {
         width: 16%;
+        min-width: 105px;
     }
 }
 </style>
