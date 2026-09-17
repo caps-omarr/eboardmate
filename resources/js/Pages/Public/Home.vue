@@ -213,7 +213,7 @@ onBeforeUnmount(() => {
                         <p
                             class="lead text-body-secondary mb-4 transition-all pe-lg-4"
                         >
-                            Browse verified boarding houses, inspect real walking distances, submit reservation requests, and check live status online—with zero account registration required.
+                            Browse verified boarding houses, inspect estimated walking distances, submit reservation requests, and check live status online with zero account registration required.
                         </p>
 
                         <!-- High-Affordance Hero CTAs (Responsive & Proportional on Mobile and Desktop) -->
