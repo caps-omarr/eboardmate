@@ -195,6 +195,8 @@ Route::middleware(['auth', 'role:super_admin'])
 
         Route::get('/reports', [AdminReportController::class, 'index'])
             ->name('reports.index');
+        Route::get('/reports/export-pdf', [AdminReportController::class, 'exportPdf'])
+            ->name('reports.export-pdf');
 
         // --- ACTIVITY LOGS ---
         Route::get('/activity-logs', [AdminActivityLogController::class, 'index'])

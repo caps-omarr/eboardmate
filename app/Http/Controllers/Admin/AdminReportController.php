@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BoardingHouse;
 use App\Models\Reservation;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -130,6 +131,125 @@ class AdminReportController extends Controller
             ],
             'generatedAt' => now()->format('F d, Y h:i A'),
         ]);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $type = $request->query('type', 'directory');
+        $generatedAt = now()->format('F d, Y h:i A');
+
+        // Prepare Base64 encoded official TPC institutional header banner
+        $bannerPath = public_path('images/tpc-header-banner.jpg');
+        $bannerBase64 = file_exists($bannerPath)
+            ? 'data:image/jpeg;base64,' . base64_encode(file_get_contents($bannerPath))
+            : '';
+
+        if ($type === 'directory') {
+            $boardingHouses = BoardingHouse::query()
+                ->with('owner:id,name,phone,email')
+                ->orderBy('name')
+                ->get()
+                ->map(function (BoardingHouse $bh) {
+                    $rawPhone = preg_replace('/[^0-9]/', '', (string)($bh->owner?->phone ?? ''));
+                    if (str_starts_with($rawPhone, '63') && strlen($rawPhone) === 12) {
+                        $rawPhone = substr($rawPhone, 2);
+                    }
+                    if (str_starts_with($rawPhone, '09') && strlen($rawPhone) === 11) {
+                        $rawPhone = substr($rawPhone, 1);
+                    }
+                    $cellNumber = !empty($rawPhone) ? $rawPhone : ($bh->owner?->phone ?? 'N/A');
+
+                    return [
+                        'owner_name' => $bh->owner?->name ?? 'No Owner Assigned',
+                        'name' => $bh->name,
+                        'address' => $bh->address ?? 'Talibon, Bohol',
+                        'cell_number' => $cellNumber,
+                    ];
+                });
+
+            $pdf = Pdf::loadView('reports.admin-directory-pdf', [
+                'boardingHouses' => $boardingHouses,
+                'bannerBase64' => $bannerBase64,
+                'generatedAt' => $generatedAt,
+            ])
+            ->setPaper('letter', 'portrait')
+            ->setOption([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'defaultFont' => 'sans-serif',
+            ]);
+
+            $filename = 'list-of-boarding-house-owners-and-landlords-' . now()->format('Ymd-His') . '.pdf';
+            return $pdf->stream($filename);
+        }
+
+        // Reservation Audit Export
+        $boardingHouseId = $request->query('boarding_house_id', 'all');
+        $status = $request->query('status', 'all');
+        $dateFrom = $request->query('date_from', '');
+        $dateTo = $request->query('date_to', '');
+        $search = trim($request->query('search', ''));
+
+        $reservationsQuery = Reservation::query()
+            ->with(['boardingHouse:id,name,address'])
+            ->when($boardingHouseId !== 'all' && !empty($boardingHouseId), function ($q) use ($boardingHouseId) {
+                $q->where('boarding_house_id', $boardingHouseId);
+            })
+            ->when($status !== 'all' && !empty($status), function ($q) use ($status) {
+                $q->where('status', $status);
+            })
+            ->when(!empty($dateFrom), function ($q) use ($dateFrom) {
+                $q->whereDate('preferred_move_in_date', '>=', $dateFrom);
+            })
+            ->when(!empty($dateTo), function ($q) use ($dateTo) {
+                $q->whereDate('preferred_move_in_date', '<=', $dateTo);
+            })
+            ->when($search !== '', function ($q) use ($search) {
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('reference_code', 'like', "%{$search}%")
+                        ->orWhere('guest_name', 'like', "%{$search}%")
+                        ->orWhereHas('boardingHouse', function ($bhQ) use ($search) {
+                            $bhQ->where('name', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->latest();
+
+        $reservations = $reservationsQuery->get()->map(function (Reservation $res) {
+            $rawPhone = preg_replace('/[^0-9]/', '', (string)($res->guest_phone ?? ''));
+            if (str_starts_with($rawPhone, '63') && strlen($rawPhone) === 12) {
+                $rawPhone = substr($rawPhone, 2);
+            }
+            if (str_starts_with($rawPhone, '09') && strlen($rawPhone) === 11) {
+                $rawPhone = substr($rawPhone, 1);
+            }
+            $cellNumber = !empty($rawPhone) ? $rawPhone : ($res->guest_phone ?? 'N/A');
+
+            return [
+                'reference_code' => $res->reference_code,
+                'guest_name' => $res->guest_name,
+                'boarding_house_name' => $res->boardingHouse?->name ?? 'N/A',
+                'preferred_move_in_date' => $res->preferred_move_in_date?->format('M d, Y') ?? 'N/A',
+                'guest_phone_formatted' => $cellNumber,
+                'status_label' => $this->statusLabel($res->status),
+                'created_at' => $res->created_at?->format('M d, Y h:i A') ?? 'N/A',
+            ];
+        });
+
+        $pdf = Pdf::loadView('reports.admin-reservations-pdf', [
+            'reservations' => $reservations,
+            'bannerBase64' => $bannerBase64,
+            'generatedAt' => $generatedAt,
+        ])
+        ->setPaper('letter', 'landscape')
+        ->setOption([
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'defaultFont' => 'sans-serif',
+        ]);
+
+        $filename = 'reservation-audit-master-list-' . now()->format('Ymd-His') . '.pdf';
+        return $pdf->stream($filename);
     }
 
     private function statusLabel(string $status): string

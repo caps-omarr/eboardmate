@@ -1,7 +1,7 @@
 <script setup>
 import { Head, router } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import { onMounted, onUnmounted, ref, watch, nextTick } from 'vue';
+import { onMounted, onUnmounted, ref, watch, nextTick, computed } from 'vue';
 import Chart from 'chart.js/auto';
 
 const props = defineProps({
@@ -170,6 +170,33 @@ const formatPrice = (price) => {
         maximumFractionDigits: 2,
     });
 };
+
+// --- CELL NUMBER FORMATTER (Matches Official TPC Document format) ---
+const formatCellNumber = (phone) => {
+    if (!phone) return 'N/A';
+    const clean = String(phone).replace(/[^0-9]/g, '');
+    if (clean.startsWith('63') && clean.length === 12) {
+        return clean.substring(2);
+    }
+    if (clean.startsWith('09') && clean.length === 11) {
+        return clean.substring(1);
+    }
+    return clean || phone;
+};
+
+// --- DIRECT PDF EXPORT URL ---
+const pdfExportUrl = computed(() => {
+    const params = new URLSearchParams();
+    params.set('type', activeReportTab.value);
+    if (activeReportTab.value === 'reservations') {
+        if (selectedBh.value && selectedBh.value !== 'all') params.set('boarding_house_id', selectedBh.value);
+        if (selectedStatus.value && selectedStatus.value !== 'all') params.set('status', selectedStatus.value);
+        if (dateFrom.value) params.set('date_from', dateFrom.value);
+        if (dateTo.value) params.set('date_to', dateTo.value);
+        if (searchQuery.value) params.set('search', searchQuery.value);
+    }
+    return `/admin/reports/export-pdf?${params.toString()}`;
+});
 </script>
 
 <template>
@@ -178,15 +205,13 @@ const formatPrice = (price) => {
 
         <div class="container-fluid max-w-desktop mx-auto pb-5 pt-2 px-3 px-md-4">
             
-            <!-- 🖨️ INSTITUTIONAL PRINT HEADER (Visible ONLY during print) -->
-            <div class="d-none d-print-block print-official-header mb-4 text-center border-bottom pb-3">
-                <div class="fw-bold text-uppercase fs-4 tracking-tight">Talibon Polytechnic College</div>
-                <div class="fs-6 text-uppercase fw-semibold text-secondary">E-BoardMate: Web-Based Locator & Reservation System</div>
-                <div class="fs-5 fw-bold mt-2 text-dark">
-                    {{ activeReportTab === 'reservations' ? 'OFFICIAL RESERVATION AUDIT MASTER LIST' : 'OFFICIAL BOARDING HOUSE SYSTEM DIRECTORY' }}
+            <!-- 🖨️ OFFICIAL TPC INSTITUTIONAL PRINT HEADER (Visible ONLY during print) -->
+            <div class="d-none d-print-block print-official-header mb-3">
+                <div class="text-center mb-2">
+                    <img src="/images/tpc-header-banner.jpg" alt="Talibon Polytechnic College Banner" class="print-banner-img" />
                 </div>
-                <div class="small text-muted mt-1">
-                    Document Generated: {{ generatedAt }} | Scope: {{ selectedBh === 'all' ? 'All Boarding Houses' : 'Filtered Boarding House' }}
+                <div class="print-document-title">
+                    {{ activeReportTab === 'directory' ? 'LIST OF BOARDING HOUSE OWNERS AND LANDLORDS/LANDLADIES' : 'LIST OF BOARDING HOUSE RESERVATIONS AND BOOKING AUDIT' }}
                 </div>
             </div>
 
@@ -204,16 +229,30 @@ const formatPrice = (price) => {
                     </p>
                 </div>
 
-                <!-- Print Action Button -->
-                <button 
-                    type="button" 
-                    class="btn btn-primary rounded-3 px-4 py-2 shadow-sm d-flex align-items-center gap-2 fw-semibold"
-                    style="min-height: 44px;"
-                    @click="printReport"
-                >
-                    <i class="bi bi-printer-fill fs-5"></i>
-                    <span>Export PDF / Print</span>
-                </button>
+                <!-- Export PDF & Print Action Buttons -->
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <a 
+                        :href="pdfExportUrl" 
+                        target="_blank"
+                        class="btn btn-primary rounded-3 px-3 py-2 shadow-sm d-flex align-items-center gap-2 fw-semibold text-nowrap"
+                        style="min-height: 44px;"
+                        title="Download official formatted PDF file directly"
+                    >
+                        <i class="bi bi-file-earmark-pdf-fill fs-5"></i>
+                        <span>Save as PDF</span>
+                    </a>
+
+                    <button 
+                        type="button" 
+                        class="btn btn-outline-secondary rounded-3 px-3 py-2 shadow-sm d-flex align-items-center gap-2 fw-semibold text-nowrap"
+                        style="min-height: 44px;"
+                        @click="printReport"
+                        title="Open Browser Print Dialog"
+                    >
+                        <i class="bi bi-printer-fill fs-5"></i>
+                        <span>Print Layout</span>
+                    </button>
+                </div>
             </header>
 
             <!-- STATS & CHART SUMMARY (Hidden in print) -->
@@ -438,6 +477,36 @@ const formatPrice = (price) => {
                         </table>
                     </div>
 
+                    <!-- 🖨️ OFFICIAL PRINT TABLE FOR RESERVATIONS (MATCHES INSTITUTIONAL FORMAT) -->
+                    <div v-if="reservations.length" class="d-none d-print-block">
+                        <table class="official-print-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 4%; text-align: center;">NO.</th>
+                                    <th style="width: 14%; text-align: center;">REF CODE</th>
+                                    <th style="width: 18%; text-align: left;">GUEST NAME</th>
+                                    <th style="width: 22%; text-align: left;">NAME OF BOARDING HOUSE</th>
+                                    <th style="width: 11%; text-align: center;">MOVE-IN DATE</th>
+                                    <th style="width: 11%; text-align: center;">CELL #</th>
+                                    <th style="width: 10%; text-align: center;">STATUS</th>
+                                    <th style="width: 10%; text-align: center;">SUBMITTED</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(res, index) in reservations" :key="res.id">
+                                    <td class="text-center">{{ index + 1 }}</td>
+                                    <td class="text-center font-monospace">{{ res.reference_code }}</td>
+                                    <td class="text-uppercase">{{ res.guest_name }}</td>
+                                    <td class="text-uppercase">{{ res.boarding_house_name }}</td>
+                                    <td class="text-center">{{ res.preferred_move_in_date }}</td>
+                                    <td class="text-center font-monospace">{{ formatCellNumber(res.guest_phone_masked) }}</td>
+                                    <td class="text-center text-uppercase">{{ res.status_label }}</td>
+                                    <td class="text-center small">{{ res.created_at }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                     <div v-else class="text-center p-5">
                         <i class="bi bi-folder-x display-5 text-secondary opacity-50 mb-2 d-block"></i>
                         <h3 class="h5 fw-bold mb-1">No reservations found</h3>
@@ -460,63 +529,55 @@ const formatPrice = (price) => {
                         <p class="text-body-secondary small mb-0">Complete roster of registered properties, owner contact details, coordinates, and capacities.</p>
                     </div>
 
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0 print-table">
+                    <!-- ON-SCREEN DIRECTORY TABLE (HIDDEN IN PRINT) -->
+                    <div class="table-responsive d-print-none">
+                        <table class="table table-hover align-middle mb-0">
                             <thead>
                                 <tr class="bg-body-tertiary">
-                                    <th scope="col" class="ps-4 py-3 text-uppercase small text-body-secondary fw-bold">Boarding House</th>
-                                    <th scope="col" class="py-3 text-uppercase small text-body-secondary fw-bold">Owner Name</th>
-                                    <th scope="col" class="py-3 text-uppercase small text-body-secondary fw-bold">Owner Contact</th>
-                                    <th scope="col" class="py-3 text-uppercase small text-body-secondary fw-bold">Exact Coordinates</th>
-                                    <th scope="col" class="py-3 text-uppercase small text-body-secondary fw-bold">Room Allocation</th>
-                                    <th scope="col" class="py-3 text-uppercase small text-body-secondary fw-bold">Bedspace Capacity</th>
-                                    <th scope="col" class="py-3 text-uppercase small text-body-secondary fw-bold text-end pe-4">Status</th>
+                                    <th scope="col" class="ps-3 py-3 text-center text-uppercase small text-body-secondary fw-bold" style="width: 5%;">NO.</th>
+                                    <th scope="col" class="py-3 text-uppercase small text-body-secondary fw-bold" style="width: 22%;">NAME OF OWNER</th>
+                                    <th scope="col" class="py-3 text-uppercase small text-body-secondary fw-bold" style="width: 22%;">NAME OF BOARDING HOUSE</th>
+                                    <th scope="col" class="py-3 text-uppercase small text-body-secondary fw-bold" style="width: 25%;">ADDRESS</th>
+                                    <th scope="col" class="py-3 text-center text-uppercase small text-body-secondary fw-bold" style="width: 14%;">CELL #</th>
+                                    <th scope="col" class="py-3 text-end pe-3 text-uppercase small text-body-secondary fw-bold" style="width: 12%;">STATUS</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="house in directoryReport" :key="house.id">
-                                    
-                                    <!-- Property & Address -->
-                                    <td class="ps-4 py-3">
-                                        <div class="fw-bold text-body-emphasis">{{ house.name }}</div>
-                                        <div class="small text-body-secondary">{{ house.address }}</div>
-                                    </td>
-
-                                    <!-- Owner Name -->
-                                    <td class="py-3 fw-medium text-body-emphasis">
-                                        {{ house.owner_name }}
-                                    </td>
-
-                                    <!-- Owner Contact -->
-                                    <td class="py-3">
-                                        <div class="font-monospace small">{{ house.owner_phone }}</div>
-                                        <div class="small text-body-secondary">{{ house.owner_email }}</div>
-                                    </td>
-
-                                    <!-- Exact Coordinates -->
-                                    <td class="py-3">
-                                        <div v-if="house.latitude && house.longitude" class="font-monospace small text-primary">
-                                            {{ house.latitude }}, {{ house.longitude }}
-                                        </div>
-                                        <span v-else class="badge badge-soft-danger rounded-2 small">Missing Coordinates</span>
-                                    </td>
-
-                                    <!-- Room Allocation -->
-                                    <td class="py-3">
-                                        <span class="fw-bold">{{ house.available_rooms }}</span> / {{ house.total_rooms }} rooms
-                                    </td>
-
-                                    <!-- Bedspace Capacity -->
-                                    <td class="py-3">
-                                        <span class="fw-bold">{{ house.available_bedspaces }}</span> / {{ house.total_bedspaces }} beds
-                                    </td>
-
-                                    <!-- Status -->
-                                    <td class="py-3 text-end pe-4">
-                                        <span class="badge rounded-2 px-2.5 py-1 text-capitalize print-badge" :class="statusBadgeClass(house.status)">
+                                <tr v-for="(house, index) in directoryReport" :key="house.id">
+                                    <td class="ps-3 py-3 text-center fw-semibold text-body-secondary">{{ index + 1 }}</td>
+                                    <td class="py-3 fw-bold text-uppercase text-body-emphasis">{{ house.owner_name }}</td>
+                                    <td class="py-3 fw-medium text-uppercase text-body-emphasis">{{ house.name }}</td>
+                                    <td class="py-3 text-uppercase small text-body-secondary">{{ house.address }}</td>
+                                    <td class="py-3 text-center font-monospace small fw-semibold">{{ formatCellNumber(house.owner_phone) }}</td>
+                                    <td class="py-3 text-end pe-3">
+                                        <span class="badge rounded-2 px-2.5 py-1 text-capitalize" :class="statusBadgeClass(house.status)">
                                             {{ house.status }}
                                         </span>
                                     </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 🖨️ OFFICIAL PRINT TABLE FOR DIRECTORY (EXACT MATCH TO TPC ATTACHED PHOTO) -->
+                    <div class="d-none d-print-block">
+                        <table class="official-print-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 5%; text-align: center;">NO.</th>
+                                    <th style="width: 25%; text-align: left;">NAME OF OWNER</th>
+                                    <th style="width: 25%; text-align: left;">NAME OF BOARDING HOUSE</th>
+                                    <th style="width: 29%; text-align: left;">ADDRESS</th>
+                                    <th style="width: 16%; text-align: center;">CELL #</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(house, index) in directoryReport" :key="house.id">
+                                    <td class="text-center">{{ index + 1 }}</td>
+                                    <td class="text-uppercase">{{ house.owner_name }}</td>
+                                    <td class="text-uppercase">{{ house.name }}</td>
+                                    <td class="text-uppercase">{{ house.address }}</td>
+                                    <td class="text-center font-monospace">{{ formatCellNumber(house.owner_phone) }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -525,24 +586,8 @@ const formatPrice = (price) => {
             </div>
 
             <!-- 🖨️ INSTITUTIONAL PRINT FOOTER (Visible ONLY during print) -->
-            <div class="d-none d-print-block mt-5 pt-4 border-top text-center text-muted small">
-                <div class="row text-center mt-4">
-                    <div class="col-6">
-                        <div class="border-top border-dark mx-auto pt-2" style="max-width: 250px;">
-                            <strong>Prepared By:</strong><br>
-                            E-BoardMate Super Administrator
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="border-top border-dark mx-auto pt-2" style="max-width: 250px;">
-                            <strong>Verified / Noted By:</strong><br>
-                            TPC Administration Official
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    Talibon Polytechnic College &bull; E-BoardMate System Official Audit Report &bull; Page 1
-                </div>
+            <div class="d-none d-print-block mt-4 text-end text-muted small" style="font-size: 8pt;">
+                Talibon Polytechnic College &bull; E-BoardMate System Official Report &bull; Generated: {{ generatedAt }}
             </div>
 
         </div>
@@ -585,11 +630,65 @@ const formatPrice = (price) => {
 }
 
 /* ========================================================= */
-/* 🖨️ PRINT-READY MEDIA STYLESHEET                          */
-/* Strips nav, shadows, dark backgrounds, buttons, and adds  */
-/* crisp monochrome borders for formal institutional reports */
+/* 🖨️ OFFICIAL PRINT MEDIA STYLESHEET (MATCHES TPC ATTACHED)  */
 /* ========================================================= */
+.official-print-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+    font-size: 9.5pt !important;
+    color: #000000 !important;
+    margin-top: 4px !important;
+}
+
+.official-print-table th,
+.official-print-table td {
+    border: 1px solid #000000 !important;
+    padding: 5px 6px !important;
+    color: #000000 !important;
+    vertical-align: middle !important;
+}
+
+.official-print-table thead th {
+    background-color: #f2f2f2 !important;
+    font-weight: bold !important;
+    text-transform: uppercase !important;
+    font-size: 9pt !important;
+    letter-spacing: 0.3px !important;
+    text-align: center !important;
+}
+
+.print-banner-img {
+    width: 100% !important;
+    max-height: 85px !important;
+    object-fit: contain !important;
+}
+
+.print-document-title {
+    text-align: center !important;
+    font-weight: bold !important;
+    font-size: 13.5pt !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    margin: 8px 0 12px 0 !important;
+    color: #000000 !important;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+}
+
 @media print {
+    @page {
+        size: letter portrait;
+        margin: 8mm 10mm 10mm 10mm;
+    }
+
+    body, html, main, .container-fluid {
+        background: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+    }
+
     /* Hide non-printable elements */
     .d-print-none,
     nav,
@@ -604,52 +703,16 @@ const formatPrice = (price) => {
         display: none !important;
     }
 
-    body, html, main, .container-fluid {
-        background: #ffffff !important;
-        color: #000000 !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        width: 100% !important;
+    .d-print-block {
+        display: block !important;
     }
 
     .ebm-card {
         box-shadow: none !important;
         border: none !important;
         background: transparent !important;
-    }
-
-    .print-table {
-        width: 100% !important;
-        border-collapse: collapse !important;
-        color: #000000 !important;
-        font-size: 9pt !important;
-    }
-
-    .print-table th,
-    .print-table td {
-        border: 1px solid #333333 !important;
-        padding: 6px 10px !important;
-        color: #000000 !important;
-        background: transparent !important;
-    }
-
-    .print-table thead th {
-        background-color: #f2f2f2 !important;
-        font-weight: bold !important;
-        text-transform: uppercase !important;
-    }
-
-    .print-badge {
-        background: none !important;
-        border: 1px solid #333333 !important;
-        color: #000000 !important;
-        box-shadow: none !important;
-        font-weight: normal !important;
-        padding: 2px 6px !important;
-    }
-
-    .print-official-header {
-        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }
 }
 </style>
