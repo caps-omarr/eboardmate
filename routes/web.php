@@ -173,7 +173,7 @@ Route::get('/admin/login', [AdminAuthController::class, 'create'])
     ->name('admin.login');
 
 Route::post('/admin/login', [AdminAuthController::class, 'store'])
-    ->middleware('guest')
+    ->middleware(['guest', 'throttle:10,1'])
     ->name('admin.login.store');
 
 Route::post('/admin/logout', [AdminAuthController::class, 'destroy'])
@@ -258,7 +258,8 @@ Route::get('/keep-alive', function () {
     try {
         \Illuminate\Support\Facades\DB::select('select 1');
         return response()->json(['status' => 'Database is awake and connected!'], 200);
-    } catch (\Exception $e) {
-        return response()->json(['status' => 'Database connection failed.', 'error' => $e->getMessage()], 500);
+    } catch (\Throwable $e) {
+        \Illuminate\Support\Facades\Log::error('Keep-alive database ping failed: ' . $e->getMessage());
+        return response()->json(['status' => 'Database connection failed.'], 500);
     }
 });

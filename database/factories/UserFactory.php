@@ -27,10 +27,36 @@ class UserFactory extends Factory
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
+            'phone' => '09' . fake()->numerify('#########'),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'role' => User::ROLE_OWNER,
+            'status' => User::STATUS_ACTIVE,
         ];
+    }
+
+    public function owner(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => User::ROLE_OWNER,
+            'status' => User::STATUS_ACTIVE,
+        ]);
+    }
+
+    public function superAdmin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => User::ROLE_SUPER_ADMIN,
+            'status' => User::STATUS_ACTIVE,
+        ]);
+    }
+
+    public function inactive(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => User::STATUS_INACTIVE,
+        ]);
     }
 
     /**
